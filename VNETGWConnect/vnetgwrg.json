@@ -1,0 +1,240 @@
+﻿{
+
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "VNetRgName": {
+      "type": "string",
+      "defaultValue": "cmcs-vnet-rg"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "GwName": {
+      "type": "string",
+      "defaultValue": "cmcs-vnetgw"
+    },
+    "VNetName": {
+      "type": "string",
+      "defaultValue": "cmcs-vnet"
+    },
+    "GwSubnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "GwSku": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "HighPerformance",
+        "UltraPerformance",
+        "VpnGw1",
+        "VpnGw2",
+        "VpnGw3",
+        "VpnGw4",
+        "VpnGw5",
+        "VpnGw1AZ",
+        "VpnGw2AZ",
+        "VpnGw3AZ",
+        "VpnGw4AZ",
+        "VpnGw5AZ",
+        "ErGw1AZ",
+        "ErGw2AZ",
+        "ErGw3AZ"
+      ]
+    },
+    "GwType": {
+      "type": "string",
+      "defaultValue": "Vpn",
+      "allowedValues": [
+        "Vpn",
+        "ExpressRoute"
+      ]
+    },
+    "VpnType": {
+      "type": "string",
+      "defaultValue": "RouteBased",
+      "allowedValues": [
+        "PolicyBased",
+        "RouteBased"
+      ]
+    },
+    "GwGeneration": {
+      "type": "string",
+      "defaultValue": "Generation1",
+      "allowedValues": [
+        "None",
+        "Generation1",
+        "Generation2"
+      ]
+    },
+    "vpnConnections": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "NoVPNConnections"
+        }
+      ]
+    }
+  },
+  "variables": {
+
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "createvnetgw",
+      "resourceGroup": "[parameters('VNetRgName')]",
+      "properties": {
+        "mode": "Incremental",
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "parameters": {
+          "location": { "value": "[parameters('location')]" },
+          "GwName": { "value": "[parameters('GwName')]" },
+          "VNetName": { "value": "[parameters('VNetName')]" },
+          "GwSubnetAddressPrefix": { "value": "[parameters('GwSubnetAddressPrefix')]" },
+          "GwSku": { "value": "[parameters('GwSku')]" },
+          "GwType": { "value": "[parameters('GwType')]" },
+          "VpnType": { "value": "[parameters('VpnType')]" },
+          "GwGeneration": { "value": "[parameters('GwGeneration')]" },
+          "vpnConnections": { "value": "[parameters('vpnConnections')]" }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "location": { "type": "string" },
+            "GwName": { "type": "string" },
+            "VNetName": { "type": "string" },
+            "GwSubnetAddressPrefix": { "type": "string" },
+            "GwSku": { "type": "string" },
+            "GwType": { "type": "string" },
+            "VpnType": { "type": "string" },
+            "GwGeneration": { "type": "string" },
+            "vpnConnections": { "type": "array" }
+          },
+          "variables": {
+            "location": "[if(empty(parameters('location')), resourceGroup().location, parameters('location'))]",
+            "GwPublicIpName": "[concat(parameters('GwName'), '-pip')]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/localNetworkGateways",
+              "apiVersion": "2020-11-01",
+              "condition": "[not(equals(parameters('vpnConnections')[copyIndex('vpnConnections')].name, 'NoVPNConnections'))]",
+              "name": "[parameters('vpnConnections')[copyIndex('vpnConnections')].name]",
+              "location": "[variables('location')]",
+              "properties": {
+                "localNetworkAddressSpace": {
+                  "addressPrefixes": "[parameters('vpnConnections')[copyIndex('vpnConnections')].addressPrefixes]"
+                },
+                "gatewayIpAddress": "[parameters('vpnConnections')[copyIndex('vpnConnections')].gatewayIpAddress]"
+              },
+              "copy": {
+                "name": "vpnConnections",
+                "count": "[length(parameters('vpnConnections'))]"
+              }
+            },
+            {
+              "type": "Microsoft.Network/virtualNetworks/subnets",
+              "apiVersion": "2020-11-01",
+              "name": "[concat(parameters('VNetName'), '/GatewaySubnet')]",
+              "location": "[variables('location')]",
+              "properties": {
+                "addressPrefix": "[parameters('GwSubnetAddressPrefix')]"
+              }
+            },
+            {
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2020-11-01",
+              "name": "[variables('GwPublicIpName')]",
+              "location": "[variables('location')]",
+              "sku": {
+                "name": "Basic",
+                "tier": "Regional"
+              },
+              "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4
+              }
+            },
+            {
+              "type": "Microsoft.Network/virtualNetworkGateways",
+              "apiVersion": "2020-11-01",
+              "name": "[parameters('GwName')]",
+              "location": "[variables('location')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('GwPublicIpName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), 'GatewaySubnet')]"
+              ],
+              "properties": {
+                "enablePrivateIpAddress": false,
+                "ipConfigurations": [
+                  {
+                    "name": "default",
+                    "properties": {
+                      "privateIPAllocationMethod": "Dynamic",
+                      "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('GwPublicIpName'))]"
+                      },
+                      "subnet": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), 'GatewaySubnet')]"
+                      }
+                    }
+                  }
+                ],
+                "sku": {
+                  "name": "[parameters('GwSku')]"
+                },
+                "gatewayType": "[parameters('GwType')]",
+                "vpnType": "[parameters('VpnType')]",
+                "vpnGatewayGeneration": "[parameters('GwGeneration')]"
+              }
+            },
+            {
+              "type": "Microsoft.Network/connections",
+              "apiVersion": "2020-11-01",
+              "condition": "[not(equals(parameters('vpnConnections')[copyIndex('vpnConnections')].name, 'NoVPNConnections'))]",
+              "name": "[parameters('vpnConnections')[copyIndex('vpnConnections')].name]",
+              "location": "[variables('location')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('GwName'))]",
+                "[resourceId('Microsoft.Network/localNetworkGateways', parameters('vpnConnections')[copyIndex('vpnConnections')].name)]"
+              ],
+              "properties": {
+                "connectionType": "[parameters('vpnConnections')[copyIndex('vpnConnections')].connectionType]",
+                "virtualNetworkGateway1": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('GwName'))]"
+                },
+                "useLocalAzureIpAddress": false,
+                "enableBgp": false,
+                "connectionProtocol": "[parameters('vpnConnections')[copyIndex('vpnConnections')].connectionProtocol]",
+                "sharedKey": "[parameters('vpnConnections')[copyIndex('vpnConnections')].sharedKey]",
+                "ipsecPolicies": [
+                  "[parameters('vpnConnections')[copyIndex('vpnConnections')].ipsecPolicies]"
+                ],
+                "usePolicyBasedTrafficSelectors": false,
+                "dpdTimeoutSeconds": 45,
+                "connectionMode": "Default",
+                "localNetworkGateway2": {
+                  "id": "[resourceId('Microsoft.Network/localNetworkGateways', parameters('vpnConnections')[copyIndex('vpnConnections')].name)]"
+                }
+              },
+              "copy": {
+                "name": "vpnConnections",
+                "count": "[length(parameters('vpnConnections'))]"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

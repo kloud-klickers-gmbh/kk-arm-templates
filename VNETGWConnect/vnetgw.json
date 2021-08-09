@@ -1,0 +1,95 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "Prefix": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "GwSubnetAddressPrefix": {
+      "type": "string"
+    },
+    "GwSku": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "VpnGw1",
+        "VpnGw2"
+      ]
+    },
+    "DNSLabel": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "VNetName": "[concat(parameters('Prefix'),'-vnet')]",
+    "GwName": "[concat(parameters('Prefix'),'-vnetgw')]",
+    "GwPublicIpName": "[concat(variables('GwName'), '-pip')]"
+  },
+"resources": [
+  {
+    "type": "Microsoft.Network/virtualNetworks/subnets",
+    "apiVersion": "2020-11-01",
+    "name": "[concat(variables('VNetName'), '/GatewaySubnet')]",
+    "location": "[parameters('location')]",
+    "properties": {
+      "addressPrefix": "[parameters('GwSubnetAddressPrefix')]"
+    }
+  },
+  {
+    "type": "Microsoft.Network/publicIPAddresses",
+    "apiVersion": "2020-11-01",
+    "name": "[variables('GwPublicIpName')]",
+    "location": "[parameters('location')]",
+    "sku": {
+      "name": "Basic",
+      "tier": "Regional"
+    },
+    "properties": {
+      "publicIPAddressVersion": "IPv4",
+      "publicIPAllocationMethod": "Dynamic",
+      "idleTimeoutInMinutes": 4,
+      "dnsSettings": {
+        "domainNameLabel": "[toLower(parameters('DNSLabel'))]"
+      }
+    }
+  },
+  {
+    "type": "Microsoft.Network/virtualNetworkGateways",
+    "apiVersion": "2020-11-01",
+    "name": "[variables('GwName')]",
+    "location": "[parameters('location')]",
+    "dependsOn": [
+      "[resourceId('Microsoft.Network/publicIPAddresses', variables('GwPublicIpName'))]",
+      "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VNetName'), 'GatewaySubnet')]"
+    ],
+    "properties": {
+      "enablePrivateIpAddress": false,
+      "ipConfigurations": [
+        {
+          "name": "default",
+          "properties": {
+            "privateIPAllocationMethod": "Dynamic",
+            "publicIPAddress": {
+              "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('GwPublicIpName'))]"
+            },
+            "subnet": {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VNetName'), 'GatewaySubnet')]"
+            }
+          }
+        }
+      ],
+      "sku": {
+        "name": "[parameters('GwSku')]",
+        "tier": "[parameters('GwSku')]"
+      },
+      "gatewayType": "Vpn",
+      "vpnType": "RouteBased",
+      "vpnGatewayGeneration": "Generation1"
+    }
+  }
+]
+}
