@@ -1,0 +1,93 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "Prefix": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "vpnConnectionName": {
+      "type": "string"
+    },
+    "vpnConnectionAddressPrefixes": {
+      "type": "array"
+    },
+    "vpnConnectionGatewayIPAddress": {
+      "type": "string"
+    },
+    "vpnConnectionProtocol": {
+      "type": "string",
+      "defaultValue": "IKEv2",
+      "allowedValues": [
+        "IKEv1",
+        "IKEv2"
+      ]
+    },
+    "vpnConnectionSharedKey": {
+      "type": "string"
+    },
+    "vpnConnectionIPSecPoliciy": {
+      "type": "array",
+      "defaultValue": []
+    },
+      "GwSku": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "VpnGw1",
+        "VpnGw2"
+      ]
+    }
+  },
+  "variables": {
+    "GwName": "[concat(parameters('Prefix'),'-vnetgw')]"
+  },
+
+  "resources": [
+    {
+      "type": "Microsoft.Network/localNetworkGateways",
+      "apiVersion": "2020-11-01",
+      "name": "[parameters('vpnConnectionName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "localNetworkAddressSpace": {
+          "addressPrefixes": "[parameters('vpnConnectionAddressPrefixes')]"
+        },
+        "gatewayIpAddress": "[parameters('vpnConnectionGatewayIPAddress')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/connections",
+      "apiVersion": "2020-11-01",
+      "name": "[parameters('vpnConnectionName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/localNetworkGateways', parameters('vpnConnectionName'))]"
+      ],
+      "properties": {
+        "connectionType": "IPsec",
+        "virtualNetworkGateway1": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', variables('GwName'))]"
+        },
+        "useLocalAzureIpAddress": false,
+        "enableBgp": false,
+        "connectionProtocol": "[parameters('vpnConnectionProtocol')]",
+        "sharedKey": "[parameters('vpnConnectionSharedKey')]",
+        "ipsecPolicies": "[if( equals(parameters('GwSku'),string('Basic')) , null() , parameters('vpnConnectionIPSecPoliciy'))]",
+        "usePolicyBasedTrafficSelectors": false,
+        "dpdTimeoutSeconds": 45,
+        "connectionMode": "Default",
+        "localNetworkGateway2": {
+          "id": "[resourceId('Microsoft.Network/localNetworkGateways', parameters('vpnConnectionName'))]"
+        }
+      }
+    }
+  ]
+}
+
+
+  
+
