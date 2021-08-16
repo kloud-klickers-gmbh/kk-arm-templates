@@ -134,7 +134,8 @@
         "localNetworkAddressSpace": {
           "addressPrefixes": "[parameters('vpnConnectionAddressPrefixes')]"
         },
-        "gatewayIpAddress": "[parameters('vpnConnectionGatewayIPAddress')]"
+        "gatewayIpAddress": "[if(not(parameters('RemoteGWViaDNS')),parameters('vpnConnectionGatewayIPAddress'),null())]",
+        "fqdn": "[if(parameters('RemoteGWViaDNS'),parameters('vpnConnectionGatewayDNS'),null())]"
       }
     },
     {
