@@ -40,6 +40,13 @@
         "IKEv2"
       ]
     },
+    "vpnConnectionGatewayDNS": {
+      "type": "string"
+    },
+    "RemoteGWViaDNS": {
+      "type": "bool",
+      "defaultValue": false
+    },
     "vpnConnectionSharedKey": {
       "type": "string"
     },
