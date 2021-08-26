@@ -1,0 +1,173 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "vnetrg":{
+            "type": "string"
+        },
+        "vnet":{
+            "type": "string"
+        },
+        "subnet":{
+            "type": "string"
+        },
+        "vmName": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string"
+        },
+        "osDiskType": {
+            "type": "string",
+            "defaultValue": "Premium_LRS"            
+        },
+        "vmsize": {
+            "type": "string"
+        },
+        "vmUsername": {
+            "type": "string"
+        },
+        "vmPassword": {
+            "type": "secureString"
+        },
+        "vmtags": {
+            "type": "object"
+        },
+        "disktags": {
+            "type": "object"
+        },
+        "domainName": {
+            "type": "string"
+        },
+        "domainAdminUser":{
+            "type": "string"
+        },
+        "dmainAdminPassword":{
+            "type": "securestring"
+        },
+        "disksize": {
+            "type": "int"
+        }
+    },
+    "variables": {
+        "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , parameters('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vnet'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnet'))]",
+        "nsgname": "[concat(parameters('vmName'),'-nsg')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('nsgname')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "location": "[parameters('location')]"
+        },
+        {
+            "name": "[parameters('vmname')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgname'))]"
+            ],
+            "properties": {
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgname'))]"
+                },
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ]
+            },
+            "tags": "[parameters('vmtags')]"
+        },
+        {
+            "name": "[parameters('vmname')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('vmName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmsize')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "diskSizeGB" : "[parameters('disksize')]",
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "[parameters('sku')]",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('vmName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('vmUsername')]",
+                    "adminPassword": "[parameters('vmPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true
+                    }
+                }
+            },
+            "tags": "[parameters('vmtags')]"
+        },
+        {
+            "name": "[concat(parameters('vmName'),'/SingleADDC')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "[concat(parameters('vmName'),'/SingleADDC')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.9",
+                "settings": {
+                    "modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/CMCS-InstallSingleADDC/DSC-CMCS-InstallSingleADDC.zip",
+                    "configurationFunction": "DSC-CMCS-InstallSingleADDC.ps1\\InstallSingleADDC",
+                    "properties": {
+                        "DomainName": "[parameters('DomainName')]",
+                        "adminCreds": {
+                            "UserName": "[parameters('domainAdminUser')]",
+                            "Password": "PrivateSettingsRef:secureadminpassword"
+                        }
+                    }
+                },
+                "protectedSettings": {                    
+                    "Items": {
+                        "secureadminpassword": "[parameters('dmainAdminPassword')]"
+                    }        
+                }
+            }
+        }
+    ]
+}
