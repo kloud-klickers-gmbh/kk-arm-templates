@@ -199,7 +199,7 @@
                         "registration": "[parameters('registration')]",
                         "joinou": "[parameters('joinou')]",
                         "joindomain": "[parameters('joindomain')]",
-                        "joinCreds": {
+                        "JoinCredential": {
                             "UserName": "[parameters('joinuser')]",
                             "Password": "PrivateSettingsRef:protectedjoinpassword"
                         }
