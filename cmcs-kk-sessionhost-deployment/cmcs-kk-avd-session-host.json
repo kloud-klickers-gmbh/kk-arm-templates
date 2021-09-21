@@ -199,13 +199,9 @@
                         "registration": "[parameters('registration')]",
                         "joinou": "[parameters('joinou')]",
                         "joindomain": "[parameters('joindomain')]",
-                        "joinuser": "[parameters('joinuser')]"
-                    }
-                },
-                "protectedSettings": {                    
-                    "Items": {
+                        "joinuser": "[parameters('joinuser')]",
                         "joinpassword": "[parameters('joinpassword')]"
-                    }        
+                    }
                 }
             }
         },
