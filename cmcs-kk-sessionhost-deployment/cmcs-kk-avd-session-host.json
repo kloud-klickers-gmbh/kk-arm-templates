@@ -216,7 +216,7 @@
             "name": "[concat(parameters('vmName'), '/GPUDriver')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('vmName'), 'joindomain')]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('vmName'), 'Microsoft.PowerShell.DSC')]"
             ],
             "condition": "[not(equals(parameters('gpuVendor'), 'none'))]",
             "properties": "[variables('gpuextensioproperties')]"
