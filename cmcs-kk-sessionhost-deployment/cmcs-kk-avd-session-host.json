@@ -200,8 +200,13 @@
                         "joinou": "[parameters('joinou')]",
                         "joindomain": "[parameters('joindomain')]",
                         "joinuser": "[parameters('joinuser')]",
-                        "joinpassword": "[parameters('joinpassword')]"
+                        "joinpassword": "PrivateSettingsRef:protectedjoinpassword"
                     }
+                },
+                "protectedSettings": {                    
+                    "Items": {
+                        "protectedjoinpassword": "[parameters('joinpassword')]"
+                    }        
                 }
             }
         },
