@@ -48,13 +48,13 @@
             "type": "secureString"
         },
         "VHDLocations": {
-            "type": "string"
+            "type": "array"
         },
         "ExcludedMembers": {
-            "type": "string"
+            "type": "array"
         },
         "IncludedMembers": {
-            "type": "string"
+            "type": "array"
         },
         "ProfileSizeMB": {
             "type": "string"
