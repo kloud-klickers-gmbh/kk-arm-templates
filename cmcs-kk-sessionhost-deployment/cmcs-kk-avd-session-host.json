@@ -199,13 +199,12 @@
                         "registration": "[parameters('registration')]",
                         "joinou": "[parameters('joinou')]",
                         "joindomain": "[parameters('joindomain')]",
-                        "joinuser": "[parameters('joinuser')]",
-                        "joinpassword": "PrivateSettingsRef:securejoinpassword"
+                        "joinuser": "[parameters('joinuser')]"
                     }
                 },
                 "protectedSettings": {                    
                     "Items": {
-                        "securejoinpassword": "[parameters('joinpassword')]"
+                        "joinpassword": "[parameters('joinpassword')]"
                     }        
                 }
             }
