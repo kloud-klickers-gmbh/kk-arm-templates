@@ -187,7 +187,8 @@
                     "configurationFunction": "DSC-AVD-PrepareHost.ps1\\PrepareHost",
                     "properties": {
                         "VHDLocations": "[parameters('VHDLocations')]",
-                        "ProfileSizeMB": "[parameters('ProfileSizeMB')]",                        
+                        "ProfileSizeMB": "[parameters('ProfileSizeMB')]",
+                        "FSLExcludedMembers": "[parameters('AdminUsername')]",
                         "registration": "[parameters('registration')]",
                         "joinou": "[parameters('joinou')]",
                         "joindomain": "[parameters('joindomain')]",

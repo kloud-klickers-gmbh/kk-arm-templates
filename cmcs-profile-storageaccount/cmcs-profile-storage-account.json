@@ -23,6 +23,9 @@
         "subnet": {
             "type": "string"
         },
+        "quota": {
+            "type": "int"
+        },
         "tags": {
             "type": "object",
             "defaultValue": {}
@@ -59,13 +62,10 @@
             "name": "[concat(parameters('storageAccountName'), '/default/', parameters('fileShareName'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
-            ]
+            ],
+            "properties": {
+                "shareQuota": "[parameters('quota')]"
+            }
         }
-    ],
-    "outputs": {
-        "output1": {
-            "type": "string",
-            "value": "[concat(subscription().id,'/resourceGroups/',parameters('vnetrg'),'/providers/Microsoft.Network/virtualNetworks/',parameters('vnet'),'/subnets/',parameters('subnet'))]"
-        }
-    }
+    ]
 }
