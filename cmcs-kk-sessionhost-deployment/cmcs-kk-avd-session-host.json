@@ -50,12 +50,6 @@
         "VHDLocations": {
             "type": "array"
         },
-        "ExcludedMembers": {
-            "type": "array"
-        },
-        "IncludedMembers": {
-            "type": "array"
-        },
         "ProfileSizeMB": {
             "type": "int"
         },                 
@@ -193,8 +187,6 @@
                     "configurationFunction": "DSC-AVD-PrepareHost.ps1\\PrepareHost",
                     "properties": {
                         "VHDLocations": "[parameters('VHDLocations')]",
-                        "ExcludedMembers": "[parameters('ExcludedMembers')]",
-                        "IncludedMembers": "[parameters('IncludedMembers')]",
                         "ProfileSizeMB": "[parameters('ProfileSizeMB')]",                        
                         "registration": "[parameters('registration')]",
                         "joinou": "[parameters('joinou')]",
