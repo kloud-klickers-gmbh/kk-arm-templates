@@ -76,6 +76,18 @@
                 "amd",
                 "none"
             ]
+        },
+        "backuprg": {
+            "type": "string",
+            "defaultValue": null
+        },
+        "backuppolicyname": {
+            "type": "string",
+            "defaultValue": null
+        },
+        "backupvaultname": {
+            "type": "string",
+            "defaultValue": null
         }
     },
     "variables": {
@@ -202,6 +214,72 @@
                     "Items": {
                         "protectedjoinpassword": "[parameters('joinpassword')]"
                     }        
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "name": "BackupDeployment",
+            "resourceGroup": "[parameters('backuprg')]",
+            "condition": "[and(not(equals(null(),parameters('backuprg'))),not(equals(null(),parameters('backupvaultname'))),not(equals(null(),parameters('backuppolicyname'))))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+            ],
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",            
+                "parameters": {
+                "vmname": {
+                    "value": "[parameters('vmName')]"
+                },
+                "vmrg": {
+                    "value": "[resourceGroup().name]"
+                },
+                "vaultName": {
+                    "value": "[parameters('backupvaultName')]"
+                },
+                "policyName": {
+                    "value": "[parameters('backuppolicyName')]"
+                }
+            },
+            
+                "template": {            
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "vaultName": {
+                            "type": "String"
+                        },
+                        "policyName": {
+                            "type": "String"
+                        },
+                        "vmname":{
+                            "type": "string"
+                        },
+                        "vmrg":{
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "ProtectedItem": "[concat('vm;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "ProtectionContainer": "[concat('IaasVMContainer;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "sourceResourceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('vmrg'),'/providers/Microsoft.Compute/virtualMachines/',parameters('vmname'))]"
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+                            "apiVersion": "2016-06-01",
+                            "name": "[concat(parameters('vaultName'), '/Azure/',variables('protectionContainer'), '/', variables('ProtectedItem'))]",
+                            "properties": {
+                                "protectedItemType": "Microsoft.ClassicCompute/virtualMachines",
+                                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('vaultName'), parameters('policyName'))]",
+                                "sourceResourceId": "[variables('sourceResourceId')]"
+                            }
+                        }
+                    ]
                 }
             }
         },
