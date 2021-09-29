@@ -1,0 +1,57 @@
+
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "existingResourceGroupName": {
+      "type": "string"
+    },
+    "existingStorageAccountName": {
+      "type": "string"
+    },
+    "existingFileShareName": {
+      "type": "string"
+    },
+    "registerStorageAccount": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "vaultName": {
+      "type": "string"
+    },
+    "policyName": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "backupFabric": "Azure",
+    "backupManagementType": "AzureStorage"
+  },
+  "resources": [
+    {
+      "condition": "[parameters('registerStorageAccount')]",
+      "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers",
+      "apiVersion": "2020-02-02",
+      "name": "[concat(parameters('vaultName'), '/', variables('backupFabric'), '/storagecontainer;Storage;', parameters('existingResourceGroupName'), ';', parameters('existingStorageAccountName'))]",
+      "properties": {
+        "backupManagementType": "[variables('backupManagementType')]",
+        "containerType": "StorageContainer",
+        "sourceResourceId": "[resourceId(parameters('existingResourceGroupName'), 'Microsoft.Storage/storageAccounts', parameters('existingStorageAccountName'))]"
+      }
+    },
+    {
+      "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+      "apiVersion": "2020-02-02",
+      "name": "[concat(parameters('vaultName'), '/', variables('backupFabric'), '/storagecontainer;Storage;', parameters('existingResourceGroupName'), ';', parameters('existingStorageAccountName'), '/AzureFileShare;', parameters('existingFileShareName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers', parameters('vaultName'), variables('backupFabric'), concat('storagecontainer;Storage;', parameters('existingResourceGroupName'), ';', parameters('existingStorageAccountName')))]"
+      ],
+      "properties": {
+        "protectedItemType": "AzureFileShareProtectedItem",
+        "sourceResourceId": "[resourceId(parameters('existingResourceGroupName'), 'Microsoft.Storage/storageAccounts', parameters('existingStorageAccountName'))]",
+        "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('vaultName'), parameters('policyName'))]",
+        "isInlineInquiry": true
+      }
+    }
+  ]
+}
