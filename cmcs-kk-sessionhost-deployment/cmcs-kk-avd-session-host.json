@@ -88,6 +88,10 @@
         "backupvaultname": {
             "type": "string",
             "defaultValue": null
+        },
+        "datetimestring":{
+            "type": "string",
+            "defaultValue": "[utcNow()]"
         }
     },
     "variables": {
@@ -220,7 +224,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
-            "name": "[concat('BackupDeployment-',parameters('vmName'),'-',utcNow())]",
+            "name": "[concat('BackupDeployment-',parameters('vmName'),'-',parameters('datetimestring'))]",
             "resourceGroup": "[parameters('backuprg')]",
             "condition": "[and(not(equals(null(),parameters('backuprg'))),not(equals(null(),parameters('backupvaultname'))),not(equals(null(),parameters('backuppolicyname'))))]",
             "dependsOn": [
