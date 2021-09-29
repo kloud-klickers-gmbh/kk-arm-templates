@@ -220,7 +220,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
-            "name": "BackupDeployment",
+            "name": "[concat('BackupDeployment-',parameters('vmName'),'-',utcNow())]",
             "resourceGroup": "[parameters('backuprg')]",
             "condition": "[and(not(equals(null(),parameters('backuprg'))),not(equals(null(),parameters('backupvaultname'))),not(equals(null(),parameters('backuppolicyname'))))]",
             "dependsOn": [
