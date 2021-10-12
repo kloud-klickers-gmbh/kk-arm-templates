@@ -1,0 +1,191 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    }
+  },
+  "variables": {
+    "skuName": "RS0",
+    "skuTier": "Standard",
+    "vaultname": "[concat(parameters('prefix'),'-backup')]",
+    "enableCRR": false,
+    "vaultStorageType": "LocallyRedundant",
+    "PolicyName_daily_filestore": "[concat(parameters('prefix') , '-daily-backup-Filestore')]",
+    "PolicyRetentionDays_filestore":  60,
+    "PolicyName_daily_profiles": "[concat(parameters('prefix') , '-daily-backup-Profiles')]",
+    "PolicyRetentionDays_profiles": 30,
+    "PolicyName_daily_vm": "[concat(parameters('prefix') , '-daily-backup-VM')]",
+    "PolicyRetentionDays_vm": 30,
+    "PolicyName_daily_wvd": "[concat(parameters('prefix') , '-daily-backup-WVD')]",
+    "PolicyRetentionDays_wvd": 7,
+    "ScheduleTime": "22:00",
+    "ScheduleTimeZone": "W. Europe Standard Time"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.RecoveryServices/vaults",
+      "apiVersion": "2020-02-02",
+      "name": "[variables('vaultName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[variables('skuName')]",
+        "tier": "[variables('skuTier')]"
+      },
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.RecoveryServices/vaults/backupstorageconfig",
+      "apiVersion": "2020-02-02",
+      "name": "[concat(variables('vaultName'), '/vaultstorageconfig')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.RecoveryServices/vaults/', variables('vaultName'))]"
+      ],
+      "properties": {
+        "StorageModelType": "[variables('vaultStorageType')]",
+        "CrossRegionRestoreFlag": "[variables('enableCRR')]"
+      }
+    },
+    {
+            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('vaultName'), '/', variables('PolicyName_daily_filestore'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults', variables('vaultName'))]"
+            ],
+            "properties": {
+                "backupManagementType": "AzureStorage",
+                "workLoadType": "AzureFileShare",
+                "schedulePolicy": {
+                    "schedulePolicyType": "SimpleSchedulePolicy",
+                    "scheduleRunFrequency": "Daily",
+                    "scheduleRunTimes": [
+                        "[variables('ScheduleTime')]"
+                    ]
+                },
+                "retentionPolicy": {
+                    "retentionPolicyType": "LongTermRetentionPolicy",
+                    "dailySchedule": {
+                        "retentionTimes": [
+                            "[variables('ScheduleTime')]"
+                        ],
+                        "retentionDuration": {
+                            "count": "[variables('PolicyRetentionDays_filestore')]",
+                            "durationType": "Days"
+                        }
+                    }
+                },
+                "timeZone": "[variables('ScheduleTimeZone')]"
+            }
+    },
+    {
+            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('vaultName'), '/', variables('PolicyName_daily_profiles'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults', variables('vaultName'))]"
+            ],
+            "properties": {
+                "backupManagementType": "AzureStorage",
+                "workLoadType": "AzureFileShare",
+                "schedulePolicy": {
+                    "schedulePolicyType": "SimpleSchedulePolicy",
+                    "scheduleRunFrequency": "Daily",
+                    "scheduleRunTimes": [
+                        "[variables('ScheduleTime')]"
+                    ]
+                },
+                "retentionPolicy": {
+                    "retentionPolicyType": "LongTermRetentionPolicy",
+                    "dailySchedule": {
+                        "retentionTimes": [
+                            "[variables('ScheduleTime')]"
+                        ],
+                        "retentionDuration": {
+                            "count": "[variables('PolicyRetentionDays_profiles')]",
+                            "durationType": "Days"
+                        }
+                    }
+                },
+                "timeZone": "[variables('ScheduleTimeZone')]"
+            }
+    },
+    {
+            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('vaultName'), '/', variables('PolicyName_daily_vm'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults', variables('vaultName'))]"
+            ],
+            "properties": {
+                "backupManagementType": "AzureIaasVM",
+                "schedulePolicy": {
+                    "schedulePolicyType": "SimpleSchedulePolicy",
+                    "scheduleRunFrequency": "Daily",
+                    "scheduleRunTimes": [
+                        "[variables('ScheduleTime')]"
+                    ]
+                },
+                "retentionPolicy": {
+                    "retentionPolicyType": "LongTermRetentionPolicy",
+                    "dailySchedule": {
+                        "retentionTimes": [
+                            "[variables('ScheduleTime')]"
+                        ],
+                        "retentionDuration": {
+                            "count": "[variables('PolicyRetentionDays_vm')]",
+                            "durationType": "Days"
+                        }
+                    }
+                },
+                "instantRPDetails": {
+                    "azureBackupRGNamePrefix": "[concat(parameters('prefix'),'-BackupRestorePoints-')]",
+                    "azureBackupRGNameSuffix": "[concat('-',parameters('location'))]"
+                },
+                "instantRpRetentionRangeInDays": 2,
+                "timeZone": "[variables('ScheduleTimeZone')]"
+            }
+    },
+    {
+            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('vaultName'), '/', variables('PolicyName_daily_wvd'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults', variables('vaultName'))]"
+            ],
+            "properties": {
+                "backupManagementType": "AzureIaasVM",
+                "schedulePolicy": {
+                    "schedulePolicyType": "SimpleSchedulePolicy",
+                    "scheduleRunFrequency": "Daily",
+                    "scheduleRunTimes": [
+                        "[variables('ScheduleTime')]"
+                    ]
+                },
+                "retentionPolicy": {
+                    "retentionPolicyType": "LongTermRetentionPolicy",
+                    "dailySchedule": {
+                        "retentionTimes": [
+                            "[variables('ScheduleTime')]"
+                        ],
+                        "retentionDuration": {
+                            "count": "[variables('PolicyRetentionDays_wvd')]",
+                            "durationType": "Days"
+                        }
+                    }
+                },                
+                "instantRPDetails": {
+                    "azureBackupRGNamePrefix": "[concat(parameters('prefix'),'-BackupRestorePoints-')]",
+                    "azureBackupRGNameSuffix": "[concat('-',parameters('location'))]"
+                },
+                "instantRpRetentionRangeInDays": 2,
+                "timeZone": "[variables('ScheduleTimeZone')]"
+            }
+    }
+  ]
+}
