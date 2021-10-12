@@ -182,6 +182,10 @@
                         }
                     }
                 },
+                "instantRPDetails": {
+                    "azureBackupRGNamePrefix": "[concat(parameters('vaultName'),'RestorePoints-')]",
+                    "azureBackupRGNameSuffix": "[concat('-',parameters('location'))]"
+                },
                 "instantRpRetentionRangeInDays": 2,
                 "timeZone": "[parameters('ScheduleTimeZone')]"
             }
@@ -213,6 +217,10 @@
                             "durationType": "Days"
                         }
                     }
+                },
+                "instantRPDetails": {
+                    "azureBackupRGNamePrefix": "[concat(parameters('vaultName'),'RestorePoints-')]",
+                    "azureBackupRGNameSuffix": "[concat('-',parameters('location'))]"
                 },
                 "instantRpRetentionRangeInDays": 2,
                 "timeZone": "[parameters('ScheduleTimeZone')]"
