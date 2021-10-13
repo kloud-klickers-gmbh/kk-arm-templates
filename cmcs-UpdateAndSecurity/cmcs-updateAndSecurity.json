@@ -2,6 +2,12 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "object"
+        },
         "SecurityRgName": {
             "type": "string",
             "defaultValue": "cmcs-security-rg",
@@ -15,17 +21,7 @@
             "metadata": {
                 "description": "Name of the resourceGroup to create"
             }
-        },
-        "location": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "tags": {
-            "type": "object",
-            "defaultValue": {
-                "SAP Artikel": ""
-            }
-        },
+        },        
         "workspaceName": {
             "type": "string",
             "defaultValue": "cmcs-loganalytics"

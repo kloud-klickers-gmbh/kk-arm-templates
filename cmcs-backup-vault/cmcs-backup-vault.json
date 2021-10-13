@@ -5,6 +5,13 @@
     "vaultName": {
       "type": "string"
     },
+    "location": {
+      "type": "string"
+    },
+    "tags": {
+        "type": "object",
+        "defaultValue": {}
+    },
     "enableCRR": {
       "type": "bool",
       "defaultValue": false
@@ -17,10 +24,7 @@
         "GeoRedundant"
       ]
     },
-    "location": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().location]"
-    },
+    
     "PolicyName_daily_filestore": {
         "type": "string",
         "defaultValue": "cmcs-daily-backup-Filestore"
@@ -72,10 +76,11 @@
       "apiVersion": "2020-02-02",
       "name": "[parameters('vaultName')]",
       "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
       "sku": {
         "name": "[variables('skuName')]",
         "tier": "[variables('skuTier')]"
-      },
+      },      
       "properties": {}
     },
     {
