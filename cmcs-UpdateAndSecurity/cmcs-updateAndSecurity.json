@@ -1,0 +1,354 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "SecurityRgName": {
+            "type": "string",
+            "defaultValue": "cmcs-security-rg",
+            "metadata": {
+                "description": "Name of the resourceGroup to create"
+            }
+        },
+        "UpdateRgName": {
+            "type": "string",
+            "defaultValue": "cmcs-update-rg",
+            "metadata": {
+                "description": "Name of the resourceGroup to create"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+                "SAP Artikel": ""
+            }
+        },
+        "workspaceName": {
+            "type": "string",
+            "defaultValue": "cmcs-loganalytics"
+        },
+        "updateAutomationAccountRgName": {
+            "type": "string",
+            "defaultValue": "cmcs-update-rg"
+        },
+        "updateAutomationAccountName": {
+            "type": "string",
+            "defaultValue": "cmcs-update-automation"
+        },
+        "updateScheduleName": {
+            "type": "string",
+            "defaultValue": "Weekly"
+        },
+        "updateScheduleStartTime": {
+            "type": "string",
+            "defaultValue": "22:00:00"
+        },
+        "udpateScheduleInterval": {
+            "type": "int",
+            "defaultValue": 1
+        },
+        "udpateScheduleFrequency": {
+            "type": "string",
+            "defaultValue": "Week"
+        },
+        "updateScheduleTimeZone": {
+            "type": "string",
+            "defaultValue": "Europe/Berlin"
+        },
+        "updateIncludedClassifications": {
+            "type": "string",
+            "defaultValue": "Critical, Security, Definition"
+        },
+        "updateRebootSetting": {
+            "type": "string",
+            "defaultValue": "IfRequired"
+        },
+        "updateDuration": {
+            "type": "string",
+            "defaultValue": "PT2H"
+        },
+        "updateScheduleWeekDays": {
+            "type": "array",
+            "defaultValue": [
+                "Thursday"
+            ]
+        }
+    },
+    "variables": {
+
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('SecurityRgName')]",
+            "location": "[parameters('Location')]",
+            "tags": {
+                "Default_Location": "[parameters('Location')]"
+            },
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('UpdateRgName')]",
+            "location": "[parameters('Location')]",
+            "tags": {
+                "Default_Location": "[parameters('Location')]"
+            },
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "createautomationaccount",
+            "resourceGroup": "[parameters('UpdateRgName')]",
+            "dependsOn": [
+                "[parameters('UpdateRgName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "parameters": {
+                    "updateAutomationAccountName": { "value": "[parameters('updateAutomationAccountName')]" },
+                    "location": { "value": "[parameters('location')]" },
+                    "tags": { "value": "[parameters('tags')]" },
+                    "updateScheduleName": { "value": "[parameters('updateScheduleName')]" },
+                    "updateScheduleStartTime": { "value": "[parameters('updateScheduleStartTime')]" },
+                    "udpateScheduleInterval": { "value": "[parameters('udpateScheduleInterval')]" },
+                    "udpateScheduleFrequency": { "value": "[parameters('udpateScheduleFrequency')]" },
+                    "updateScheduleTimeZone": { "value": "[parameters('updateScheduleTimeZone')]" },
+                    "updateIncludedClassifications": { "value": "[parameters('updateIncludedClassifications')]" },
+                    "updateRebootSetting": { "value": "[parameters('updateRebootSetting')]" },
+                    "updateDuration": { "value": "[parameters('updateDuration')]" },
+                    "updateScheduleWeekDays": { "value": "[parameters('updateScheduleWeekDays')]" }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "updateAutomationAccountName": { "type": "String" },
+                        "location": { "type": "string" },
+                        "tags": { "type": "object" },
+                        "updateScheduleName": { "type": "string" },
+                        "updateScheduleStartTime": { "type": "string" },
+                        "udpateScheduleInterval": { "type": "int" },
+                        "udpateScheduleFrequency": { "type": "string" },
+                        "updateScheduleTimeZone": { "type": "string" },
+                        "updateIncludedClassifications": { "type": "string" },
+                        "updateRebootSetting": { "type": "string" },
+                        "updateDuration": { "type": "string" },
+                        "updateScheduleWeekDays": { "type": "array" }
+
+                    },
+                    "variables": {
+                        "location": "[parameters('location')]"
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.Automation/automationAccounts",
+                            "apiVersion": "2020-01-13-preview",
+                            "name": "[parameters('updateAutomationAccountName')]",
+                            "location": "[variables('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                                "sku": {
+                                    "name": "Basic"
+                                }
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Automation/automationAccounts/softwareUpdateConfigurations",
+                            "apiVersion": "2019-06-01",
+                            "name": "[concat(parameters('updateAutomationAccountName'), '/', parameters('updateScheduleName'))]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Automation/automationAccounts', parameters('updateAutomationAccountName'))]"
+                            ],
+                            "properties": {
+                                "updateConfiguration": {
+                                    "operatingSystem": "Windows",
+                                    "windows": {
+                                        "includedUpdateClassifications": "[parameters('updateIncludedClassifications')]",
+                                        "rebootSetting": "[parameters('updateRebootSetting')]"
+                                    },
+                                    "targets": {
+                                        "azureQueries": [
+                                            {
+                                                "scope": [
+                                                    "[subscription().id]"
+                                                ],
+                                                "tagSettings": {
+                                                    "tags": {},
+                                                    "filterOperator": "Any"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "duration": "[parameters('updateDuration')]"
+                                },
+                                "tasks": {},
+                                "scheduleInfo": {
+                                    "startTime": "[parameters('updateScheduleStartTime')]",
+                                    "expiryTime": "8999-12-31T23:59:59Z",
+                                    "interval": "[parameters('udpateScheduleInterval')]",
+                                    "frequency": "[parameters('udpateScheduleFrequency')]",
+                                    "timeZone": "[parameters('updateScheduleTimeZone')]",
+                                    "advancedSchedule": {
+                                        "weekDays": "[parameters('updateScheduleWeekDays')]"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "createloganalytics",
+            "resourceGroup": "[parameters('SecurityRgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', parameters('UpdateRgName'))]",
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('UpdateRgName'),'/providers/Microsoft.Resources/deployments/createautomationaccount')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "parameters": {
+                    "location": { "value": "[parameters('location')]" },
+                    "tags": { "value": "[parameters('tags')]" },
+                    "workspaceName": { "value": "[parameters('workspaceName')]" },
+                    "updateAutomationAccountRgName": { "value": "[parameters('updateAutomationAccountRgName')]" },
+                    "updateAutomationAccountName": { "value": "[parameters('updateAutomationAccountName')]" }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "location": { "type": "string" },
+                        "tags": { "type": "object" },
+                        "workspaceName": { "type": "string" },
+                        "updateAutomationAccountRgName": { "type": "string" },
+                        "updateAutomationAccountName": { "type": "string" }
+                    },
+                    "variables": {
+                        "location": "[parameters('location')]"
+                    },
+                    "resources": [
+                        {
+                            "type": "microsoft.operationalinsights/workspaces",
+                            "apiVersion": "2020-10-01",
+                            "name": "[parameters('workspaceName')]",
+                            "location": "[variables('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                                "sku": {
+                                    "name": "PerGB2018"
+                                }
+                            }
+                        },
+                        {
+                            "type": "microsoft.operationalinsights/workspaces/linkedservices",
+                            "apiVersion": "2020-08-01",
+                            "name": "[concat(parameters('workspaceName'), '/Automation')]",
+                            "dependsOn": [
+                                "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
+                            ],
+                            "properties": {
+                                "resourceId": "[resourceId(parameters('updateAutomationAccountRgName'), 'Microsoft.Automation/automationAccounts', parameters('updateAutomationAccountName'))]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+                            "apiVersion": "2020-08-01",
+                            "name": "[concat(parameters('workspaceName'), '/updates|microsoftdefaultcomputergroup')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+                            ],
+                            "properties": {
+                                "category": "Updates",
+                                "displayName": "MicrosoftDefaultComputerGroup",
+                                "query": "Heartbeat | where Computer in~ (\"\") or VMUUID in~ (\"\") | distinct Computer",
+                                "tags": [
+                                    {
+                                        "name": "Group",
+                                        "value": "Computer"
+                                    }
+                                ],
+                                "functionAlias": "Updates__MicrosoftDefaultComputerGroup",
+                                "version": 2
+                            }
+                        },
+                        {
+                            "type": "Microsoft.OperationalInsights/workspaces/configurationScopes",
+                            "apiVersion": "2015-11-01-preview",
+                            "name": "[concat(parameters('workspaceName'), '/MicrosoftDefaultScopeConfig-Updates')]",
+                            "location": "[variables('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+                            ],
+                            "kind": "SearchComputerGroup",
+                            "properties": {
+                                "Include": [
+                                    "Updates__MicrosoftDefaultComputerGroup"
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.OperationsManagement/solutions",
+                            "apiVersion": "2015-11-01-preview",
+                            "name": "[concat('SecurityCenterFree(', parameters('workspaceName'), ')')]",
+                            "location": "[variables('location')]",
+                            "dependsOn": [
+                                "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
+                            ],
+                            "tags": "[parameters('tags')]",
+                            "plan": {
+                                "name": "[concat('SecurityCenterFree(', parameters('workspaceName'), ')')]",
+                                "product": "OMSGallery/SecurityCenterFree",
+                                "promotionCode": "",
+                                "publisher": "Microsoft"
+                            },
+                            "properties": {
+                                "workspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.OperationsManagement/solutions",
+                            "apiVersion": "2015-11-01-preview",
+                            "name": "[concat('Updates(', parameters('workspaceName'), ')')]",
+                            "location": "[variables('location')]",
+                            "dependsOn": [
+                                "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
+                            ],
+                            "tags": "[parameters('tags')]",
+                            "plan": {
+                                "name": "[concat('Updates(', parameters('workspaceName'), ')')]",
+                                "product": "OMSGallery/Updates",
+                                "promotionCode": "",
+                                "publisher": "Microsoft"
+                            },
+                            "properties": {
+                                "workspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]",
+                                "configurations": [
+                                    {
+                                        "Name": "SolutionTargeting",
+                                        "Value": "MicrosoftDefaultScopeConfig-Updates"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
