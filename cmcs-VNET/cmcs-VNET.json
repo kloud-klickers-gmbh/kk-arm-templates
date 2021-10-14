@@ -1,0 +1,109 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "defaultValue": "cmcs-vnet",
+            "type": "String"
+        },
+        "nsgName": {
+            "defaultValue": "cmcs-nsg",
+            "type": "String"
+        },
+        "location": {
+            "type": "String"
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        "SubnetLanName": {
+            "type": "string",
+            "defaultValue": "cmcs-lan-subnet"        
+        },
+        "SubnetWanName": {
+            "type": "string",
+            "defaultValue": "cmcs-wan-subnet"        
+        },
+        "SubnetDmzName": {
+            "type": "string",
+            "defaultValue": "cmcs-dmz-subnet"        
+        },
+        "vnetAddressPrefix": {
+            "type": "string"
+        },
+        "LanAddressPrefix": {
+            "type": "string"
+        },
+        "WanAddressPrefix": {
+            "type": "string"
+        },
+        "DmzAddressPrefix": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('nsgName')]",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('vnetName')]",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetAddressPrefix')]"
+                    ]
+                },
+                "dhcpOptions": {
+                    "dnsServers": []
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('SubnetLanName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('LanAddressPrefix')]",
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "[parameters('SubnetWanName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('WanAddressPrefix')]",
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "[parameters('SubnetDmzName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('DmzAddressPrefix')]",
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": [],
+                "enableDdosProtection": false
+            }
+        }
+    ]
+}
