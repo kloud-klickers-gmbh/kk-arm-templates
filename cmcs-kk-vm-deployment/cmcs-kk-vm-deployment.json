@@ -1,0 +1,213 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "prefix": {
+            "type": "string"
+        },
+        "vmname": {
+            "type": "string"
+        },        
+        "vmUsername": {
+            "type": "string"
+        },
+        "vmPassword": {
+            "type": "secureString"
+        },
+        "vmtags": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        "disksize": {
+            "type": "int"
+        },
+        "disktype": {
+            "type": "string",
+            "defaultValue": "Premium_LRS"
+        },         
+        "datadisks" : {
+            "type": "array",
+            "defaultValue": null
+        },
+        "sku": {
+            "type": "string",
+            "defaultValue": "2019-Datacenter-smalldisk"
+        },
+        "vmsize": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "vnetrg":"[concat(parameters('prefix'),'-vnet-rg')]",
+        "vnet":"[concat(parameters('prefix'),'-vnet')]",
+        "subnet":"[concat(parameters('prefix'),'-lan-subnet')]",
+        "backuprg" : "[concat(parameters('prefix'),'-backup-rg')]",
+        "vaultName" : "[concat(parameters('prefix'),'-backup')]",
+        "policyName" : "[concat(parameters('prefix'),'-daily-backup-VM')]",
+        "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnet'))]",
+        "nsgname": "[concat(parameters('vmName'),'-nsg')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('nsgname')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "location": "[parameters('location')]"
+        },
+        {
+            "name": "[parameters('vmname')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgname'))]"
+            ],
+            "properties": {
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgname'))]"
+                },
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ]
+            },
+            "tags": "[parameters('vmtags')]"
+        },
+        {
+            "name": "[parameters('vmname')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('vmName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmsize')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "diskSizeGB" : "[parameters('disksize')]",
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('DiskType')]"
+                        }
+                    },               
+                    "Copy": [
+                        {
+                            "name": "dataDisks",
+                            "count": "[length(parameters('datadisks'))]",
+                            "input": {
+                                "diskSizeGB": "[parameters('datadisks')[copyIndex('dataDisks')]]",
+                                "lun": "[copyIndex('dataDisks')]",
+                                "createoption": "Empty",
+                                "managedDisk": {
+                                    "storageAccountType": "[parameters('disktype')]"
+                                }
+                            }
+                        }
+                    ],
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "[parameters('sku')]",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('vmName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('vmUsername')]",
+                    "adminPassword": "[parameters('vmPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true
+                    }
+                }
+            },
+            "tags": "[parameters('vmtags')]"
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "name": "BackupDeployment",
+            "resourceGroup": "[variables('backuprg')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+            ],
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",            
+                "parameters": {
+                "vmname": {
+                    "value": "[parameters('vmName')]"
+                },
+                "vmrg": {
+                    "value": "[resourceGroup().name]"
+                },
+                "vaultName": {
+                    "value": "[variables('vaultName')]"
+                },
+                "policyName": {
+                    "value": "[variables('policyName')]"
+                }
+                },
+            
+                "template": {            
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "vaultName": {
+                            "type": "String"
+                        },
+                        "policyName": {
+                            "type": "String"
+                        },
+                        "vmname":{
+                            "type": "string"
+                        },
+                        "vmrg":{
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "ProtectedItem": "[concat('vm;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "ProtectionContainer": "[concat('IaasVMContainer;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "sourceResourceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('vmrg'),'/providers/Microsoft.Compute/virtualMachines/',parameters('vmname'))]"
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+                            "apiVersion": "2016-06-01",
+                            "name": "[concat(parameters('vaultName'), '/Azure/',variables('protectionContainer'), '/', variables('ProtectedItem'))]",
+                            "properties": {
+                                "protectedItemType": "Microsoft.ClassicCompute/virtualMachines",
+                                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('vaultName'), parameters('policyName'))]",
+                                "sourceResourceId": "[variables('sourceResourceId')]"
+                            }
+                        }
+                    ]
+                }
+            }
+        } 
+    ]
+}
