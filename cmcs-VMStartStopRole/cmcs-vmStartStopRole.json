@@ -2,6 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "roleName": {
+            "defaultValue": "Virtual Machine Start-Stop",
+            "type": "string"
+        }
     },
     "variables": {
         "actions": [
@@ -21,7 +25,7 @@
             "apiVersion": "2018-07-01",
             "name": "[variables('roleDefName')]",
             "properties": {
-                "roleName": "Virtual Machine Start-Stop",
+                "roleName": "[parameters('roleName')]",
                 "description": "Lets you stop, start and restart VMs.",
                 "type": "customRole",
                 "isCustom": true,
