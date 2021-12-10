@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
@@ -47,54 +47,7 @@
         "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
         "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , parameters('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vnet'))]",
         "subnetRefWAN": "[concat(variables('vnetId'), '/subnets/', parameters('subnetWAN'))]",
-        "subnetRefLAN": "[concat(variables('vnetId'), '/subnets/', parameters('subnetLAN'))]",
-        "networkSecurityGroupRules": [
-            {
-                "name": "SSH",
-                "properties": {
-                    "priority": 1010,
-                    "protocol": "TCP",
-                    "access": "Allow",
-                    "direction": "Inbound",
-                    "sourceApplicationSecurityGroups": [],
-                    "destinationApplicationSecurityGroups": [],
-                    "sourceAddressPrefix": "[parameters('ConfigRemoteIP')]",
-                    "sourcePortRange": "*",
-                    "destinationAddressPrefix": "*",
-                    "destinationPortRange": "22"
-                }
-            },
-            {
-                "name": "HTTPS",
-                "properties": {
-                    "priority": 1020,
-                    "protocol": "TCP",
-                    "access": "Allow",
-                    "direction": "Inbound",
-                    "sourceApplicationSecurityGroups": [],
-                    "destinationApplicationSecurityGroups": [],
-                    "sourceAddressPrefix": "[parameters('ConfigRemoteIP')]",
-                    "sourcePortRange": "*",
-                    "destinationAddressPrefix": "*",
-                    "destinationPortRange": "443"
-                }
-            },
-            {
-                "name": "HTTP",
-                "properties": {
-                    "priority": 1030,
-                    "protocol": "TCP",
-                    "access": "Allow",
-                    "direction": "Inbound",
-                    "sourceApplicationSecurityGroups": [],
-                    "destinationApplicationSecurityGroups": [],
-                    "sourceAddressPrefix": "[parameters('ConfigRemoteIP')]",
-                    "sourcePortRange": "*",
-                    "destinationAddressPrefix": "*",
-                    "destinationPortRange": "80"
-                }
-            }
-        ]
+        "subnetRefLAN": "[concat(variables('vnetId'), '/subnets/', parameters('subnetLAN'))]"
     },
     "resources": [
         {
@@ -153,7 +106,23 @@
             "apiVersion": "2019-02-01",
             "location": "[parameters('location')]",
             "properties": {
-                "securityRules": "[variables('networkSecurityGroupRules')]"
+                "securityRules": [
+                    {
+                        "name": "AllowAllInFromConfigIP",
+                        "properties": {
+                            "priority": 1000,
+                            "protocol": "*",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceApplicationSecurityGroups": [],
+                            "destinationApplicationSecurityGroups": [],
+                            "sourceAddressPrefix": "[parameters('ConfigRemoteIP')]",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "*"
+                        }
+                    }
+                ]
             }
         },
         {
@@ -228,6 +197,94 @@
                 "publisher": "netgate",
                 "product": "netgate-pfsense-plus-fw-vpn-router"
             }
-        }
+        },        
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "name": "RouteTableDeployment",
+            "resourceGroup": "[parameters('vnetrg')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+            ],
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",            
+                "parameters": {
+                    "FwLanNicIp": {
+                        "value": "[reference(resourceId('Microsoft.Network/networkInterfaces',variables('networkInterfaceNameLAN')),'2021-03-01','Full').properties.ipconfigurations[0].properties.privateipaddress]"
+                    },
+                    "subnetLAN": {
+                        "value": "[parameters('subnetLAN')]"
+                    },
+                    "vnet": {
+                        "value": "[parameters('vnet')]"
+                    },
+                    "LANAddressPrefix": {
+                        "value": "[reference(variables('subnetrefLAN'),'2020-05-01','Full').properties.addressPrefix]"
+                    }
+                    
+                },            
+                "template": {            
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "FwLanNicIp": {
+                            "type": "string"
+                        },
+                        "vnet": {
+                            "type": "string"
+                        },
+                        "subnetLAN": {
+                            "type": "string"
+                        },
+                        "LANAddressPrefix": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        
+                    },
+                    "resources": [
+                        {
+                            "name": "LanDefaultRouteTable",
+                            "type": "Microsoft.Network/routeTables",
+                            "apiVersion": "2020-05-01",
+                            "location": "[resourceGroup().location]",
+                            "tags": {},
+                            "properties": {
+                                "routes": [
+                                    {
+                                        "name": "DefaultRouteToFirewall",
+                                        "properties": {
+                                            "addressPrefix": "0.0.0.0/0",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "[parameters('FwLanNicIp')]"
+                                        }
+                                    }
+                                ],
+                                "disableBgpRoutePropagation": true
+                            }
+                        },
+                        {
+                            "name": "[concat(parameters('vnet'),'/',parameters('subnetLAN'))]",
+                            "type": "Microsoft.Network/virtualNetworks/subnets",
+                            "apiVersion": "2020-05-01",
+                            "location": "[resourceGroup().location]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/routeTables', 'LanDefaultRouteTable')]"
+                            ],
+                            "properties": {
+                                "addressPrefix": "[parameters('LANAddressPrefix')]",
+                                "routeTable": {
+                                    "id": "[resourceId('Microsoft.Network/routeTables','LanDefaultRouteTable')]"
+                                }
+                            }
+                        }   
+                    ]
+                }
+            }
+        } 
     ]
 }
