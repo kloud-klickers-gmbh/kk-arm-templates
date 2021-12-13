@@ -47,7 +47,7 @@
         },
         "routeTableName": {
             "type": "string",
-            "defaultValue": "[concat(parameters('prefix'),'-RouteTable-lan-subnet')]"
+            "defaultValue": "[concat(parameters('prefix'),'-RouteTable-',replace(parameters('subnetLAN'),concat(parameters('prefix'),'-'),''))]"
         } 
     },
     "variables": {
