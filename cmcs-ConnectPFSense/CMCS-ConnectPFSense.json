@@ -46,7 +46,11 @@
         "routeTableName": {
             "type": "string",
             "defaultValue": "[concat(parameters('prefix'),'-RouteTable-',replace(parameters('subnetLAN'),concat(parameters('prefix'),'-'),''))]"
-        } 
+        },
+        "diskSize": {
+            "type": "int",
+            "defaultValue": 32
+        }
     },
     "variables": {
         "osDiskType": "Premium_LRS",
@@ -176,7 +180,8 @@
                         "createOption": "fromImage",
                         "managedDisk": {
                             "storageAccountType": "[variables('osDiskType')]"
-                        }
+                        },
+                        "diskSizeGB": "[parameters('diskSize')]"
                     },
                     "imageReference": {
                         "publisher": "netgate",
@@ -316,5 +321,16 @@
                 }
             }
         } 
-    ]
+    ],
+    "outputs": {
+        "ConnectionURL": {
+            "type": "string",
+            "value": "[concat('https://',reference(resourceId('Microsoft.Network/publicIpAddresses',variables('publicIpAddressName')),'2019-02-01','Full').properties.dnssettings.fqdn)]"
+        },
+        "ExternalIP": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Network/publicIpAddresses',variables('publicIpAddressName')),'2019-02-01','Full').properties.ipaddress]"
+        }
+
+    }
 }
