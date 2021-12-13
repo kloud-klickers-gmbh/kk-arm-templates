@@ -37,9 +37,7 @@
         },
         "FirewallTags": {
             "type": "object",
-            "defaultValue": {
-                "SAP-Artikel": "Dummy123"
-            }
+            "defaultValue": {}
         },
         "prefix": {
             "type": "string",
