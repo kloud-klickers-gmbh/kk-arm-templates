@@ -305,12 +305,12 @@
                             "apiVersion": "2020-05-01",
                             "location": "[resourceGroup().location]",
                             "dependsOn": [
-                                "[resourceId('Microsoft.Network/routeTables', 'LanDefaultRouteTable')]"
+                                "[resourceId('Microsoft.Network/routeTables', parameters('routeTableName'))]"
                             ],
                             "properties": {
                                 "addressPrefix": "[parameters('LANAddressPrefix')]",
                                 "routeTable": {
-                                    "id": "[resourceId('Microsoft.Network/routeTables','LanDefaultRouteTable')]"
+                                    "id": "[resourceId('Microsoft.Network/routeTables',parameters('routeTableName'))]"
                                 }
                             }
                         }   
