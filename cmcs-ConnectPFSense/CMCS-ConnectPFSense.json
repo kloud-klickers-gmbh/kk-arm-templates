@@ -50,6 +50,10 @@
         "diskSize": {
             "type": "int",
             "defaultValue": 32
+        },
+        "configureRouteTable": {
+            "type": "bool",
+            "defaultValue": true
         }
     },
     "variables": {
@@ -70,7 +74,7 @@
         {
             "name": "[variables('networkInterfaceNameWAN')]",
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2021-03-01",
+            "apiVersion": "2020-11-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]",
@@ -78,6 +82,7 @@
             ],
             "tags": "[parameters('FirewallTags')]",
             "properties": {
+                "enableIPForwarding": true,
                 "ipConfigurations": [
                     {
                         "name": "ipconfigWAN",
@@ -88,7 +93,7 @@
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIpAddress": {
                                 "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', variables('publicIpAddressName'))]"
-                            }
+                            }                            
                         }
                     }
                 ],
@@ -100,12 +105,13 @@
         {
             "name": "[variables('networkInterfaceNameLAN')]",
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2021-03-01",
+            "apiVersion": "2020-11-01",
             "location": "[parameters('location')]",
             "dependsOn": [
             ],
             "tags": "[parameters('FirewallTags')]",
             "properties": {
+                "enableIPForwarding": true,
                 "ipConfigurations": [
                     {
                         "name": "ipconfigLAN",
@@ -223,6 +229,7 @@
         },        
         {
             "type": "Microsoft.Resources/deployments",
+            "condition": "[parameters('configureRouteTable')]",
             "apiVersion": "2017-05-10",
             "name": "RouteTableDeployment",
             "resourceGroup": "[parameters('vnetrg')]",
