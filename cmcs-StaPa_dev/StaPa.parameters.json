@@ -1,0 +1,38 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "tags": {
+            "value": {
+                // TODO: Fill in parameter value
+            }
+        },
+        "customername": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "vnetAddressPrefix": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "LanAddressPrefix": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "WanAddressPrefix": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "DmzAddressPrefix": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "JumpHostAdminPassword": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "ProfileStorageAccountName": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "ProfileFileShareName": {
+            "value": "" // TODO: Fill in parameter value
+        }
+    }
+}
