@@ -335,12 +335,27 @@
         },
         {
             "type": "Microsoft.Security/autoProvisioningSettings",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/workspaceSettings', 'default')]"
+            ],
             "apiVersion": "2017-08-01-preview",
             "name": "default",
             "properties": {
                 "autoProvision": "On"
             }
-        },        
+        },
+        {
+            "type": "Microsoft.Authorization/policyAssignments",
+            "apiVersion": "2021-06-01",
+            "name": "[concat('ASC Default - ',subscription().displayName)]",
+            "location": "[parameters('location')]",
+            "scope": "[subscription().Id]",
+            "properties": {
+                "displayName": "CMCS Security Center",
+                "enforcementMode": "Default",
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8"
+            }
+        },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
