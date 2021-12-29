@@ -1396,6 +1396,7 @@
                             "apiVersion": "2020-11-01",
                             "name": "[variables('jumphost_nic_name')]",
                             "location": "[parameters('location')]",
+                            "tags": "[parameters('tags')]",
                             "dependsOn": [
                                 "[resourceId('Microsoft.Network/publicIPAddresses', variables('jumphost_pip_name'))]",
                                 "[resourceId('Microsoft.Network/networkSecurityGroups', variables('jumphost_nsg_name'))]"
@@ -1421,7 +1422,22 @@
                             }
                         }
                     ],
-                    "outputs": {}
+                    "outputs": {
+                        "JumpHostPublicIPAddress": {
+                            "type": "string",
+                            "condition": "[parameters('JumpHostdeployPublicIp')]",
+                            "value": "[reference(concat(subscription().id,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIpAddresses/',parameters('jumphostName'),'-pip'),'2019-02-01','Full').properties.ipaddress]"
+                        },
+                        "JumpHostInternalIPAddress": {
+                            "type": "string",
+                            "value": "[reference(concat(subscription().id,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Network/networkInterfaces/',parameters('jumphostName'),'-nic'),'2021-03-01','Full').properties.ipconfigurations[0].properties.privateipaddress]"
+                        },
+                        "JumpHostDNSName": {
+                            "type": "string",
+                            "condition": "[parameters('JumpHostdeployPublicIp')]",
+                            "value": "[reference(concat(subscription().id,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIpAddresses/',parameters('jumphostName'),'-pip'),'2019-02-01','Full').properties.dnssettings.fqdn]"
+                        }
+                    }
                 }
             }
         },
@@ -1666,6 +1682,9 @@
                     },
                     "tags": {
                         "value": "[parameters('tags')]"
+                    },
+                    "JumpHostRDPRemoteIPs": {
+                        "value": "[parameters('JumpHostRDPRemoteIPs')]"
                     }
                 },
                 "template": {
@@ -1704,6 +1723,9 @@
                         },
                         "DmzAddressPrefix": {
                             "type": "string"
+                        },
+                        "JumpHostRDPRemoteIPs": {
+                            "type": "array"
                         }
                     },
                     "variables": {},
@@ -1715,7 +1737,22 @@
                             "location": "[parameters('location')]",
                             "tags": "[parameters('tags')]",
                             "properties": {
-                                "securityRules": []
+                                "securityRules": [
+                                    {
+                                        "name": "allow_rdp_itsure_inbound",
+                                        "properties": {
+                                            "description": "Allow RDP from IT sure Office Neu-Ulm and Azure",
+                                            "protocol": "Tcp",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "3389",
+                                            "sourceAddressPrefixes": "[parameters('JumpHostRDPRemoteIPs')]",
+                                            "destinationAddressPrefix": "*",
+                                            "access": "Allow",
+                                            "priority": 100,
+                                            "direction": "Inbound"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -1785,5 +1822,21 @@
             },
             "resourceGroup": "[parameters('vnetRgName')]"
         }
-    ]
+    ],
+    "outputs": {
+        "Output_JumpHostPublicIPAddress": {
+            "type": "string",
+            "condition": "[parameters('JumpHostdeployPublicIp')]",
+            "value": "[reference('JumpHostDeployment').outputs.JumpHostPublicIPAddress.value]"
+        },
+        "Output_JumpHostInternalIPAddress": {
+            "type": "string",
+            "value": "[reference('JumpHostDeployment').outputs.JumpHostInternalIPAddress.value]"
+        },
+        "Output_JumpHostDNSName": {
+            "type": "string",
+            "condition": "[parameters('JumpHostdeployPublicIp')]",
+            "value": "[reference('JumpHostDeployment').outputs.JumpHostDNSName.value]"
+        }
+    }
 }
