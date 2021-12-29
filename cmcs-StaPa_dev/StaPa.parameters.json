@@ -3,36 +3,28 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
-            "value": "" // TODO: Fill in parameter value
+            "value": ""
         },
         "tags": {
-            "value": {
-                // TODO: Fill in parameter value
-            }
+            "value": {}
         },
         "customername": {
-            "value": "" // TODO: Fill in parameter value
+            "value": ""
         },
         "vnetAddressPrefix": {
-            "value": "" // TODO: Fill in parameter value
+            "value": ""
         },
         "LanAddressPrefix": {
-            "value": "" // TODO: Fill in parameter value
+            "value": ""
         },
         "WanAddressPrefix": {
-            "value": "" // TODO: Fill in parameter value
+            "value": ""
         },
         "DmzAddressPrefix": {
-            "value": "" // TODO: Fill in parameter value
+            "value": ""
         },
         "JumpHostAdminPassword": {
-            "value": "" // TODO: Fill in parameter value
-        },
-        "ProfileStorageAccountName": {
-            "value": "" // TODO: Fill in parameter value
-        },
-        "ProfileFileShareName": {
-            "value": "" // TODO: Fill in parameter value
+            "value": ""
         }
     }
 }
