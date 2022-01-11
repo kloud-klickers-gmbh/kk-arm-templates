@@ -42,6 +42,15 @@
         },
         "JumpHostRDPRemoteIP": {
             "type": "string"
+        },
+        "JumpHostVmLicenseType": {
+            "type": "string",
+            "defaultValue": "Windows_Client",
+            "allowedValues": [
+              "Windows_Client",
+              "Windows_Server",
+              ""
+            ]
         }
     },
     "variables": {
@@ -857,6 +866,9 @@
                     "JumpHostVmSize": {
                         "value": "[variables('JumpHostVmSize')]"
                     },
+                    "JumpHostVmLicenseType": {
+                        "value": "[parameters('JumpHostVmLicenseType')]"
+                    },
                     "location": {
                         "value": "[parameters('location')]"
                     },
@@ -915,12 +927,14 @@
                         },
                         "JumpHostRDPRemoteIP": {
                             "type": "string"
+                        },
+                        "JumpHostVmLicenseType": {
+                            "type": "string"
                         }
                     },
                     "variables": {
                         "JumpHostPublicIpAllocationMethod": "Static",
                         "JumpHostStorageAccountType": "StandardSSD_LRS",
-                        "JumpHostVmLicenseType": "Windows_Client",
                         "imagePublisher": "MicrosoftWindowsDesktop",
                         "imageOffer": "Windows-10",
                         "jumphost_pip_name": "[concat(parameters('jumphostName'),'-pip')]",
@@ -1030,7 +1044,7 @@
                                         "enabled": false
                                     }
                                 },
-                                "licenseType": "[variables('JumpHostVmLicenseType')]"
+                                "licenseType": "[parameters('JumpHostVmLicenseType')]"
                             }
                         },
                         {
