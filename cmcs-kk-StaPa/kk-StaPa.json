@@ -1,0 +1,1331 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "type": "string"
+        },
+        "location": {
+            "allowedValues": [
+                "westeurope",
+                "germanywestcentral"
+            ],
+            "type": "String"
+        },
+        "tags": {
+            "type": "Object"
+        },
+        "vnetAddressPrefix": {
+            "type": "String"
+        },
+        "LanAddressPrefix": {
+            "type": "String"
+        },
+        "WanAddressPrefix": {
+            "type": "String"
+        },
+        "DmzAddressPrefix": {
+            "type": "String"
+        },
+        "JumpHostAdminUsername": {
+            "type": "String"
+        },        
+        "JumpHostAdminPassword": {
+            "type": "SecureString"
+        },        
+        "JumpHostImageSku": {
+            "defaultValue": "20h2-pro-g2",
+            "type": "String"
+        },        
+        "JumpHostPublicIpDnsName": {
+            "type": "String"
+        },
+        "JumpHostRDPRemoteIPs": {
+            "type": "Array"
+        }
+    },
+    "variables": {
+        "backupRgName": "[concat(parameters('prefix'),'-backup-rg')]",
+        "vaultName": "[concat(parameters('prefix'),'-backup')]",
+        "PolicyName_daily_filestore": "[concat(parameters('prefix'),'-daily-backup-Filestore')]",
+        "PolicyName_daily_profiles": "[concat(parameters('prefix'),'-daily-backup-Profiles')]",
+        "PolicyName_daily_vm": "[concat(parameters('prefix'),'-daily-backup-VM')]",
+        "PolicyName_daily_wvd": "[concat(parameters('prefix'),'-daily-backup-WVD')]",        
+        "PolicyRetentionDays_filestore": 60,
+        "PolicyRetentionDays_profiles": 30,
+        "PolicyRetentionDays_vm": 30,
+        "PolicyRetentionDays_wvd": 7,
+        "vaultStorageType": "LocallyRedundant",
+        "enableCRR": false,
+        "BackupScheduleTime": "22:00",        
+        "JumpHostRgName": "[concat(parameters('prefix'),'-jumphost-rg')]",
+        "jumphostName": "[concat(parameters('prefix'),'-jumphost')]",        
+        "JumpHostVmSize": "Standard_B2S",
+        "JumpHostDeployPublicIp": true,
+        "vnetRgName": "[concat(parameters('prefix'),'-vnet-rg')]",
+        "vnetName": "[concat(parameters('prefix'),'-vnet')]",
+        "SubnetDMZName": "[concat(parameters('prefix'),'-dmz-subnet')]",
+        "SubnetLANName": "[concat(parameters('prefix'),'-lan-subnet')]",
+        "SubnetWANName": "[concat(parameters('prefix'),'-wan-subnet')]",
+        "NSGName": "[concat(parameters('prefix'),'-nsg')]",
+        "SecurityRgName": "[concat(parameters('prefix'),'-security-rg')]",
+        "workspaceName": "[concat(parameters('prefix'),'-loganalytics')]",
+        "UpdateRgName": "[concat(parameters('prefix'),'-update-rg')]",
+        "updateAutomationAccountName": "[concat(parameters('prefix'),'-update-automation')]",
+        "udpateScheduleFrequency": "Week",
+        "udpateScheduleInterval": 1,        
+        "updateDuration": "PT2H",
+        "updateIncludedClassifications": "Critical, Security, Definition",
+        "updateRebootSetting": "IfRequired",        
+        "updateScheduleName": "Weekly",
+        "updateScheduleStartTime": "22:00:00",
+        "updateScheduleTimeZone": "Europe/Berlin",
+        "updateScheduleWeekDays": ["Thursday"],        
+        "ScheduleTimeZone": "W. Europe Standard Time"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/policyassignments",
+            "apiVersion": "2020-09-01",
+            "name": "[concat('ASC Default - ',subscription().displayName)]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "displayName": "CMCS Security Center",
+                "enforcementMode": "Default",
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('backupRgName')]",
+            "location": "[parameters('Location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('JumpHostRgName')]",
+            "location": "[parameters('Location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('SecurityRgName')]",
+            "location": "[parameters('Location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('UpdateRgName')]",
+            "location": "[parameters('Location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('vnetRgName')]",
+            "location": "[parameters('Location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "backupDeployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('backupRgName'))]"
+            ],
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('vaultName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "enableCRR": {
+                        "value": "[variables('enableCRR')]"
+                    },
+                    "vaultStorageType": {
+                        "value": "[variables('vaultStorageType')]"
+                    },
+                    "PolicyName_daily_filestore": {
+                        "value": "[variables('PolicyName_daily_filestore')]"
+                    },
+                    "PolicyName_daily_profiles": {
+                        "value": "[variables('PolicyName_daily_profiles')]"
+                    },
+                    "PolicyName_daily_vm": {
+                        "value": "[variables('PolicyName_daily_vm')]"
+                    },
+                    "PolicyName_daily_wvd": {
+                        "value": "[variables('PolicyName_daily_wvd')]"
+                    },
+                    "PolicyRetentionDays_filestore": {
+                        "value": "[variables('PolicyRetentionDays_filestore')]"
+                    },
+                    "PolicyRetentionDays_profiles": {
+                        "value": "[variables('PolicyRetentionDays_profiles')]"
+                    },
+                    "PolicyRetentionDays_vm": {
+                        "value": "[variables('PolicyRetentionDays_vm')]"
+                    },
+                    "PolicyRetentionDays_wvd": {
+                        "value": "[variables('PolicyRetentionDays_wvd')]"
+                    },
+                    "BackupScheduleTime": {
+                        "value": "[variables('BackupScheduleTime')]"
+                    },
+                    "ScheduleTimeZone": {
+                        "value": "[variables('ScheduleTimeZone')]"
+                    }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "vaultName": {
+                            "type": "string"
+                        },
+                        "location": {
+                            "type": "string"
+                        },
+                        "tags": {
+                            "type": "object"
+                        },
+                        "enableCRR": {
+                            "type": "bool"
+                        },
+                        "vaultStorageType": {
+                            "type": "string"
+                        },
+                        "PolicyName_daily_filestore": {
+                            "type": "string"
+                        },
+                        "PolicyRetentionDays_filestore": {
+                            "type": "int"
+                        },
+                        "PolicyName_daily_profiles": {
+                            "type": "string"
+                        },
+                        "PolicyRetentionDays_profiles": {
+                            "type": "int"
+                        },
+                        "PolicyName_daily_vm": {
+                            "type": "string"
+                        },
+                        "PolicyRetentionDays_vm": {
+                            "type": "int"
+                        },
+                        "PolicyName_daily_wvd": {
+                            "type": "string"
+                        },
+                        "PolicyRetentionDays_wvd": {
+                            "type": "int"
+                        },
+                        "BackupScheduleTime": {
+                            "type": "string"
+                        },
+                        "ScheduleTimeZone": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "skuName": "RS0",
+                        "skuTier": "Standard"
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults",
+                            "apiVersion": "2020-02-02",
+                            "name": "[parameters('vaultName')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('tags')]",
+                            "sku": {
+                                "name": "[variables('skuName')]",
+                                "tier": "[variables('skuTier')]"
+                            },
+                            "properties": {}
+                        },
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults/backupstorageconfig",
+                            "apiVersion": "2021-07-01",
+                            "name": "[concat(parameters('vaultName'), '/vaultstorageconfig')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.RecoveryServices/vaults/', parameters('vaultName'))]"
+                            ],
+                            "properties": {
+                                "StorageModelType": "[parameters('vaultStorageType')]",
+                                "CrossRegionRestoreFlag": "[parameters('enableCRR')]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+                            "apiVersion": "2021-04-01",
+                            "name": "[concat(parameters('vaultName'), '/', parameters('PolicyName_daily_filestore'))]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.RecoveryServices/vaults', parameters('vaultName'))]"
+                            ],
+                            "properties": {
+                                "backupManagementType": "AzureStorage",
+                                "workLoadType": "AzureFileShare",
+                                "schedulePolicy": {
+                                    "schedulePolicyType": "SimpleSchedulePolicy",
+                                    "scheduleRunFrequency": "Daily",
+                                    "scheduleRunTimes": [
+                                        "[parameters('BackupScheduleTime')]"
+                                    ]
+                                },
+                                "retentionPolicy": {
+                                    "retentionPolicyType": "LongTermRetentionPolicy",
+                                    "dailySchedule": {
+                                        "retentionTimes": [
+                                            "[parameters('BackupScheduleTime')]"
+                                        ],
+                                        "retentionDuration": {
+                                            "count": "[parameters('PolicyRetentionDays_filestore')]",
+                                            "durationType": "Days"
+                                        }
+                                    }
+                                },
+                                "timeZone": "[parameters('ScheduleTimeZone')]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+                            "apiVersion": "2021-04-01",
+                            "name": "[concat(parameters('vaultName'), '/', parameters('PolicyName_daily_profiles'))]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.RecoveryServices/vaults', parameters('vaultName'))]"
+                            ],
+                            "properties": {
+                                "backupManagementType": "AzureStorage",
+                                "workLoadType": "AzureFileShare",
+                                "schedulePolicy": {
+                                    "schedulePolicyType": "SimpleSchedulePolicy",
+                                    "scheduleRunFrequency": "Daily",
+                                    "scheduleRunTimes": [
+                                        "[parameters('BackupScheduleTime')]"
+                                    ]
+                                },
+                                "retentionPolicy": {
+                                    "retentionPolicyType": "LongTermRetentionPolicy",
+                                    "dailySchedule": {
+                                        "retentionTimes": [
+                                            "[parameters('BackupScheduleTime')]"
+                                        ],
+                                        "retentionDuration": {
+                                            "count": "[parameters('PolicyRetentionDays_profiles')]",
+                                            "durationType": "Days"
+                                        }
+                                    }
+                                },
+                                "timeZone": "[parameters('ScheduleTimeZone')]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+                            "apiVersion": "2021-04-01",
+                            "name": "[concat(parameters('vaultName'), '/', parameters('PolicyName_daily_vm'))]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.RecoveryServices/vaults', parameters('vaultName'))]"
+                            ],
+                            "properties": {
+                                "backupManagementType": "AzureIaasVM",
+                                "schedulePolicy": {
+                                    "schedulePolicyType": "SimpleSchedulePolicy",
+                                    "scheduleRunFrequency": "Daily",
+                                    "scheduleRunTimes": [
+                                        "[parameters('BackupScheduleTime')]"
+                                    ]
+                                },
+                                "retentionPolicy": {
+                                    "retentionPolicyType": "LongTermRetentionPolicy",
+                                    "dailySchedule": {
+                                        "retentionTimes": [
+                                            "[parameters('BackupScheduleTime')]"
+                                        ],
+                                        "retentionDuration": {
+                                            "count": "[parameters('PolicyRetentionDays_vm')]",
+                                            "durationType": "Days"
+                                        }
+                                    }
+                                },
+                                "instantRPDetails": {
+                                    "azureBackupRGNamePrefix": "[concat(parameters('vaultName'),'RestorePoints-')]",
+                                    "azureBackupRGNameSuffix": "[concat('-',parameters('location'))]"
+                                },
+                                "instantRpRetentionRangeInDays": 2,
+                                "timeZone": "[parameters('ScheduleTimeZone')]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+                            "apiVersion": "2021-04-01",
+                            "name": "[concat(parameters('vaultName'), '/', parameters('PolicyName_daily_wvd'))]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.RecoveryServices/vaults', parameters('vaultName'))]"
+                            ],
+                            "properties": {
+                                "backupManagementType": "AzureIaasVM",
+                                "schedulePolicy": {
+                                    "schedulePolicyType": "SimpleSchedulePolicy",
+                                    "scheduleRunFrequency": "Daily",
+                                    "scheduleRunTimes": [
+                                        "[parameters('BackupScheduleTime')]"
+                                    ]
+                                },
+                                "retentionPolicy": {
+                                    "retentionPolicyType": "LongTermRetentionPolicy",
+                                    "dailySchedule": {
+                                        "retentionTimes": [
+                                            "[parameters('BackupScheduleTime')]"
+                                        ],
+                                        "retentionDuration": {
+                                            "count": "[parameters('PolicyRetentionDays_wvd')]",
+                                            "durationType": "Days"
+                                        }
+                                    }
+                                },
+                                "instantRPDetails": {
+                                    "azureBackupRGNamePrefix": "[concat(parameters('vaultName'),'RestorePoints-')]",
+                                    "azureBackupRGNameSuffix": "[concat('-',parameters('location'))]"
+                                },
+                                "instantRpRetentionRangeInDays": 2,
+                                "timeZone": "[parameters('ScheduleTimeZone')]"
+                            }
+                        }
+                    ],
+                    "outputs": {}
+                }
+            },
+            "resourceGroup": "[variables('backupRgName')]"
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "createautomationaccount",
+            "dependsOn": [
+                "[variables('UpdateRgName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "parameters": {
+                    "updateAutomationAccountName": {
+                        "value": "[variables('updateAutomationAccountName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "updateScheduleName": {
+                        "value": "[variables('updateScheduleName')]"
+                    },
+                    "updateScheduleStartTime": {
+                        "value": "[variables('updateScheduleStartTime')]"
+                    },
+                    "udpateScheduleInterval": {
+                        "value": "[variables('udpateScheduleInterval')]"
+                    },
+                    "udpateScheduleFrequency": {
+                        "value": "[variables('udpateScheduleFrequency')]"
+                    },
+                    "updateScheduleTimeZone": {
+                        "value": "[variables('updateScheduleTimeZone')]"
+                    },
+                    "updateIncludedClassifications": {
+                        "value": "[variables('updateIncludedClassifications')]"
+                    },
+                    "updateRebootSetting": {
+                        "value": "[variables('updateRebootSetting')]"
+                    },
+                    "updateDuration": {
+                        "value": "[variables('updateDuration')]"
+                    },
+                    "updateScheduleWeekDays": {
+                        "value": "[variables('updateScheduleWeekDays')]"
+                    }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "updateAutomationAccountName": {
+                            "type": "String"
+                        },
+                        "location": {
+                            "type": "string"
+                        },
+                        "tags": {
+                            "type": "object"
+                        },
+                        "updateScheduleName": {
+                            "type": "string"
+                        },
+                        "updateScheduleStartTime": {
+                            "type": "string"
+                        },
+                        "udpateScheduleInterval": {
+                            "type": "int"
+                        },
+                        "udpateScheduleFrequency": {
+                            "type": "string"
+                        },
+                        "updateScheduleTimeZone": {
+                            "type": "string"
+                        },
+                        "updateIncludedClassifications": {
+                            "type": "string"
+                        },
+                        "updateRebootSetting": {
+                            "type": "string"
+                        },
+                        "updateDuration": {
+                            "type": "string"
+                        },
+                        "updateScheduleWeekDays": {
+                            "type": "array"
+                        }
+                    },
+                    "variables": {
+                        "location": "[parameters('location')]"
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.Automation/automationAccounts",
+                            "apiVersion": "2020-01-13-preview",
+                            "name": "[parameters('updateAutomationAccountName')]",
+                            "location": "[variables('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                                "sku": {
+                                    "name": "Basic"
+                                }
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Automation/automationAccounts/softwareUpdateConfigurations",
+                            "apiVersion": "2019-06-01",
+                            "name": "[concat(parameters('updateAutomationAccountName'), '/', parameters('updateScheduleName'))]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Automation/automationAccounts', parameters('updateAutomationAccountName'))]"
+                            ],
+                            "properties": {
+                                "updateConfiguration": {
+                                    "operatingSystem": "Windows",
+                                    "windows": {
+                                        "includedUpdateClassifications": "[parameters('updateIncludedClassifications')]",
+                                        "rebootSetting": "[parameters('updateRebootSetting')]"
+                                    },
+                                    "targets": {
+                                        "azureQueries": [
+                                            {
+                                                "scope": [
+                                                    "[subscription().id]"
+                                                ],
+                                                "tagSettings": {
+                                                    "tags": {},
+                                                    "filterOperator": "Any"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "duration": "[parameters('updateDuration')]"
+                                },
+                                "tasks": {},
+                                "scheduleInfo": {
+                                    "startTime": "[parameters('updateScheduleStartTime')]",
+                                    "expiryTime": "8999-12-31T23:59:59Z",
+                                    "interval": "[parameters('udpateScheduleInterval')]",
+                                    "frequency": "[parameters('udpateScheduleFrequency')]",
+                                    "timeZone": "[parameters('updateScheduleTimeZone')]",
+                                    "advancedSchedule": {
+                                        "weekDays": "[parameters('updateScheduleWeekDays')]"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "resourceGroup": "[variables('UpdateRgName')]"
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "createloganalytics",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('UpdateRgName'))]",
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('SecurityRgName'))]",
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('UpdateRgName'),'/providers/Microsoft.Resources/deployments/createautomationaccount')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "workspaceName": {
+                        "value": "[variables('workspaceName')]"
+                    },
+                    "updateAutomationAccountRgName": {
+                        "value": "[variables('updateRgName')]"
+                    },
+                    "updateAutomationAccountName": {
+                        "value": "[variables('updateAutomationAccountName')]"
+                    }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "location": {
+                            "type": "string"
+                        },
+                        "tags": {
+                            "type": "object"
+                        },
+                        "workspaceName": {
+                            "type": "string"
+                        },
+                        "updateAutomationAccountRgName": {
+                            "type": "string"
+                        },
+                        "updateAutomationAccountName": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "location": "[parameters('location')]"
+                    },
+                    "resources": [
+                        {
+                            "type": "microsoft.operationalinsights/workspaces",
+                            "apiVersion": "2020-10-01",
+                            "name": "[parameters('workspaceName')]",
+                            "location": "[variables('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                                "sku": {
+                                    "name": "PerGB2018"
+                                }
+                            }
+                        },
+                        {
+                            "type": "microsoft.operationalinsights/workspaces/linkedservices",
+                            "apiVersion": "2020-08-01",
+                            "condition": "[if(not(equals(parameters('location'),'germanywestcentral')),true(),false())]",
+                            "name": "[concat(parameters('workspaceName'), '/Automation')]",
+                            "dependsOn": [
+                                "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
+                            ],
+                            "properties": {
+                                "resourceId": "[resourceId(parameters('updateAutomationAccountRgName'), 'Microsoft.Automation/automationAccounts', parameters('updateAutomationAccountName'))]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+                            "apiVersion": "2020-08-01",
+                            "name": "[concat(parameters('workspaceName'), '/updates|microsoftdefaultcomputergroup')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+                            ],
+                            "properties": {
+                                "etag": "*",
+                                "category": "Updates",
+                                "displayName": "MicrosoftDefaultComputerGroup",
+                                "query": "Heartbeat | where Computer in~ (\"\") or VMUUID in~ (\"\") | distinct Computer",
+                                "tags": [
+                                    {
+                                        "name": "Group",
+                                        "value": "Computer"
+                                    }
+                                ],
+                                "functionAlias": "Updates__MicrosoftDefaultComputerGroup"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.OperationalInsights/workspaces/configurationScopes",
+                            "apiVersion": "2015-11-01-preview",
+                            "name": "[concat(parameters('workspaceName'), '/MicrosoftDefaultScopeConfig-Updates')]",
+                            "location": "[variables('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+                            ],
+                            "kind": "SearchComputerGroup",
+                            "properties": {
+                                "Include": [
+                                    "Updates__MicrosoftDefaultComputerGroup"
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.OperationsManagement/solutions",
+                            "apiVersion": "2015-11-01-preview",
+                            "name": "[concat('SecurityCenterFree(', parameters('workspaceName'), ')')]",
+                            "location": "[variables('location')]",
+                            "dependsOn": [
+                                "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
+                            ],
+                            "tags": "[parameters('tags')]",
+                            "plan": {
+                                "name": "[concat('SecurityCenterFree(', parameters('workspaceName'), ')')]",
+                                "product": "OMSGallery/SecurityCenterFree",
+                                "promotionCode": "",
+                                "publisher": "Microsoft"
+                            },
+                            "properties": {
+                                "workspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.OperationsManagement/solutions",
+                            "apiVersion": "2015-11-01-preview",
+                            "name": "[concat('Updates(', parameters('workspaceName'), ')')]",
+                            "location": "[variables('location')]",
+                            "dependsOn": [
+                                "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
+                            ],
+                            "tags": "[parameters('tags')]",
+                            "plan": {
+                                "name": "[concat('Updates(', parameters('workspaceName'), ')')]",
+                                "product": "OMSGallery/Updates",
+                                "promotionCode": "",
+                                "publisher": "Microsoft"
+                            },
+                            "properties": {
+                                "workspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]",
+                                "configurations": [
+                                    {
+                                        "Name": "SolutionTargeting",
+                                        "Value": "MicrosoftDefaultScopeConfig-Updates"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "resourceGroup": "[variables('SecurityRgName')]"
+        },
+        {
+            "type": "Microsoft.Security/workspaceSettings",
+            "apiVersion": "2017-08-01-preview",
+            "name": "default",
+            "dependsOn": [
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('securityRgName'),'/providers/Microsoft.Resources/deployments/createloganalytics')]"
+            ],
+            "properties": {
+                "scope": "[subscription().id]",
+                "workspaceId": "[concat(subscription().id,'/resourceGroups/',variables('SecurityRgName'),'/providers/microsoft.operationalinsights/workspaces/',variables('workspaceName'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/autoProvisioningSettings",
+            "apiVersion": "2017-08-01-preview",
+            "name": "default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/workspaceSettings', 'default')]"
+            ],
+            "properties": {
+                "autoProvision": "On"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "JumpHostBackupDeployment",
+            "dependsOn": [
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('JumpHostRgName'),'/providers/Microsoft.Resources/deployments/JumpHostDeployment')]",
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('backupRgName'),'/providers/Microsoft.Resources/deployments/backupDeployment')]"
+            ],
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                    "vmname": {
+                        "value": "[variables('jumphostName')]"
+                    },
+                    "vmrg": {
+                        "value": "[variables('JumpHostRgName')]"
+                    },
+                    "vaultName": {
+                        "value": "[variables('vaultName')]"
+                    },
+                    "policyName": {
+                        "value": "[variables('PolicyName_daily_vm')]"
+                    }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "vaultName": {
+                            "type": "String"
+                        },
+                        "policyName": {
+                            "type": "String"
+                        },
+                        "vmname": {
+                            "type": "string"
+                        },
+                        "vmrg": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "ProtectedItem": "[concat('vm;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "ProtectionContainer": "[concat('IaasVMContainer;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "sourceResourceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('vmrg'),'/providers/Microsoft.Compute/virtualMachines/',parameters('vmname'))]"
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+                            "apiVersion": "2016-06-01",
+                            "name": "[concat(parameters('vaultName'), '/Azure/',variables('protectionContainer'), '/', variables('ProtectedItem'))]",
+                            "properties": {
+                                "protectedItemType": "Microsoft.ClassicCompute/virtualMachines",
+                                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('vaultName'), parameters('policyName'))]",
+                                "sourceResourceId": "[variables('sourceResourceId')]"
+                            }
+                        }
+                    ]
+                }
+            },
+            "resourceGroup": "[variables('backuprgname')]"
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "JumpHostDeployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('JumpHostRgName'))]",
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vnetRgName'),'/providers/Microsoft.Resources/deployments/vnetDeployment')]"
+            ],
+            "resourceGroup": "[variables('JumpHostRgName')]",
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                    "JumpHostAdminPassword": {
+                        "value": "[parameters('JumpHostAdminPassword')]"
+                    },
+                    "JumpHostAdminUsername": {
+                        "value": "[parameters('JumpHostAdminUsername')]"
+                    },
+                    "JumpHostDeployPublicIp": {
+                        "value": "[variables('JumpHostDeployPublicIp')]"
+                    },
+                    "JumpHostImageSku": {
+                        "value": "[parameters('JumpHostImageSku')]"
+                    },
+                    "jumphostName": {
+                        "value": "[variables('jumphostName')]"
+                    },
+                    "JumpHostPublicIpDnsName": {
+                        "value": "[parameters('JumpHostPublicIpDnsName')]"
+                    },
+                    "JumpHostRDPRemoteIPs": {
+                        "value": "[parameters('JumpHostRDPRemoteIPs')]"
+                    },
+                    "JumpHostVmSize": {
+                        "value": "[variables('JumpHostVmSize')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "subnetLANName": {
+                        "value": "[variables('SubnetLANName')]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "vnetName": {
+                        "value": "[variables('vnetName')]"
+                    },
+                    "vnetRGName": {
+                        "value": "[variables('vnetRgName')]"
+                    }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "jumphostName": {
+                            "type": "string"
+                        },
+                        "JumpHostAdminUsername": {
+                            "type": "string"
+                        },
+                        "JumpHostAdminPassword": {
+                            "type": "securestring"
+                        },
+                        "tags": {
+                            "type": "object"
+                        },
+                        "JumpHostDeployPublicIp": {
+                            "type": "bool"
+                        },
+                        "JumpHostPublicIpDnsName": {
+                            "type": "string"
+                        },
+                        "location": {
+                            "type": "string"
+                        },
+                        "vnetRGName": {
+                            "type": "string"
+                        },
+                        "vnetName": {
+                            "type": "string"
+                        },
+                        "subnetLANName": {
+                            "type": "string"
+                        },
+                        "JumpHostVmSize": {
+                            "type": "string"
+                        },
+                        "JumpHostImageSku": {
+                            "type": "string"
+                        },
+                        "JumpHostRDPRemoteIPs": {
+                            "type": "array"
+                        }
+                    },
+                    "variables": {
+                        "JumpHostPublicIpAllocationMethod": "Static",
+                        "JumpHostStorageAccountType": "StandardSSD_LRS",
+                        "JumpHostVmLicenseType": "Windows_Client",
+                        "imagePublisher": "MicrosoftWindowsDesktop",
+                        "imageOffer": "Windows-10",
+                        "jumphost_pip_name": "[concat(parameters('jumphostName'),'-pip')]",
+                        "jumphost_nsg_name": "[concat(parameters('jumphostName'),'-nsg')]",
+                        "jumphost_nic_name": "[concat(parameters('jumphostName'),'-nic')]",
+                        "subnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , parameters('vnetrgname'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vnetname'), '/subnets/', parameters('subnetLANName'))]"
+                    },
+                    "resources": [
+                        {
+                            "name": "[variables('jumphost_nsg_name')]",
+                            "type": "Microsoft.Network/networkSecurityGroups",
+                            "apiVersion": "2020-11-01",
+                            "tags": "[parameters('tags')]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "securityRules": [
+                                    {
+                                        "name": "allow_rdp_itsure_inbound",
+                                        "properties": {
+                                            "description": "Allow RDP from IT sure Office Neu-Ulm and Azure",
+                                            "protocol": "Tcp",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "3389",
+                                            "sourceAddressPrefixes": "[parameters('JumpHostRDPRemoteIPs')]",
+                                            "destinationAddressPrefix": "*",
+                                            "access": "Allow",
+                                            "priority": 100,
+                                            "direction": "Inbound"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/publicIPAddresses",
+                            "apiVersion": "2020-11-01",
+                            "condition": "[parameters('JumpHostdeployPublicIp')]",
+                            "name": "[variables('jumphost_pip_name')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('tags')]",
+                            "sku": {
+                                "name": "Basic",
+                                "tier": "Regional"
+                            },
+                            "properties": {
+                                "publicIPAddressVersion": "IPv4",
+                                "publicIPAllocationMethod": "[variables('JumpHostpublicIpAllocationMethod')]",
+                                "idleTimeoutInMinutes": 4,
+                                "dnsSettings": {
+                                    "domainNameLabel": "[parameters('JumpHostPublicIpDnsName')]"
+                                },
+                                "ipTags": []
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Compute/virtualMachines",
+                            "apiVersion": "2020-12-01",
+                            "name": "[parameters('jumphostName')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/networkInterfaces', variables('jumphost_nic_name'))]"
+                            ],
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                                "hardwareProfile": {
+                                    "vmSize": "[parameters('JumpHostvmSize')]"
+                                },
+                                "storageProfile": {
+                                    "imageReference": {
+                                        "publisher": "[variables('imagePublisher')]",
+                                        "offer": "[variables('imageOffer')]",
+                                        "sku": "[parameters('JumpHostimageSku')]",
+                                        "version": "latest"
+                                    },
+                                    "osDisk": {
+                                        "osType": "Windows",
+                                        "name": "[concat(parameters('jumphostName'), '_OsDisk_1')]",
+                                        "createOption": "FromImage",
+                                        "caching": "ReadWrite",
+                                        "managedDisk": {
+                                            "storageAccountType": "[variables('JumpHoststorageAccountType')]"
+                                        }
+                                    },
+                                    "dataDisks": []
+                                },
+                                "osProfile": {
+                                    "computerName": "[parameters('jumphostName')]",
+                                    "adminUsername": "[parameters('JumpHostadminUsername')]",
+                                    "adminPassword": "[parameters('JumpHostadminPassword')]",
+                                    "windowsConfiguration": {
+                                        "provisionVMAgent": true,
+                                        "enableAutomaticUpdates": true,
+                                        "patchSettings": {
+                                            "patchMode": "AutomaticByOS"
+                                        }
+                                    }
+                                },
+                                "networkProfile": {
+                                    "networkInterfaces": [
+                                        {
+                                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('jumphost_nic_name'))]"
+                                        }
+                                    ]
+                                },
+                                "diagnosticsProfile": {
+                                    "bootDiagnostics": {
+                                        "enabled": false
+                                    }
+                                },
+                                "licenseType": "[variables('JumpHostVmLicenseType')]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Compute/virtualMachines/extensions",
+                            "apiVersion": "2020-12-01",
+                            "name": "[concat(parameters('jumphostName'), '/BGInfo')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Compute/virtualMachines', parameters('jumphostName'))]"
+                            ],
+                            "properties": {
+                                "autoUpgradeMinorVersion": true,
+                                "publisher": "Microsoft.Compute",
+                                "type": "BGInfo",
+                                "typeHandlerVersion": "2.1"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Compute/virtualMachines/extensions",
+                            "name": "[concat(parameters('jumphostName'),'/AntiMalware')]",
+                            "apiVersion": "2020-12-01",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Compute/virtualMachines', parameters('jumphostName'))]"
+                            ],
+                            "properties": {
+                                "publisher": "Microsoft.Azure.Security",
+                                "type": "IaaSAntimalware",
+                                "typeHandlerVersion": "1.5",
+                                "autoUpgradeMinorVersion": true,
+                                "settings": {
+                                    "AntimalwareEnabled": true,
+                                    "Exclusions": {
+                                        "Extensions": "",
+                                        "Paths": "",
+                                        "Processes": ""
+                                    },
+                                    "RealtimeProtectionEnabled": "true",
+                                    "ScheduledScanSettings": {
+                                        "isEnabled": "true",
+                                        "scanType": "Quick",
+                                        "day": "7",
+                                        "time": "120"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/networkInterfaces",
+                            "apiVersion": "2020-11-01",
+                            "name": "[variables('jumphost_nic_name')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('tags')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/publicIPAddresses', variables('jumphost_pip_name'))]",
+                                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('jumphost_nsg_name'))]"
+                            ],
+                            "properties": {
+                                "ipConfigurations": [
+                                    {
+                                        "name": "ipconfig1",
+                                        "properties": {
+                                            "privateIPAllocationMethod": "Dynamic",
+                                            "publicIPAddress": {
+                                                "id": "[if(parameters('JumpHostdeployPublicIp'), resourceId('Microsoft.Network/publicIPAddresses', variables('jumphost_pip_name')),json('null'))]"
+                                            },
+                                            "subnet": {
+                                                "id": "[variables('subnetId')]"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "networkSecurityGroup": {
+                                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('jumphost_nsg_name'))]"
+                                }
+                            }
+                        }
+                    ],
+                    "outputs": {
+                        "JumpHostPublicIPAddress": {
+                            "type": "string",
+                            "condition": "[parameters('JumpHostdeployPublicIp')]",
+                            "value": "[reference(concat(subscription().id,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIpAddresses/',parameters('jumphostName'),'-pip'),'2019-02-01','Full').properties.ipaddress]"
+                        },
+                        "JumpHostInternalIPAddress": {
+                            "type": "string",
+                            "value": "[reference(concat(subscription().id,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Network/networkInterfaces/',parameters('jumphostName'),'-nic'),'2021-03-01','Full').properties.ipconfigurations[0].properties.privateipaddress]"
+                        },
+                        "JumpHostDNSName": {
+                            "type": "string",
+                            "condition": "[parameters('JumpHostdeployPublicIp')]",
+                            "value": "[reference(concat(subscription().id,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIpAddresses/',parameters('jumphostName'),'-pip'),'2019-02-01','Full').properties.dnssettings.fqdn]"
+                        }
+                    }
+                }
+            }
+        },        
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "vnetDeployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('vnetRgName'))]"
+            ],
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "vnetName": {
+                        "value": "[variables('vnetName')]"
+                    },
+                    "nsgName": {
+                        "value": "[variables('NSGName')]"
+                    },
+                    "SubnetDmzName": {
+                        "value": "[variables('SubnetDMZName')]"
+                    },
+                    "SubnetLanName": {
+                        "value": "[variables('SubnetLANName')]"
+                    },
+                    "SubnetWanName": {
+                        "value": "[variables('SubnetWANName')]"
+                    },
+                    "vnetAddressPrefix": {
+                        "value": "[parameters('vnetAddressPrefix')]"
+                    },
+                    "LanAddressPrefix": {
+                        "value": "[parameters('LanAddressPrefix')]"
+                    },
+                    "WanAddressPrefix": {
+                        "value": "[parameters('WanAddressPrefix')]"
+                    },
+                    "DmzAddressPrefix": {
+                        "value": "[parameters('DmzAddressPrefix')]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "JumpHostRDPRemoteIPs": {
+                        "value": "[parameters('JumpHostRDPRemoteIPs')]"
+                    }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "vnetName": {
+                            "type": "String"
+                        },
+                        "nsgName": {
+                            "type": "String"
+                        },
+                        "location": {
+                            "type": "String"
+                        },
+                        "tags": {
+                            "type": "object"
+                        },
+                        "SubnetLanName": {
+                            "type": "string"
+                        },
+                        "SubnetWanName": {
+                            "type": "string"
+                        },
+                        "SubnetDmzName": {
+                            "type": "string"
+                        },
+                        "vnetAddressPrefix": {
+                            "type": "string"
+                        },
+                        "LanAddressPrefix": {
+                            "type": "string"
+                        },
+                        "WanAddressPrefix": {
+                            "type": "string"
+                        },
+                        "DmzAddressPrefix": {
+                            "type": "string"
+                        },
+                        "JumpHostRDPRemoteIPs": {
+                            "type": "array"
+                        }
+                    },
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/networkSecurityGroups",
+                            "apiVersion": "2020-11-01",
+                            "name": "[parameters('nsgName')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                                "securityRules": [
+                                    {
+                                        "name": "allow_rdp_itsure_inbound",
+                                        "properties": {
+                                            "description": "Allow RDP from IT sure Office Neu-Ulm and Azure",
+                                            "protocol": "Tcp",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "3389",
+                                            "sourceAddressPrefixes": "[parameters('JumpHostRDPRemoteIPs')]",
+                                            "destinationAddressPrefix": "*",
+                                            "access": "Allow",
+                                            "priority": 100,
+                                            "direction": "Inbound"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/virtualNetworks",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+                            ],
+                            "apiVersion": "2020-11-01",
+                            "name": "[parameters('vnetName')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                                "addressSpace": {
+                                    "addressPrefixes": [
+                                        "[parameters('vnetAddressPrefix')]"
+                                    ]
+                                },
+                                "dhcpOptions": {
+                                    "dnsServers": []
+                                },
+                                "subnets": [
+                                    {
+                                        "name": "[parameters('SubnetLanName')]",
+                                        "properties": {
+                                            "addressPrefix": "[parameters('LanAddressPrefix')]",
+                                            "serviceEndpoints": [
+                                                {
+                                                    "service": "Microsoft.Storage"
+                                                }
+                                            ],
+                                            "delegations": [],
+                                            "privateEndpointNetworkPolicies": "Enabled",
+                                            "privateLinkServiceNetworkPolicies": "Enabled",
+                                            "networkSecurityGroup": {
+                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "[parameters('SubnetWanName')]",
+                                        "properties": {
+                                            "addressPrefix": "[parameters('WanAddressPrefix')]",
+                                            "serviceEndpoints": [],
+                                            "delegations": [],
+                                            "privateEndpointNetworkPolicies": "Enabled",
+                                            "privateLinkServiceNetworkPolicies": "Enabled"
+                                        }
+                                    },
+                                    {
+                                        "name": "[parameters('SubnetDmzName')]",
+                                        "properties": {
+                                            "addressPrefix": "[parameters('DmzAddressPrefix')]",
+                                            "serviceEndpoints": [],
+                                            "delegations": [],
+                                            "privateEndpointNetworkPolicies": "Enabled",
+                                            "privateLinkServiceNetworkPolicies": "Enabled"
+                                        }
+                                    }
+                                ],
+                                "virtualNetworkPeerings": [],
+                                "enableDdosProtection": false
+                            }
+                        }
+                    ],
+                    "outputs": {}
+                }
+            },
+            "resourceGroup": "[variables('vnetRgName')]"
+        }
+    ],
+    "outputs": {
+        "Output_JumpHostPublicIPAddress": {
+            "type": "string",
+            "condition": "[variables('JumpHostdeployPublicIp')]",
+            "value": "[reference('JumpHostDeployment').outputs.JumpHostPublicIPAddress.value]"
+        },
+        "Output_JumpHostInternalIPAddress": {
+            "type": "string",
+            "value": "[reference('JumpHostDeployment').outputs.JumpHostInternalIPAddress.value]"
+        },
+        "Output_JumpHostDNSName": {
+            "type": "string",
+            "condition": "[variables('JumpHostdeployPublicIp')]",
+            "value": "[reference('JumpHostDeployment').outputs.JumpHostDNSName.value]"
+        }
+    }
+}
