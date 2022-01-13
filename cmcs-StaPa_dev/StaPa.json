@@ -275,7 +275,9 @@
             "type": "String"
         }
     },
-    "variables": {},
+    "variables": {
+        "SecurityAndAutomationLocation": "westeurope"
+    },
     "resources": [
         {
             "type": "Microsoft.Authorization/policyassignments",
@@ -446,14 +448,14 @@
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
             "name": "[parameters('SecurityRgName')]",
-            "location": "[parameters('Location')]",
+            "location": "[variables('SecurityAndAutomationLocation')]",
             "properties": {}
         },
         {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
             "name": "[parameters('UpdateRgName')]",
-            "location": "[parameters('Location')]",
+            "location": "[variables('SecurityAndAutomationLocation')]",
             "properties": {}
         },
         {
@@ -760,7 +762,7 @@
                         "value": "[parameters('updateAutomationAccountName')]"
                     },
                     "location": {
-                        "value": "[parameters('location')]"
+                        "value": "[variables('SecurityAndAutomationLocation')]"
                     },
                     "tags": {
                         "value": "[parameters('tags')]"
@@ -913,7 +915,7 @@
                 },
                 "parameters": {
                     "location": {
-                        "value": "[parameters('location')]"
+                        "value": "[variables('SecurityAndAutomationLocation')]"
                     },
                     "tags": {
                         "value": "[parameters('tags')]"
