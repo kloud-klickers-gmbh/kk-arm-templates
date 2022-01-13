@@ -109,7 +109,7 @@
             "type": "String"
         },
         "JumpHostPublicIpDnsName": {
-            "defaultValue": "[parameters('customername')]",
+            "defaultValue": "[tolower(parameters('customername'))]",
             "type": "String"
         },
         "JumpHostRDPRemoteIPs": {
