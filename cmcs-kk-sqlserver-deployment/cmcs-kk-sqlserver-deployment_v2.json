@@ -314,7 +314,9 @@
             "name": "[parameters('vmName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
+                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/Microsoft.Azure.Security')]",
+                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/MicrosoftMonitoringAgent')]"
             ],
             "properties": {
                 "virtualMachineResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
