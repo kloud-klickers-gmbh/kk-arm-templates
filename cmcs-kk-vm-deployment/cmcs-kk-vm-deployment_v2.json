@@ -54,7 +54,7 @@
         "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'))]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnet'))]",
         "nsgname": "[concat(parameters('vmName'),'-nsg')]",
-        "workspaceid": "[concat(subscription().id,'/resourcegroups/',parameters('prefix'),'-security-rg/providers/microsoft.operationalinsights/workspaces/cmcs-loganalytics')]"
+        "workspaceid": "[concat(subscription().id,'/resourcegroups/',parameters('prefix'),'-security-rg/providers/microsoft.operationalinsights/workspaces/',parameters('prefix'),'-loganalytics')]"
     },
     "resources": [
         {
