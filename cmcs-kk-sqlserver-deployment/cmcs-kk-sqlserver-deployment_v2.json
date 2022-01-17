@@ -313,6 +313,7 @@
             "apiVersion": "2017-03-01-preview",
             "name": "[parameters('vmName')]",
             "location": "[parameters('location')]",
+            "tags": "[parameters('vmTags')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
                 "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/Microsoft.Azure.Security')]",
