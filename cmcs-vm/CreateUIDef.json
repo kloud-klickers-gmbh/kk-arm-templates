@@ -255,7 +255,7 @@
         ],
         "steps": [],
         "outputs": {
-            "location": "[basics('location')]",
+            "location": "[location()]",
             "vmname": "[basics('vmname')]",
             "vmUsername": "[basics('vmUsername')]",
             "vmPassword": "[basics('vmPassword')]",
