@@ -1,0 +1,268 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+    "handler": "Microsoft.Azure.CreateUIDef",
+    "version": "0.1.2-preview",
+    "parameters": {
+        "config": {
+            "basics": {
+                "location": {
+                    "allowedValues": [
+                        "westeurope",
+                        "germanywestcentral"
+                    ]                    
+                }
+            }
+        },
+        "resourceTypes": [
+            "microsoft.resources/resourcegroups"
+        ],
+        "basics": [
+			{
+                "name": "sku",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Sku",
+                "defaultValue": "2019-Datacenter-smalldisk",
+                "toolTip": "",
+                "constraints": {
+                    "required": false,
+                    "allowedValues": [
+                        {
+                            "label": "2016-Datacenter-smalldisk",
+                            "value": "2016-Datacenter-smalldisk"
+                        },
+                        {
+                            "label": "2016-datacenter-smalldisk-g2",
+                            "value": "2016-datacenter-smalldisk-g2"
+                        },
+                        {
+                            "label": "2019-Datacenter-smalldisk",
+                            "value": "2019-Datacenter-smalldisk"
+                        },
+                        {
+                            "label": "2019-datacenter-smalldisk-g2",
+                            "value": "2019-datacenter-smalldisk-g2"
+                        },
+                        {
+                            "label": "2022-datacenter-azure-edition-smalldisk",
+                            "value": "2022-datacenter-azure-edition-smalldisk"
+                        },
+                        {
+                            "label": "2022-datacenter-smalldisk",
+                            "value": "2022-datacenter-smalldisk"
+                        },
+                        {
+                            "label": "2022-datacenter-smalldisk-g2",
+                            "value": "2022-datacenter-smalldisk-g2"
+                        }
+                    ]
+                },
+                "visible": true
+            },
+            {
+                "name": "vmsize",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Vmsize",
+                "defaultValue": " ",
+                "toolTip": "",
+                "constraints": {
+                    "required": true,
+                    "allowedValues": [
+                        {
+                            "label": "DC",
+                            "value": {"Size":"DC","AzureSize":"Standard_b2ms"}
+                        },
+                        {
+                            "label": "XXS4",
+                            "value": {"Size":"XXS4","AzureSize":"Standard_b2s"}
+                        },
+                        {
+                            "label": "XS4",
+                            "value": {"Size":"XS4","AzureSize":"Standard_F2s_v2"}
+                        },
+                        {
+                            "label": "XS8",
+                            "value": {"Size":"XS8","AzureSize":"Standard_D2ds_v4"}
+                        },
+                        {
+                            "label": "S8",
+                            "value": {"Size":"S8","AzureSize":"Standard_F4s_v2"}
+                        },
+                        {
+                            "label": "S16",
+                            "value": {"Size":"S16","AzureSize":"Standard_D4ds_v4"}
+                        },
+                        {
+                            "label": "M32",
+                            "value": {"Size":"M32","AzureSize":"Standard_D8ds_v4"}
+                        },
+                        {
+                            "label": "M64",
+                            "value": {"Size":"M64","AzureSize":"Standard_E8ds_v4"}
+                        },
+                        {
+                            "label": "L128",
+                            "value": {"Size":"L128","AzureSize":"Standard_E16s_v3"}
+                        }
+                    ]
+                },
+                "visible": true
+            },
+            {
+                "name": "vmname",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Vmname",
+                "defaultValue": "",
+                "toolTip": "",
+                "constraints": {
+                    "required": true,
+                    "regex": "^cmcs-[a-z0-9A-Z-]{1,10}$",
+                    "validationMessage": "Has to start with \"cmcs-\" and be between 1-10 alphanumerical characters and -"
+                },
+                "visible": true
+            },
+            {
+                "name": "vmUsername",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Vm Username",
+                "defaultValue": "",
+                "toolTip": "",
+                "constraints": {
+                    "required": true,
+                    "regex": "",
+                    "validationMessage": ""
+                },
+                "visible": true
+            },
+            {
+                "name": "vmPassword",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                    "password": "Vm Password",
+                    "confirmPassword": "Confirm password"
+                },
+                "toolTip": "",
+                "constraints": {
+                    "required": true,
+                    "regex": "",
+                    "validationMessage": ""
+                },
+                "options": {
+                    "hideConfirmation": true
+                },
+                "visible": true
+            },
+            {
+                "type": "Microsoft.Common.DropDown",
+				"label": "OSDiskSize",
+				"name": "DiskSize",
+                "constraints": {
+                    "allowedValues": [
+                        {
+                            "label": "Disk 64 GB",
+                            "value": 64
+                        },
+                        {
+                            "label": "Disk 128 GB",
+                            "value": 128
+                        },
+                        {
+                            "label": "Disk 256 GB",
+                            "value": 256
+                        },
+                        {
+                            "label": "Disk 512 GB",
+                            "value": 512
+                        },
+                        {
+                            "label": "Disk 1024 GB",
+                            "value": 1024
+                        },
+                        {
+                            "label": "Disk 2048 GB",
+                            "value": 2048
+                        },
+                        {
+                            "label": "Disk 4096 GB",
+                            "value": 4096
+                        }
+        			]                                 
+                }
+            },
+            {
+                        "name": "people",
+                        "type": "Microsoft.Common.EditableGrid",
+                        "ariaLabel": "Enter information per DataDisk",
+                        "label": "People",
+                        "constraints": {
+                            "width": "Full",
+                            "rows": {
+                                "count": {
+                                    "min": 0,
+                                    "max": 10
+                                }
+                            },
+                            "columns": [
+                                {
+                                    "id": "DataDisks",
+                                    "header": "DataDisks",
+                                    "width": "1fr",
+                                    "element": {
+                                        "type": "Microsoft.Common.DropDown",
+                                        "placeholder": "Add Data Disk",
+                                        "constraints": {
+                                            "allowedValues": [
+                                                {
+                                                    "label": "Disk 32 GB",
+                                                    "value": {"size":32,"tag":{"Artikel":"Disk-Art-32"}}
+                                                },
+                                                {
+                                                    "label": "Disk 64 GB",
+                                                    "value": {"size":64,"tag":{"Artikel":"Disk-Art-64"}}
+                                                },
+                                                {
+                                                    "label": "Disk 128 GB",
+                                                    "value": {"size":128,"tag":{"Artikel":"Disk-Art-128"}}
+                                                },
+                                                {
+                                                    "label": "Disk 256 GB",
+                                                    "value": {"size":256,"tag":{"Artikel":"Disk-Art-256"}}
+                                                },
+                                                {
+                                                    "label": "Disk 512 GB",
+                                                    "value": {"size":512,"tag":{"Artikel":"Disk-Art-512"}}
+                                                },
+                                                {
+                                                    "label": "Disk 1024 GB",
+                                                    "value": {"size":32,"tag":{"Artikel":"Disk-Art-1024"}}
+                                                },
+                                                {
+                                                    "label": "Disk 2048 GB",
+                                                    "value": {"size":2048,"tag":{"Artikel":"Disk-Art-2048"}}
+                                                },
+                                                {
+                                                    "label": "Disk 4096 GB",
+                                                    "value": {"size":4096,"tag":{"Artikel":"Disk-Art-4096"}}
+                                                }
+
+                                            ]                                 
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+            
+        ],
+        "steps": [],
+        "outputs": {
+            "location": "[basics('location')]",
+            "vmname": "[basics('vmname')]",
+            "vmUsername": "[basics('vmUsername')]",
+            "vmPassword": "[basics('vmPassword')]",
+            "disksize": "[basics('disksize')]",
+            "datadisks": "[basics('datadisks')]",
+            "sku": "[basics('sku')]",
+            "vmsize": "[basics('vmsize')]"
+        }
+    }
+}

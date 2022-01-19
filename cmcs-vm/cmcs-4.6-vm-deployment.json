@@ -1,0 +1,347 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "prefix": {
+            "type": "string",
+            "defaultValue": "cmcs"
+        },
+        "vmname": {
+            "type": "string"
+        },        
+        "vmUsername": {
+            "type": "string"
+        },
+        "vmPassword": {
+            "type": "secureString"
+        },
+        "disksize": {
+            "type": "int",
+            "minValue": 64
+        },
+        "disktype": {
+            "type": "string",
+            "defaultValue": "Premium_LRS"
+        },         
+        "datadisks" : {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description":"Array of disk sizes for the data disks for example: [128,64] for a 128 GB and a 64 GB disk"
+            }
+        },
+        "sku": {
+            "type": "string",
+            "defaultValue": "2019-Datacenter-smalldisk",
+            "allowedValues": [
+                "2016-Datacenter-smalldisk",
+                "2016-datacenter-smalldisk-g2",
+                "2019-Datacenter-smalldisk",
+                "2019-datacenter-smalldisk-g2",
+                "2022-datacenter-azure-edition-smalldisk",
+                "2022-datacenter-smalldisk",
+                "2022-datacenter-smalldisk-g2"
+            ]
+        },
+        "vmsize": {
+            "type": "object",
+            "allowedValues": [
+                {"Size":"DC","AzureSize":"Standard_b2ms"},
+                {"Size":"XXS4","AzureSize":"Standard_b2s"},
+                {"Size":"XS4","AzureSize":"Standard_F2s_v2"},
+                {"Size":"XS8","AzureSize":"Standard_D2ds_v4"},
+                {"Size":"S8","AzureSize":"Standard_F4s_v2"},
+                {"Size":"S16","AzureSize":"Standard_D4ds_v4"},
+                {"Size":"M32","AzureSize":"Standard_D8ds_v4"},
+                {"Size":"M64","AzureSize":"Standard_E8ds_v4"},
+                {"Size":"L128","AzureSize":"Standard_E16s_v3"}
+            ]
+        }
+    },
+    "functions": [
+        {
+            "namespace": "do",
+            "members": {
+                "roundupdisksize": {
+                    "parameters": [
+                        {
+                            "name": "disksize",
+                            "type": "int"
+                        }
+                    ],
+                    "output": {
+                        "value": "[if(lessOrEquals(parameters('disksize'),32),32,if(lessOrEquals(parameters('disksize'),64),64,if(lessOrEquals(parameters('disksize'),128),128,if(lessOrEquals(parameters('disksize'),256),256,if(lessOrEquals(parameters('disksize'),512),512,if(lessOrEquals(parameters('disksize'),1024),1024,if(lessOrEquals(parameters('disksize'),2048),2048,null())))))))]",
+                        "type": "int"
+                    }
+                }
+            }
+        }
+    ],
+    "variables": {
+        "DiskArticlePrefix": "msc-cbstorage-s",
+        "DiskArticleSuffix": "-4.6",
+        "VMArticlePrefix": "msc-cserver-",
+        "VMArticleSuffix": "-4.6",
+        "vmtags": {"Artikel":"[concat(variables('VMArticlePrefix'),parameters('vmsize').size,variables('VMArticleSuffix'))]"},
+        "vnetrg":"[concat(parameters('prefix'),'-vnet-rg')]",
+        "vnet":"[concat(parameters('prefix'),'-vnet')]",
+        "subnet":"[concat(parameters('prefix'),'-lan-subnet')]",
+        "backuprg" : "[concat(parameters('prefix'),'-backup-rg')]",
+        "vaultName" : "[concat(parameters('prefix'),'-backup')]",
+        "policyName" : "[concat(parameters('prefix'),'-daily-backup-VM')]",
+        "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnet'))]",
+        "nsgname": "[concat(parameters('vmName'),'-nsg')]",
+        "workspaceid": "[concat(subscription().id,'/resourcegroups/',parameters('prefix'),'-security-rg/providers/microsoft.operationalinsights/workspaces/',parameters('prefix'),'-loganalytics')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('nsgname')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "location": "[parameters('location')]",
+            "tags": "[variables('vmtags')]"
+        },
+        {
+            "name": "[parameters('vmname')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgname'))]"
+            ],
+            "properties": {
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgname'))]"
+                },
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ]
+            },
+            "tags": "[variables('vmtags')]"
+        },
+        {
+            "name": "[parameters('vmname')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('vmName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmsize').AzureSize]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "diskSizeGB" : "[do.roundupdisksize(parameters('disksize'))]",
+                        "createOption": "fromImage",
+                        "name": "[concat(parameters('vmname'),'-OsDisk')]",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('DiskType')]"
+                        }
+                    },            
+                    "Copy": [
+                        {
+                            "name": "dataDisks",
+                            "count": "[length(parameters('datadisks'))]",
+                            "input": {
+                                "diskSizeGB": "[do.roundupdisksize(parameters('datadisks')[copyIndex('dataDisks')])]",
+                                "lun": "[copyIndex('dataDisks')]",
+                                "createoption": "Empty",
+                                "name": "[concat(parameters('vmname'),'-DataDisk-',copyIndex('dataDisks',1))]",
+                                "managedDisk": {
+                                    "storageAccountType": "[parameters('disktype')]"
+                                }
+                            }
+                        }
+                    ],
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "[parameters('sku')]",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('vmName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('vmUsername')]",
+                    "adminPassword": "[parameters('vmPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true
+                    }
+                }
+            },
+            "tags": "[variables('vmtags')]",
+            "resources": [
+                {
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "apiVersion": "2021-03-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
+                    ],
+                    "name": "[concat(parameters('vmname'),'/Microsoft.Azure.Security')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Security",
+                        "type": "IaaSAntimalware",
+                        "typeHandlerVersion": "1.3",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "AntimalwareEnabled": true,
+                            "Exclusions": {
+                                "Extensions": "",
+                                "Paths": "",
+                                "Processes": ""
+                            },
+                            "RealtimeProtectionEnabled": "true",
+                            "ScheduledScanSettings": {
+                                "isEnabled": "false",
+                                "scanType": "Quick",
+                                "day": "7",
+                                "time": "120"
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "apiVersion": "2021-03-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
+                    ],
+                    "name": "[concat(parameters('vmname'),'/MicrosoftMonitoringAgent')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "autoUpgradeMinorVersion": true,
+                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                        "type": "MicrosoftMonitoringAgent",
+                        "settings": {
+                            "workspaceId": "[reference(variables('workspaceId'), '2015-03-20').customerid]"
+                        },
+                        "protectedSettings": {
+                            "workspaceKey": "[listKeys(variables('workspaceId'), '2015-03-20').primarySharedKey]"
+                        },                        
+                        "typeHandlerVersion": "1.0"
+                    }
+                }                            
+            ]
+        },
+        {
+            "type": "Microsoft.Resources/tags",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
+            ],
+            "apiVersion": "2021-04-01",
+            "name": "default",
+            "scope": "[concat(resourceGroup().id,'/providers/Microsoft.Compute/disks/',parameters('vmname'),'-OsDisk')]",
+            "properties": {
+                "tags": {
+                    "Artikel":"[concat(variables('DiskArticlePrefix'),string(do.roundupdisksize(parameters('disksize'))),variables('DiskArticleSuffix'))]"
+                }
+            }
+        },  
+        {
+            "type": "Microsoft.Resources/tags",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
+            ],
+            "apiVersion": "2021-04-01",
+            "name": "default",
+            "copy": {
+                "name": "datadisktags",
+                "count": "[length(parameters('datadisks'))]"
+            },
+            "scope": "[concat(resourceGroup().id,'/providers/Microsoft.Compute/disks/',parameters('vmname'),'-DataDisk-',copyIndex('dataDisktags',1))]",
+            "properties": {
+                "tags": {
+                    "Artikel":"[concat(variables('DiskArticlePrefix'),string(do.roundupdisksize(parameters('datadisks')[copyIndex('dataDiskTags')])),variables('DiskArticleSuffix'))]"
+                }
+            }
+        },    
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "name": "BackupDeployment",
+            "resourceGroup": "[variables('backuprg')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+            ],
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",            
+                "parameters": {
+                "vmname": {
+                    "value": "[parameters('vmName')]"
+                },
+                "vmrg": {
+                    "value": "[resourceGroup().name]"
+                },
+                "vaultName": {
+                    "value": "[variables('vaultName')]"
+                },
+                "policyName": {
+                    "value": "[variables('policyName')]"
+                }
+                },
+            
+                "template": {            
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "vaultName": {
+                            "type": "String"
+                        },
+                        "policyName": {
+                            "type": "String"
+                        },
+                        "vmname":{
+                            "type": "string"
+                        },
+                        "vmrg":{
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "ProtectedItem": "[concat('vm;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "ProtectionContainer": "[concat('IaasVMContainer;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "sourceResourceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('vmrg'),'/providers/Microsoft.Compute/virtualMachines/',parameters('vmname'))]"
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+                            "apiVersion": "2016-06-01",
+                            "name": "[concat(parameters('vaultName'), '/Azure/',variables('protectionContainer'), '/', variables('ProtectedItem'))]",
+                            "properties": {
+                                "protectedItemType": "Microsoft.ClassicCompute/virtualMachines",
+                                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('vaultName'), parameters('policyName'))]",
+                                "sourceResourceId": "[variables('sourceResourceId')]"
+                            }
+                        }
+                    ]
+                }
+            }
+        } 
+    ]
+}
