@@ -46,8 +46,8 @@
                 "typeHandlerVersion": "2.9",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/AVD-FSLShrink/DSC-AVD-FSLShrink.zip",
-                    "configurationFunction": "DSC-AVD-FSLShrink.ps1\\FSLShrink",
+                    "modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/AVD-FSLShrinkMulti/DSC-AVD-FSLShrinkMulti.zip",
+                    "configurationFunction": "DSC-AVD-FSLShrinkMulti.ps1\\FSLShrink",
                     "properties": {
                         "ProfilesUNCPaths": "[parameters('ProfilesUNCPaths')]",
                         "ScheduleHours": "[parameters('ScheduleHours')]",
