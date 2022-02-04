@@ -1,0 +1,72 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },        
+        "vmName": {
+            "type": "string"
+        },
+        "ProfilesUNCPaths": {
+            "type": "array"
+        },
+        "SATarget": {
+            "type": "string"
+        },
+        "SAUser": {
+            "type": "string"
+        },
+        "SAPass": {
+            "type": "String"
+        },
+        "ScheduleHours": {
+            "type": "int"
+        },
+        "ScheduleMinutes": {
+            "type": "int"
+        },
+        "ShrinkUser": {
+            "type": "string"
+        },
+        "ShrinkUserPass": {
+            "type": "secureString"
+        }
+    },
+    "variables": {},
+    "resources": [        
+        {
+            "apiVersion": "2019-07-01",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('vmName'), '/Microsoft.PowerShell.DSC')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.9",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/AVD-FSLShrink/DSC-AVD-FSLShrink.zip",
+                    "configurationFunction": "DSC-AVD-FSLShrink.ps1\\FSLShrink",
+                    "properties": {
+                        "ProfilesUNCPaths": "[parameters('ProfilesUNCPaths')]",
+                        "ScheduleHours": "[parameters('ScheduleHours')]",
+                        "ScheduleMinutes": "[parameters('ScheduleMinutes')]",
+                        "SATarget": "[parameters('SATarget')]",
+                        "SAUser": "[parameters('SAUser')]",
+                        "sapass": "[parameters('sapass')]",
+                        "ShrinkUserCred":{
+                            "UserName": "[parameters('ShrinkUser')]",
+                            "Password": "PrivateSettingsRef:ShrinkUserPass"
+                        }
+                    }
+                },
+                "protectedSettings": {                    
+                    "Items": {
+                        "ShrinkUserPass": "[parameters('ShrinkUserPass')]"
+                    }        
+                }                
+            }
+        }   
+    ]
+}
