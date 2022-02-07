@@ -365,7 +365,7 @@
                     "value": "[parameters('vmName')]"
                 },
                 "vmrg": {
-                    "value": "[resourceGroup().name]"
+                    "value": "[variables('vmrgname')]"
                 },
                 "vaultName": {
                     "value": "[variables('vaultName')]"
