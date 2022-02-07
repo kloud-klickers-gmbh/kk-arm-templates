@@ -60,6 +60,7 @@
         {
             "name": "vmDeployment",
             "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('vmrgname')]",
             "apiVersion": "2021-04-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/resourceGroups', concat(parameters('vmname'),'-rg'))]"
