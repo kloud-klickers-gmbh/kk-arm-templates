@@ -350,7 +350,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "BackupDeployment",
+            "name": "[concat('BackupDeployment-',parameters('vmname'))]",
             "resourceGroup": "[variables('backuprg')]",
             "dependsOn": [
                 "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/vmDeployment')]"
