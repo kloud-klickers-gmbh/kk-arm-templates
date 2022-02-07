@@ -47,19 +47,23 @@
     "variables": {        
         "backuprg" : "[concat(parameters('prefix'),'-backup-rg')]",
         "vaultName" : "[concat(parameters('prefix'),'-backup')]",
-        "policyName" : "[concat(parameters('prefix'),'-daily-backup-VM')]"        
+        "policyName" : "[concat(parameters('prefix'),'-daily-backup-VM')]",
+        "vmrgname": "[concat(parameters('vmname'),'-rg')]" 
     },
     "resources": [
         {
-            "name": "[concat(parameters('vmname'),'-rg')]",
+            "name": "[variables('vmrgname')]",
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2021-05-01",
             "location": "[parameters('location')]"
         },
         {
-            "name": "nestedDeployment1",
+            "name": "vmDeployment",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', concat(parameters('vmname'),'-rg'))]"
+            ],
             "properties": {
                 "expressionEvaluationOptions": {
                     "scope": "inner"
@@ -348,7 +352,7 @@
             "name": "BackupDeployment",
             "resourceGroup": "[variables('backuprg')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/vmDeployment')]"
             ],
             "properties": {
                 "expressionEvaluationOptions": {
