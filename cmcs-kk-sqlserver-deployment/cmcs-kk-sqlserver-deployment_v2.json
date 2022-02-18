@@ -50,6 +50,14 @@
         "diskTagsLog": {
             "type": "object",
             "defaultValue": {}
+        },
+        "imageoffer": {
+            "type": "string",
+            "defaultvalue": "sql2019-ws2019"
+        },
+        "imagesku": {
+            "type": "string",
+            "defaultvalue": "standard"
         }
     },
     "variables": {
@@ -210,8 +218,8 @@
                     },
                     "imageReference": {
                         "publisher": "microsoftsqlserver",
-                        "offer": "sql2019-ws2019",
-                        "sku": "standard",
+                        "offer": "[parameters('imageoffer')]",
+                        "sku": "[parameters('imagesku')]",
                         "version": "latest"
                     },
                     "copy": [
