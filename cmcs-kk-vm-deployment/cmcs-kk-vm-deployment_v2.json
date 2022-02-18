@@ -36,7 +36,11 @@
             "type": "array",
             "defaultValue": null
         },
-        "sku": {
+        "imageoffer": {
+            "type": "string",
+            "defaultvalue": "WindowsServer"
+        },
+        "imagesku": {
             "type": "string",
             "defaultValue": "2019-Datacenter-smalldisk"
         },
@@ -101,8 +105,11 @@
                     "datadisks": {
                         "value": "[parameters('datadisks')]"
                     },
-                    "sku": {
-                        "value": "[parameters('sku')]"
+                    "imageoffer": {
+                        "value": "[parameters('imageoffer')]"
+                    },
+                    "imagesku": {
+                        "value": "[parameters('imagesku')]"
                     },
                     "vmsize": {
                         "value": "[parameters('vmsize')]"
@@ -146,9 +153,11 @@
                             "type": "array",
                             "defaultValue": null
                         },
-                        "sku": {
-                            "type": "string",
-                            "defaultValue": "2019-Datacenter-smalldisk"
+                        "imagesku": {
+                            "type": "string"
+                        },
+                        "imageoffer": {
+                            "type": "string"
                         },
                         "vmsize": {
                             "type": "string"
@@ -236,8 +245,8 @@
                                     ],
                                     "imageReference": {
                                         "publisher": "MicrosoftWindowsServer",
-                                        "offer": "WindowsServer",
-                                        "sku": "[parameters('sku')]",
+                                        "offer": "[parameters('imageoffer')]",
+                                        "sku": "[parameters('imagesku')]",
                                         "version": "latest"
                                     }
                                 },
