@@ -1,0 +1,118 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "hostPoolName": {
+            "type": "String"
+        },
+        "hostPoolFriendlyName": {
+            "type": "string"
+        },
+        "hostPoolMaxSessionLimit": {
+            "type": "int"
+        },
+        "workspaceName": {
+            "type": "String"
+        },
+        "workspaceFriendlyName": {
+            "type": "string"
+        },
+        "appGroupName": {
+            "type": "String"
+        },
+        "appGroupFriendlyName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "String"
+        }
+    },
+    "variables": {
+        "workspaceid": "[concat(subscription().id,'/resourcegroups/',parameters('prefix'),'-security-rg/providers/microsoft.operationalinsights/workspaces/',parameters('prefix'),'-loganalytics')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DesktopVirtualization/hostpools",
+            "apiVersion": "2021-03-09-preview",
+            "name": "[parameters('hostPoolName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "friendlyName": "[parameters('hostPoolFriendlyName')]",
+                "hostPoolType": "Pooled",
+                "maxSessionLimit": "[parameters('hostPoolMaxSessionLimit')]",
+                "loadBalancerType": "BreadthFirst",
+                "validationEnvironment": false,
+                "preferredAppGroupType": "Desktop",
+                "startVMOnConnect": false
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/hostpools/providers/diagnosticSettings",
+            "apiVersion": "2021-05-01-preview",
+            "name": "[concat(parameters('hostpoolName'),'/Microsoft.Insights/WVDInsights')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostPoolName'))]"
+            ],
+            "properties": {
+                "workspaceId": "[variables('workspaceId')]",
+                "logs": [
+                    {
+                        "category": "Checkpoint",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Error",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Management",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Connection",
+                        "enabled": true
+                    },
+                    {
+                        "category": "HostRegistration",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AgentHealthStatus",
+                        "enabled": true
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/applicationgroups",
+            "apiVersion": "2021-03-09-preview",
+            "name": "[parameters('appGroupName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostPoolName'))]"
+            ],
+            "kind": "Desktop",
+            "properties": {
+                "hostPoolArmPath": "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostPoolName'))]",
+                "friendlyName": "[parameters('appGroupFriendlyName')]",
+                "applicationGroupType": "Desktop"
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/workspaces",
+            "apiVersion": "2021-03-09-preview",
+            "name": "[parameters('workspaceName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/applicationgroups', parameters('appGroupName'))]"
+            ],
+            "properties": {
+                "applicationGroupReferences": [
+                    "[resourceId('Microsoft.DesktopVirtualization/applicationgroups', parameters('appGroupName'))]"
+                ],
+                "friendlyName": "[parameters('workspaceFriendlyName')]"
+            }
+        },
+        
+    ]
+}
