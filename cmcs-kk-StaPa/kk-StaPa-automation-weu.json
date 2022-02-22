@@ -51,6 +51,10 @@
               "Windows_Server",
               ""
             ]
+        },
+        "DeployUpdateAutomationScope": {
+            "type": "bool",
+            "defaultValue": false
         }
     },
     "variables": {
@@ -92,7 +96,57 @@
         "updateScheduleStartTime": "22:00:00",
         "updateScheduleTimeZone": "Europe/Berlin",
         "updateScheduleWeekDays": ["Thursday"],        
-        "ScheduleTimeZone": "W. Europe Standard Time"
+        "ScheduleTimeZone": "W. Europe Standard Time",
+        "SecurityPricing": [
+            {
+                "Name": "VirtualMachines",
+                "PricingTier": "Standard"
+            },
+            {
+                "Name": "SqlServers",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "AppServices",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "StorageAccounts",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "SqlServerVirtualMachines",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "KubernetesService",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "ContainerRegistry",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "KeyVaults",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "Dns",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "Arm",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "OpenSourceRelationalDatabases",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "Containers",
+                "PricingTier": "Free"
+            }
+        ]
     },
     "resources": [
         {
@@ -604,6 +658,9 @@
                     },
                     "updateAutomationAccountName": {
                         "value": "[variables('updateAutomationAccountName')]"
+                    },
+                    "DeployUpdateAutomationScope": {
+                        "value": "[parameters('DeployUpdateAutomationScope')]"
                     }
                 },
                 "template": {
@@ -624,7 +681,11 @@
                         },
                         "updateAutomationAccountName": {
                             "type": "string"
+                        },
+                        "DeployUpdateAutomationScope": {
+                            "type": "bool"
                         }
+
                     },
                     "variables": {
                         "location": "[parameters('location')]"
@@ -658,6 +719,7 @@
                             "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
                             "apiVersion": "2020-08-01",
                             "name": "[concat(parameters('workspaceName'), '/updates|microsoftdefaultcomputergroup')]",
+                            "condition": "[parameters('DeployUpdateAutomationScope')]",
                             "dependsOn": [
                                 "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
                             ],
@@ -679,6 +741,7 @@
                             "type": "Microsoft.OperationalInsights/workspaces/configurationScopes",
                             "apiVersion": "2015-11-01-preview",
                             "name": "[concat(parameters('workspaceName'), '/MicrosoftDefaultScopeConfig-Updates')]",
+                            "condition": "[parameters('DeployUpdateAutomationScope')]",
                             "location": "[variables('location')]",
                             "dependsOn": [
                                 "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
@@ -761,6 +824,18 @@
             "properties": {
                 "autoProvision": "On"
             }
+        },
+        {
+            "type": "Microsoft.Security/pricings",
+            "copy": {
+                "count": "[length(variables('SecurityPricing'))]",
+                "name": "SecurityPricingLoop"
+            },
+            "apiVersion": "2018-06-01",
+            "name": "[variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].Name]",
+            "properties": {
+                "pricingTier": "[variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].PricingTier]"            
+        }
         },
         {
             "type": "Microsoft.Resources/deployments",
