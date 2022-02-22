@@ -34,7 +34,7 @@
             "type": "SecureString"
         },        
         "JumpHostImageSku": {
-            "defaultValue": "20h2-pro-g2",
+            "defaultValue": "win10-21h2-pro-g2",
             "type": "String"
         },        
         "JumpHostPublicIpDnsName": {
@@ -789,12 +789,7 @@
                             },
                             "properties": {
                                 "workspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]",
-                                "configurations": [
-                                    {
-                                        "Name": "SolutionTargeting",
-                                        "Value": "MicrosoftDefaultScopeConfig-Updates"
-                                    }
-                                ]
+                                "configurations": "[if(parameters('DeployUpdateAutomationScope'),json('[{\"Name\": \"SolutionTargeting\",\"Value\": \"MicrosoftDefaultScopeConfig-Updates\"}]'),json('null'))]"
                             }
                         }
                     ]
