@@ -1,0 +1,401 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "roleName": {
+            "defaultValue": "AVD_Autoscale",
+            "type": "string"
+        },
+        "roleDescription": {
+            "defaultValue": "Role for AVD Scalingplan",
+            "type": "string"
+        },
+        "principalId": {
+            "type": "string"
+        },
+        "scalingPlanLocation": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "scalingPlanName": {
+            "type": "string"
+        },
+        "scalingPlanTimeZone": {
+            "type": "string",
+            "defaultValue": "W. Europe Standard Time"
+        },
+        "scalingPlanHostPoolType": {
+            "type": "string",
+            "defaultValue": "pooled"
+        },
+        "scalingPlanRampUpStartTime": {
+            "type": "string",
+            "defaultValue": "7:00"                            
+        },
+        "scalingPlanPeakStartTime": {
+            "type": "string",
+            "defaultValue": "9:00"                            
+        },
+        "scalingPlanRampDownStartTime": {
+            "type": "string",
+            "defaultValue": "18:00"                            
+        },
+        "scalingPlanOffPeakStartTime": {
+            "type": "string",
+            "defaultValue": "20:00"                            
+        },
+        "scalingPlanRampUpLoadBalancingAlgorithm": {
+        	"type": "string",
+        	"defaultValue": "BreadthFirst",
+            "allowedValues": [
+                "BreadthFirst",
+                "DepthFirst"
+            ]
+        },
+        "scalingPlanRampUpMinimumHostsPct": {
+        	"type": "int",
+        	"defaultValue": 50,
+            "minValue": 0,
+            "maxValue": 100
+        },
+        "scalingPlanRampUpCapacityThresholdPct": {
+        	"type": "int",
+        	"defaultValue": 75,
+            "minValue": 0,
+            "maxValue": 100
+        },
+        "scalingPlanPeakLoadBalancingAlgorithm": {
+        	"type": "string",
+        	"defaultValue": "BreadthFirst",
+            "allowedValues": [
+                "BreadthFirst",
+                "DepthFirst"
+            ]
+        },
+        "scalingPlanRampDownLoadBalancingAlgorithm": {
+        	"type": "string",
+        	"defaultValue": "DepthFirst",
+            "allowedValues": [
+                "BreadthFirst",
+                "DepthFirst"
+            ]
+        },
+        "scalingPlanRampDownMinimumHostsPct": {
+        	"type": "int",
+        	"defaultValue": 10,
+            "minValue": 0,
+            "maxValue": 100
+        },
+        "scalingPlanRampDownCapacityThresholdPct": {
+        	"type": "int",
+        	"defaultValue": 90,
+            "minValue": 0,
+            "maxValue": 100
+        },
+        "scalingPlanRampDownForceLogoffUsers": {
+        	"type": "bool",
+        	"defaultValue": false
+        },
+        "scalingPlanRampDownWaitTimeMinutes": {
+        	"type": "int",
+        	"defaultValue": 30,
+            "minValue": 0,
+            "maxValue": 100
+        },
+        "scalingPlanRampDownNotificationMessage": {
+        	"type": "string",
+        	"defaultValue": "You will be logged off in 30 min. Make sure to save your work."
+        },
+        "scalingPlanRampDownStopHostsWhen": {
+        	"type": "string",
+        	"defaultValue": "ZeroActiveSessions",
+            "allowedValues": [
+                "ZeroActiveSessions",
+                "ZeroSessions"
+            ]
+        },
+        "scalingPlanOffPeakLoadBalancingAlgorithm": {
+        	"type": "string",
+        	"defaultValue": "DepthFirst",
+            "allowedValues": [
+                "BreadthFirst",
+                "DepthFirst"
+            ]
+        },
+        "scalingPlanHostPoolARMPath": {
+            "type": "string"
+        },
+        "AVDRG": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "actions": [
+            "Microsoft.Insights/eventtypes/values/read",
+            "Microsoft.Compute/virtualMachines/deallocate/action",
+            "Microsoft.Compute/virtualMachines/restart/action",
+            "Microsoft.Compute/virtualMachines/powerOff/action",
+            "Microsoft.Compute/virtualMachines/start/action",
+            "Microsoft.Compute/virtualMachines/read",
+            "Microsoft.DesktopVirtualization/hostpools/read",
+            "Microsoft.DesktopVirtualization/hostpools/write",
+            "Microsoft.DesktopVirtualization/hostpools/sessionhosts/read",
+            "Microsoft.DesktopVirtualization/hostpools/sessionhosts/write",
+            "Microsoft.DesktopVirtualization/hostpools/sessionhosts/usersessions/delete",
+            "Microsoft.DesktopVirtualization/hostpools/sessionhosts/usersessions/read",
+            "Microsoft.DesktopVirtualization/hostpools/sessionhosts/usersessions/sendMessage/action",
+            "Microsoft.DesktopVirtualization/hostpools/sessionhosts/usersessions/read"
+        ],
+        "notActions": [],
+        "roleDefName": "[guid(subscription().id, string(variables('actions')), string(variables('notActions')))]",
+        "scalingPlanTimeZone": "W. Europe Standard Time"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/roleDefinitions",
+            "apiVersion": "2018-07-01",
+            "name": "[variables('roleDefName')]",
+            "properties": {
+                "roleName": "[parameters('roleName')]",
+                "description": "[parameters('roleDescription')]",
+                "type": "customRole",
+                "isCustom": true,
+                "permissions": [
+                    {
+                        "actions": "[variables('actions')]",
+                        "notActions": "[variables('notActions')]"
+                    }
+                ],
+                "assignableScopes": [
+                  "[subscription().id]"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "dependsOn":[
+                "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefName'))]"
+            ],
+            "apiVersion": "2021-04-01-preview",
+            "name": "[guid(subscription().id, parameters('principalId'))]",
+            "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefName'))]"
+            }
+        },
+        {
+            "name": "deployScalingPlan",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "resourceGroup": "[parameters('AVDRG')]",
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                    "scalingPlanHostPoolARMPath": {
+                        "value": "[parameters('scalingPlanHostPoolARMPath')]"
+                    },
+                    "scalingPlanHostPoolType": {
+                        "value": "[parameters('scalingPlanHostPoolType')]"
+                    },
+                    "scalingPlanName": {
+                        "value": "[parameters('scalingPlanName')]"
+                    },
+                    "scalingPlanOffPeakStartTime": {
+                        "value": "[parameters('scalingPlanOffPeakStartTime')]"
+                    },
+                    "scalingPlanPeakStartTime": {
+                        "value": "[parameters('scalingPlanPeakStartTime')]"
+                    },
+                    "scalingPlanRampDownStartTime": {
+                        "value": "[parameters('scalingPlanRampDownStartTime')]"
+                    },
+                    "scalingPlanRampUpStartTime": {
+                        "value": "[parameters('scalingPlanRampUpStartTime')]"
+                    },
+                    "scalingPlanTimeZone": {
+                        "value": "[parameters('scalingPlanTimeZone')]"
+                    },
+                    "scalingPlanLocation": {
+                        "value": "[parameters('scalingPlanLocation')]"
+                    },
+                    "scalingPlanOffPeakLoadBalancingAlgorithm": {
+                        "value": "[parameters('scalingPlanOffPeakLoadBalancingAlgorithm')]"
+                    },
+                    "scalingPlanPeakLoadBalancingAlgorithm": {
+                        "value": "[parameters('scalingPlanPeakLoadBalancingAlgorithm')]"
+                    },
+                    "scalingPlanRampDownCapacityThresholdPct": {
+                        "value": "[parameters('scalingPlanRampDownCapacityThresholdPct')]"
+                    },
+                    "scalingPlanRampDownForceLogoffUsers": {
+                        "value": "[parameters('scalingPlanRampDownForceLogoffUsers')]"
+                    },
+                    "scalingPlanRampDownLoadBalancingAlgorithm": {
+                        "value": "[parameters('scalingPlanRampDownLoadBalancingAlgorithm')]"
+                    },
+                    "scalingPlanRampDownMinimumHostsPct": {
+                        "value": "[parameters('scalingPlanRampDownMinimumHostsPct')]"
+                    },
+                    "scalingPlanRampDownNotificationMessage": {
+                        "value": "[parameters('scalingPlanRampDownNotificationMessage')]"
+                    },
+                    "scalingPlanRampDownStopHostsWhen": {
+                        "value": "[parameters('scalingPlanRampDownStopHostsWhen')]"
+                    },
+                    "scalingPlanRampDownWaitTimeMinutes": {
+                        "value": "[parameters('scalingPlanRampDownWaitTimeMinutes')]"
+                    },
+                    "scalingPlanRampUpCapacityThresholdPct": {
+                        "value": "[parameters('scalingPlanRampUpCapacityThresholdPct')]"
+                    },
+                    "scalingPlanRampUpLoadBalancingAlgorithm": {
+                        "value": "[parameters('scalingPlanRampUpLoadBalancingAlgorithm')]"
+                    },
+                    "scalingPlanRampUpMinimumHostsPct": {
+                        "value": "[parameters('scalingPlanRampUpMinimumHostsPct')]"
+                    }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "scalingPlanName": {
+                            "type": "string"
+                        },
+                        "scalingPlanTimeZone": {
+                            "type": "string"
+                        },
+                        "scalingPlanHostPoolType": {
+                            "type": "string"
+                        },
+                        "scalingPlanRampUpStartTime": {
+                            "type": "string"                          
+                        },
+                        "scalingPlanPeakStartTime": {
+                            "type": "string"                        
+                        },
+                        "scalingPlanRampDownStartTime": {
+                            "type": "string"                           
+                        },
+                        "scalingPlanOffPeakStartTime": {
+                            "type": "string"                          
+                        },
+                        "scalingPlanHostPoolARMPath": {
+                            "type": "string"
+                        },
+                        "scalingPlanLocation": {
+                            "type": "string"
+                        },
+                        "scalingPlanRampUpLoadBalancingAlgorithm": {
+                        	"type": "string"
+                        },
+                        "scalingPlanRampUpMinimumHostsPct": {
+                        	"type": "int"
+                        },
+                        "scalingPlanRampUpCapacityThresholdPct": {
+                        	"type": "int"
+                        },
+                        "scalingPlanPeakLoadBalancingAlgorithm": {
+                        	"type": "string"
+                        },
+                        "scalingPlanRampDownLoadBalancingAlgorithm": {
+                        	"type": "string"
+                        },
+                        "scalingPlanRampDownMinimumHostsPct": {
+                        	"type": "int"
+                        },
+                        "scalingPlanRampDownCapacityThresholdPct": {
+                        	"type": "int"
+                        },
+                        "scalingPlanRampDownForceLogoffUsers": {
+                        	"type": "bool"
+                        },
+                        "scalingPlanRampDownWaitTimeMinutes": {
+                        	"type": "int"
+                        },
+                        "scalingPlanRampDownNotificationMessage": {
+                        	"type": "string"
+                        },
+                        "scalingPlanRampDownStopHostsWhen": {
+                        	"type": "string"
+                        },
+                        "scalingPlanOffPeakLoadBalancingAlgorithm": {
+                        	"type": "string"
+                        }
+                    },
+                    "variables": {
+                        "rampUpStartTime": {
+                            "hour": "[int(split(parameters('scalingPlanRampUpStartTime'),':')[0])]",
+                            "minute": "[int(split(parameters('scalingPlanRampUpStartTime'),':')[1])]"
+                        },
+                        "peakStartTime": {
+                            "hour": "[int(split(parameters('scalingPlanPeakStartTime'),':')[0])]",
+                            "minute": "[int(split(parameters('scalingPlanPeakStartTime'),':')[1])]"
+                        },
+                        "rampDownStartTime": {
+                            "hour": "[int(split(parameters('scalingPlanRampDownStartTime'),':')[0])]",
+                            "minute": "[int(split(parameters('scalingPlanRampDownStartTime'),':')[1])]"
+                        },
+                        "offPeakStartTime": {
+                            "hour": "[int(split(parameters('scalingPlanOffPeakStartTime'),':')[0])]",
+                            "minute": "[int(split(parameters('scalingPlanOffPeakStartTime'),':')[1])]"
+                        }
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.DesktopVirtualization/scalingplans",
+                            "apiVersion": "2021-09-03-preview",
+                            "name": "[parameters('scalingPlanName')]",
+                            "location": "[parameters('scalingPlanLocation')]",
+                            "properties": {
+                                "friendlyName": "[parameters('scalingPlanName')]",
+                                "timeZone": "[parameters('scalingPlanTimeZone')]",
+                                "hostPoolType": "[parameters('scalingPlanHostPoolType')]",
+                                "schedules": [
+                                    {
+                                        "name": "weekdays_schedule",
+                                        "rampUpStartTime": "[variables('rampUpStartTime')]",
+                                        "peakStartTime": "[variables('peakStartTime')]",
+                                        "rampDownStartTime": "[variables('rampDownStartTime')]",
+                                        "offPeakStartTime": "[variables('offPeakStartTime')]",                                        
+                                        "daysOfWeek": [
+                                            "Monday",
+                                            "Tuesday",
+                                            "Wednesday",
+                                            "Thursday",
+                                            "Friday"
+                                        ],
+                                        "rampUpLoadBalancingAlgorithm": "[parameters('scalingPlanRampUpLoadBalancingAlgorithm')]",
+                                        "rampUpMinimumHostsPct": "[parameters('scalingPlanRampUpMinimumHostsPct')]",
+                                        "rampUpCapacityThresholdPct": "[parameters('scalingPlanRampUpCapacityThresholdPct')]",
+                                        "peakLoadBalancingAlgorithm": "[parameters('scalingPlanPeakLoadBalancingAlgorithm')]",
+                                        "rampDownLoadBalancingAlgorithm": "[parameters('scalingPlanRampDownLoadBalancingAlgorithm')]",
+                                        "rampDownMinimumHostsPct": "[parameters('scalingPlanRampDownMinimumHostsPct')]",
+                                        "rampDownCapacityThresholdPct": "[parameters('scalingPlanRampDownCapacityThresholdPct')]",
+                                        "rampDownForceLogoffUsers": "[parameters('scalingPlanRampDownForceLogoffUsers')]",
+                                        "rampDownWaitTimeMinutes": "[parameters('scalingPlanRampDownWaitTimeMinutes')]",
+                                        "rampDownNotificationMessage": "[parameters('scalingPlanRampDownNotificationMessage')]",
+                                        "rampDownStopHostsWhen": "[parameters('scalingPlanRampDownStopHostsWhen')]",
+                                        "offPeakLoadBalancingAlgorithm": "[parameters('scalingPlanOffPeakLoadBalancingAlgorithm')]"
+                                    }
+                                ],
+                                "exclusionTag": "excludeFromScaling",
+                                "hostPoolReferences": [
+                                    {
+                                        "hostPoolArmPath": "[parameters('scalingPlanHostPoolARMPath')]",
+                                        "scalingPlanEnabled": true
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "outputs": {}
+                }
+            }
+        }
+    ]
+}
+
