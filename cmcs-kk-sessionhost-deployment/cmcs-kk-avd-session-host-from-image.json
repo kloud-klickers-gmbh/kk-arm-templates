@@ -38,12 +38,6 @@
         "AdminPassword": {
             "type": "secureString"
         },
-        "VHDLocations": {
-            "type": "array"
-        },
-        "ProfileSizeMB": {
-            "type": "int"
-        },                 
         "registration": {
             "type": "string"
         },
@@ -187,12 +181,9 @@
                 "typeHandlerVersion": "2.73",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/AVD-PrepareHost/DSC-AVD-PrepareHost.zip",
-                    "configurationFunction": "DSC-AVD-PrepareHost.ps1\\PrepareHost",
+                    "modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/AVD-PrepareRolloutHost/DSC-AVD-PrepareRolloutHost.zip",
+                    "configurationFunction": "DSC-AVD-PrepareRolloutHost.ps1\\PrepareHost",
                     "properties": {
-                        "VHDLocations": "[parameters('VHDLocations')]",
-                        "ProfileSizeMB": "[parameters('ProfileSizeMB')]",
-                        "FSLExcludedMembers": "[parameters('AdminUsername')]",
                         "registration": "[parameters('registration')]",
                         "joinou": "[parameters('joinou')]",
                         "joindomain": "[parameters('joindomain')]",
