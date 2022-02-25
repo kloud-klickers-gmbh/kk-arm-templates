@@ -25,6 +25,9 @@
         },
         "location": {
             "type": "String"
+        },
+        "prefix": {
+            "type": "String"
         }
     },
     "variables": {
@@ -113,6 +116,31 @@
                 "friendlyName": "[parameters('workspaceFriendlyName')]"
             }
         },
-        
+        {
+            "type": "Microsoft.DesktopVirtualization/workspaces/providers/diagnosticSettings",
+            "apiVersion": "2017-05-01-preview",
+            "name": "[concat(parameters('workspaceName'),'/Microsoft.Insights/WVDInsights')]",
+            "properties": {
+                "workspaceId": "[variables('workspaceId')]",
+                "logs": [
+                    {
+                        "category": "Checkpoint",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Error",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Management",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Feed",
+                        "enabled": true
+                    }
+                ]
+            }
+        }                
     ]
 }

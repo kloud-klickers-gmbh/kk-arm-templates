@@ -202,8 +202,6 @@
                 "typeHandlerVersion": "2.73",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    //"modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/AVD-PrepareImagingHost/DSC-AVD-PrepareImagingHost.zip",
-                    //"configurationFunction": "DSC-AVD-PrepareImagingHost.ps1\\PrepareHost",
                     "modulesUrl": "[parameters('DSCModulesUrl')]",
                     "configurationFunction": "[parameters('DSCConfigurationFunction')]",
                     "properties": {

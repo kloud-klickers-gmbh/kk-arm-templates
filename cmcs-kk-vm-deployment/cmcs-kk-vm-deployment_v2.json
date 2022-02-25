@@ -34,7 +34,7 @@
         },         
         "datadisks" : {
             "type": "array",
-            "defaultValue": null
+            "defaultValue": []
         },
         "imageoffer": {
             "type": "string",
