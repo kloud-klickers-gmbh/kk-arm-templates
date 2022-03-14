@@ -58,6 +58,22 @@
         "imagesku": {
             "type": "string",
             "defaultvalue": "standard"
+        },
+        "licenseType": {
+            "type": "string",
+            "defaultValue": "Windows_Server",
+            "allowedValues": [
+                "Windows_Server",
+                "Windows_Client"
+            ]
+        },
+        "sqlServerLicenseType": {
+            "type": "string",
+            "defaultValue": "PAYG",
+            "allowedValues": [
+                "PAYG",
+                "AHUB"
+            ]
         }
     },
     "variables": {
@@ -260,7 +276,7 @@
                         }                        
                     }
                 },
-                "licenseType": "Windows_Server"
+                "licenseType": "[parameters('licenseType')]"
             },
             "resources": [
                 {
@@ -330,7 +346,7 @@
             "properties": {
                 "virtualMachineResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
                 "sqlManagement": "Full",
-                "SqlServerLicenseType": "PAYG",
+                "SqlServerLicenseType": "[parameters('sqlServerLicenseType')]",
                 "AutoPatchingSettings": {
                     "Enable": true,
                     "DayOfWeek": "[variables('sqlAutopatchingDayOfWeek')]",

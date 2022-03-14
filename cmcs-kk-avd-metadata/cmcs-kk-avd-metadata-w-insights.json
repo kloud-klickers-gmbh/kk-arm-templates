@@ -28,6 +28,10 @@
         },
         "prefix": {
             "type": "String"
+        },
+        "utcValue": {
+            "type": "string",
+            "defaultValue": "[utcNow()]"
         }
     },
     "variables": {
@@ -49,43 +53,7 @@
                 "startVMOnConnect": false
             }
         },
-        {
-            "type": "Microsoft.DesktopVirtualization/hostpools/providers/diagnosticSettings",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('hostpoolName'),'/Microsoft.Insights/WVDInsights')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostPoolName'))]"
-            ],
-            "properties": {
-                "workspaceId": "[variables('workspaceId')]",
-                "logs": [
-                    {
-                        "category": "Checkpoint",
-                        "enabled": true
-                    },
-                    {
-                        "category": "Error",
-                        "enabled": true
-                    },
-                    {
-                        "category": "Management",
-                        "enabled": true
-                    },
-                    {
-                        "category": "Connection",
-                        "enabled": true
-                    },
-                    {
-                        "category": "HostRegistration",
-                        "enabled": true
-                    },
-                    {
-                        "category": "AgentHealthStatus",
-                        "enabled": true
-                    }
-                ]
-            }
-        },
+        
         {
             "type": "Microsoft.DesktopVirtualization/applicationgroups",
             "apiVersion": "2021-03-09-preview",
@@ -117,9 +85,70 @@
             }
         },
         {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2020-10-01",
+            "name": "RegisterInsightsProvider",
+            "location": "[parameters('location')]",
+            "kind": "AzurePowerShell",
+            "identity": {
+                "type": "UserAssigned"
+            },
+            "properties": {
+                "forceUpdateTag": "[parameters('utcValue')]",
+                "azPowerShellVersion": "6.4",
+                "timeout": "PT10M",
+                "scriptContent": "register-AzResourceProvider -ProviderNamespace microsoft.Insights\r\nstart-sleep -Seconds 90\r\n",
+                "cleanupPreference": "Always",
+                "retentionInterval": "PT1H"
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/hostpools/providers/diagnosticSettings",
+            "apiVersion": "2021-05-01-preview",
+            "name": "[concat(parameters('hostpoolName'),'/Microsoft.Insights/WVDInsights')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostPoolName'))]",
+                "[resourceId('Microsoft.Resources/deploymentScripts', 'RegisterInsightsProvider')]"
+            ],
+            "properties": {
+                "workspaceId": "[variables('workspaceId')]",
+                
+                "logs": [
+                    {
+                        "category": "Checkpoint",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Error",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Management",
+                        "enabled": true
+                    },
+                    {
+                        "category": "Connection",
+                        "enabled": true
+                    },
+                    {
+                        "category": "HostRegistration",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AgentHealthStatus",
+                        "enabled": true
+                    }
+                ]
+            }
+        },
+        {
             "type": "Microsoft.DesktopVirtualization/workspaces/providers/diagnosticSettings",
             "apiVersion": "2017-05-01-preview",
             "name": "[concat(parameters('workspaceName'),'/Microsoft.Insights/WVDInsights')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/workspaces', parameters('workspaceName'))]",
+                "[resourceId('Microsoft.Resources/deploymentScripts', 'RegisterInsightsProvider')]"
+            ],
             "properties": {
                 "workspaceId": "[variables('workspaceId')]",
                 "logs": [

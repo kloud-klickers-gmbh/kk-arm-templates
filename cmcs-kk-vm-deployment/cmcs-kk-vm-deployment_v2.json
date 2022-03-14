@@ -46,6 +46,14 @@
         },
         "vmsize": {
             "type": "string"
+        },
+        "licenseType": {
+            "type": "string",
+            "defaultValue": "Windows_Server",
+            "allowedValues": [
+                "Windows_Server",
+                "Windows_Client"
+            ]
         }
     },
     "variables": {        
@@ -113,6 +121,9 @@
                     },
                     "vmsize": {
                         "value": "[parameters('vmsize')]"
+                    },
+                    "licenseType": {
+                        "value": "[parameters('licenseType')]"
                     }
                 },
                 "template": {
@@ -161,6 +172,9 @@
                         },
                         "vmsize": {
                             "type": "string"
+                        },
+                        "licenseType": {
+                            "type": "string"            
                         }
                     },
                     "variables": {
@@ -216,6 +230,7 @@
                                 "[concat('Microsoft.Network/networkInterfaces/', parameters('vmName'))]"
                             ],
                             "properties": {
+                                "licenseType": "[parameters('licenseType')]",
                                 "hardwareProfile": {
                                     "vmSize": "[parameters('vmsize')]"
                                 },

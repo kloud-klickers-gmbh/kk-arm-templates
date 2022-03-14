@@ -276,13 +276,63 @@
         }
     },
     "variables": {
-        "SecurityAndAutomationLocation": "westeurope"
+        "SecurityAndAutomationLocation": "westeurope",
+        "SecurityPricing": [
+            {
+                "Name": "VirtualMachines",
+                "PricingTier": "Standard"
+            },
+            {
+                "Name": "SqlServers",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "AppServices",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "StorageAccounts",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "SqlServerVirtualMachines",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "KubernetesService",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "ContainerRegistry",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "KeyVaults",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "Dns",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "Arm",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "OpenSourceRelationalDatabases",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "Containers",
+                "PricingTier": "Free"
+            }
+        ]
     },
     "resources": [
         {
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2020-09-01",
-            "name": "[concat('ASC Default - ',subscription().displayName)]",
+            "name": "[concat('ASC Default - (',subscription().subscriptionId,')')]",
             "location": "[parameters('location')]",
             "properties": {
                 "displayName": "CMCS Security Center",
@@ -1084,6 +1134,18 @@
             "properties": {
                 "autoProvision": "On"
             }
+        },
+        {
+            "type": "Microsoft.Security/pricings",
+            "copy": {
+                "count": "[length(variables('SecurityPricing'))]",
+                "name": "SecurityPricingLoop"
+            },
+            "apiVersion": "2018-06-01",
+            "name": "[variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].Name]",
+            "properties": {
+                "pricingTier": "[variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].PricingTier]"            
+        }
         },
         {
             "type": "Microsoft.Resources/deployments",
