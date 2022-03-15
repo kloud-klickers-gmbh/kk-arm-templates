@@ -59,6 +59,15 @@
                 {"Size":"M64","AzureSize":"Standard_E8ds_v4"},
                 {"Size":"L128","AzureSize":"Standard_E16s_v3"}
             ]
+        },
+        "licenseType": {
+            "type": "string",
+            "defaultValue": "none",
+            "allowedValues": [
+                "Windows_Server",
+                "Windows_Client",
+                "none"
+            ]
         }
     },
     "functions": [
@@ -189,7 +198,8 @@
                         "enableAutomaticUpdates": true,
                         "provisionVmAgent": true
                     }
-                }
+                },
+                "licenseType": "[if(equals('none',parameters('licensetype')),null(),parameters('licensetype'))]"
             },
             "tags": "[variables('vmtags')]",
             "resources": [
