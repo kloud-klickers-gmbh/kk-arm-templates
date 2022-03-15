@@ -152,7 +152,7 @@
         {
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2020-09-01",
-            "name": "[concat('ASC Default - (',subscription().id,')')]",
+            "name": "[concat('ASC Default - (',subscription().subscriptionId,')')]",
             "location": "[parameters('location')]",
             "properties": {
                 "displayName": "CMCS Security Center",
