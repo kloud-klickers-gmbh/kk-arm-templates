@@ -45,11 +45,11 @@
         },
         "JumpHostVmLicenseType": {
             "type": "string",
-            "defaultValue": "Windows_Client",
+            "defaultValue": "none",
             "allowedValues": [
               "Windows_Client",
               "Windows_Server",
-              ""
+              "none"
             ]
         },
         "DeployUpdateAutomationScope": {
@@ -1114,7 +1114,7 @@
                                         "enabled": false
                                     }
                                 },
-                                "licenseType": "[parameters('JumpHostVmLicenseType')]"
+                                "licenseType": "[if(equals('none',parameters('JumpHostVmLicenseType')),null(),parameters('JumpHostVmLicenseType'))]"
                             }
                         },
                         {
