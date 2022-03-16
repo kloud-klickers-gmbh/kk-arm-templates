@@ -61,10 +61,11 @@
         },
         "licenseType": {
             "type": "string",
-            "defaultValue": "Windows_Server",
+            "defaultValue": "none",
             "allowedValues": [
                 "Windows_Server",
-                "Windows_Client"
+                "Windows_Client",
+                "none"
             ]
         },
         "sqlServerLicenseType": {
@@ -276,7 +277,7 @@
                         }                        
                     }
                 },
-                "licenseType": "[parameters('licenseType')]"
+                "licenseType": "[if(equals('none',parameters('licensetype')),null(),parameters('licensetype'))]"
             },
             "resources": [
                 {
