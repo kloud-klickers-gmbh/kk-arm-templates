@@ -188,6 +188,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "resourceGroup": "[parameters('AVDRG')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Authorization/roleAssignments', guid(subscription().id, parameters('principalId')))]"
+            ],
             "properties": {
                 "expressionEvaluationOptions": {
                     "scope": "inner"
