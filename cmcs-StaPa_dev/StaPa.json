@@ -5,9 +5,18 @@
         "location": {
             "allowedValues": [
                 "westeurope",
-                "germanywestcentral"
+                "germanywestcentral",
+                "eastasia"
             ],
             "type": "String"
+        },
+        "SecurityAndAutomationLocation": {
+            "type": "string",
+            "defaultValue": "westeurope",
+            "allowedValues": [
+                "westeurope",
+                "eastasia"
+            ]
         },
         "tags": {
             "type": "Object",
@@ -50,6 +59,22 @@
         },
         "avdlocation": {
             "defaultValue": "westeurope",
+            "allowedValues": [
+                "uksouth",
+                "ukwest",
+                "canadaeast",
+                "canadacentral",
+                "northeurope",
+                "westeurope",
+                "eastus",
+                "eastus2",
+                "westus",
+                "westus2",
+                "northcentralus",
+                "southcentralus",
+                "westcentralus",
+                "centralus"
+            ],
             "type": "String"
         },
         "backupRgName": {
@@ -275,8 +300,7 @@
             "type": "String"
         }
     },
-    "variables": {
-        "SecurityAndAutomationLocation": "westeurope",
+    "variables": {        
         "SecurityPricing": [
             {
                 "Name": "VirtualMachines",
@@ -498,14 +522,14 @@
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
             "name": "[parameters('SecurityRgName')]",
-            "location": "[variables('SecurityAndAutomationLocation')]",
+            "location": "[parameters('SecurityAndAutomationLocation')]",
             "properties": {}
         },
         {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
             "name": "[parameters('UpdateRgName')]",
-            "location": "[variables('SecurityAndAutomationLocation')]",
+            "location": "[parameters('SecurityAndAutomationLocation')]",
             "properties": {}
         },
         {
@@ -812,7 +836,7 @@
                         "value": "[parameters('updateAutomationAccountName')]"
                     },
                     "location": {
-                        "value": "[variables('SecurityAndAutomationLocation')]"
+                        "value": "[parameters('SecurityAndAutomationLocation')]"
                     },
                     "tags": {
                         "value": "[parameters('tags')]"
@@ -965,7 +989,7 @@
                 },
                 "parameters": {
                     "location": {
-                        "value": "[variables('SecurityAndAutomationLocation')]"
+                        "value": "[parameters('SecurityAndAutomationLocation')]"
                     },
                     "tags": {
                         "value": "[parameters('tags')]"
