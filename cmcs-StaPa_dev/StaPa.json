@@ -6,7 +6,8 @@
             "allowedValues": [
                 "westeurope",
                 "germanywestcentral",
-                "eastasia"
+                "eastasia",
+                "southeastasia"
             ],
             "type": "String"
         },
@@ -15,7 +16,8 @@
             "defaultValue": "westeurope",
             "allowedValues": [
                 "westeurope",
-                "eastasia"
+                "eastasia",
+                "southeastasia"
             ]
         },
         "tags": {
@@ -32,6 +34,18 @@
                 },
                 {
                     "SAP-Artikel": "msc-cube-cloud-m-de-4.6"
+                },
+                {
+                    "SAP-Artikel": "msc-cube-cloud-s-ea-4.6"
+                },
+                {
+                    "SAP-Artikel": "msc-cube-cloud-m-ea-4.6"
+                },
+                {
+                    "SAP-Artikel": "msc-cube-cloud-s-sea-4.6"
+                },
+                {
+                    "SAP-Artikel": "msc-cube-cloud-m-sea-4.6"
                 }
             ]
         },
