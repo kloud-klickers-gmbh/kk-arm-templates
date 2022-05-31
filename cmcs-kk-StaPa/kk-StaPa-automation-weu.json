@@ -52,6 +52,10 @@
               "none"
             ]
         },
+        "JumpHostVmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B2S"
+        },
         "DeployUpdateAutomationScope": {
             "type": "bool",
             "defaultValue": false
@@ -75,7 +79,6 @@
         "BackupScheduleTime": "22:00",        
         "JumpHostRgName": "[concat(parameters('prefix'),'-jumphost-rg')]",
         "jumphostName": "[concat(parameters('prefix'),'-jumphost')]",        
-        "JumpHostVmSize": "Standard_B2S",
         "JumpHostDeployPublicIp": true,
         "vnetRgName": "[concat(parameters('prefix'),'-vnet-rg')]",
         "vnetName": "[concat(parameters('prefix'),'-vnet')]",
@@ -934,7 +937,7 @@
                         "value": "[parameters('JumpHostRDPRemoteIP')]"
                     },
                     "JumpHostVmSize": {
-                        "value": "[variables('JumpHostVmSize')]"
+                        "value": "[parameters('JumpHostVmSize')]"
                     },
                     "JumpHostVmLicenseType": {
                         "value": "[parameters('JumpHostVmLicenseType')]"
