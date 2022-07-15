@@ -32,6 +32,10 @@
             "type": "string",      
             "defaultValue": "20h2-evd-o365pp-g2"
         },
+        "vmGalleryImageVersion": {
+            "type": "string",      
+            "defaultValue": "latest"
+        },
         "vmOSDiskSize": {
             "type": "int",      
             "defaultValue": 128
@@ -159,7 +163,7 @@
                         "publisher": "[parameters('vmGalleryImagePublisher')]",
                         "offer": "[parameters('vmGalleryImageOffer')]",
                         "sku": "[parameters('vmGalleryImageSKU')]",
-                        "version": "latest"
+                        "version": "[parameters('vmGalleryImageVersion')]"
                     },
                     "osDisk": {
                         "createOption": "FromImage",
