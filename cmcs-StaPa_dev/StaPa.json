@@ -1541,23 +1541,7 @@
                                 }
                             }
                         }
-                    ],
-                    "outputs": {
-                        "JumpHostPublicIPAddress": {
-                            "type": "string",
-                            "condition": "[parameters('JumpHostdeployPublicIp')]",
-                            "value": "[reference(concat(subscription().id,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIpAddresses/',parameters('jumphostName'),'-pip'),'2019-02-01','Full').properties.ipaddress]"
-                        },
-                        "JumpHostInternalIPAddress": {
-                            "type": "string",
-                            "value": "[reference(concat(subscription().id,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Network/networkInterfaces/',parameters('jumphostName'),'-nic'),'2021-03-01','Full').properties.ipconfigurations[0].properties.privateipaddress]"
-                        },
-                        "JumpHostDNSName": {
-                            "type": "string",
-                            "condition": "[parameters('JumpHostdeployPublicIp')]",
-                            "value": "[reference(concat(subscription().id,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIpAddresses/',parameters('jumphostName'),'-pip'),'2019-02-01','Full').properties.dnssettings.fqdn]"
-                        }
-                    }
+                    ]                    
                 }
             }
         },
