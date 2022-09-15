@@ -1189,7 +1189,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "JumpHostBackupDeployment",
+            "condition": "[parameters('DeployJumpHostRG')]",
             "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', parameters('JumpHostRgName'))]",
                 "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('JumpHostRgName'),'/providers/Microsoft.Resources/deployments/JumpHostDeployment')]",
                 "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('backupRgName'),'/providers/Microsoft.Resources/deployments/backupDeployment')]"
             ],
@@ -1932,7 +1934,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "resourceGroup": "[parameters('JumpHostRgName')]",
-            "condition": "[if(greaterOrEquals(length(parameters('DeployAVDMetadata')),1),true(),false())]",
+            "condition": "[and(if(greaterOrEquals(length(parameters('DeployAVDMetadata')),1),true(),false()),if(parameters('DeployJumpHostRG'),true(),false()))]",
             "dependsOn": [
                 "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('JumpHostRgName'),'/providers/Microsoft.Resources/deployments/JumpHostDeployment')]",
                 "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('ProfilesRgName'),'/providers/Microsoft.Resources/deployments/ProfileStoreDeployment')]",
