@@ -2058,21 +2058,5 @@
                 }
             }
         }
-    ],
-    "outputs": {
-        "Output_JumpHostPublicIPAddress": {
-            "type": "string",
-            "condition": "[parameters('JumpHostdeployPublicIp')]",
-            "value": "[reference('JumpHostDeployment').outputs.JumpHostPublicIPAddress.value]"
-        },
-        "Output_JumpHostInternalIPAddress": {
-            "type": "string",
-            "value": "[reference('JumpHostDeployment').outputs.JumpHostInternalIPAddress.value]"
-        },
-        "Output_JumpHostDNSName": {
-            "type": "string",
-            "condition": "[parameters('JumpHostdeployPublicIp')]",
-            "value": "[reference('JumpHostDeployment').outputs.JumpHostDNSName.value]"
-        }
-    }
+    ]
 }
