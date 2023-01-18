@@ -95,6 +95,24 @@
                 "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8"
             }
         },
+        { 
+          "name": "VirtualMachines", 
+          "type": "Microsoft.Security/pricings", 
+          "apiVersion": "2022-03-01", 
+          "properties": { 
+              "subPlan": "P1", 
+              "pricingTier": "Standard" 
+          }
+        },
+        { 
+          "name": "StorageAccounts", 
+          "type": "Microsoft.Security/pricings", 
+          "apiVersion": "2022-03-01", 
+          "properties": { 
+              "subPlan": "PerTransaction", 
+              "pricingTier": "Standard" 
+          }
+        },
         {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
