@@ -102,19 +102,11 @@
         "ScheduleTimeZone": "W. Europe Standard Time",
         "SecurityPricing": [
             {
-                "Name": "VirtualMachines",
-                "PricingTier": "Standard"
-            },
-            {
                 "Name": "SqlServers",
                 "PricingTier": "Free"
             },
             {
                 "Name": "AppServices",
-                "PricingTier": "Free"
-            },
-            {
-                "Name": "StorageAccounts",
                 "PricingTier": "Free"
             },
             {
@@ -165,6 +157,9 @@
         },
         { 
           "name": "VirtualMachines", 
+          "dependsOn": [
+                "[resourceId('Microsoft.Authorization/policyassignments', '[concat('ASC Default - (',subscription().subscriptionId,')')]']"
+           ],
           "type": "Microsoft.Security/pricings", 
           "apiVersion": "2022-03-01", 
           "properties": { 
@@ -174,6 +169,9 @@
         },
         { 
           "name": "StorageAccounts", 
+           "dependsOn": [
+                "[resourceId('Microsoft.Authorization/policyassignments', '[concat('ASC Default - (',subscription().subscriptionId,')')]']"
+           ],
           "type": "Microsoft.Security/pricings", 
           "apiVersion": "2022-03-01", 
           "properties": { 
