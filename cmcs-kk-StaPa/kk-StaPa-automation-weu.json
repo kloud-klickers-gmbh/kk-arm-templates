@@ -158,7 +158,7 @@
         { 
           "name": "VirtualMachines", 
           "dependsOn": [
-                "[resourceId('Microsoft.Authorization/policyassignments', [concat('ASC Default - (',subscription().subscriptionId,')')]]"
+                "[concat('ASC Default - (',subscription().subscriptionId,')')]"
            ],
           "type": "Microsoft.Security/pricings", 
           "apiVersion": "2022-03-01", 
@@ -170,7 +170,7 @@
         { 
           "name": "StorageAccounts", 
            "dependsOn": [
-                "[resourceId('Microsoft.Authorization/policyassignments', [concat('ASC Default - (',subscription().subscriptionId,')')]]"
+                "[concat('ASC Default - (',subscription().subscriptionId,')')]"
            ],
           "type": "Microsoft.Security/pricings", 
           "apiVersion": "2022-03-01", 
