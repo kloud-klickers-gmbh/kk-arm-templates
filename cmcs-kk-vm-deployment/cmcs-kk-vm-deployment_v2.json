@@ -55,11 +55,15 @@
                 "Windows_Client",
                 "none"
             ]
+        },
+        "vaultName": {
+            "type": "string",
+        },
+        "backuprg": {
+            "type": "string"
         }
     },
     "variables": {        
-        "backuprg" : "[concat(parameters('prefix'),'-backup-rg')]",
-        "vaultName" : "[concat(parameters('prefix'),'-backup')]",
         "policyName" : "[concat(parameters('prefix'),'-daily-backup-VM')]",
         "vmrgname": "[concat(parameters('vmname'),'-rg')]" 
     },
@@ -376,7 +380,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat('BackupDeployment-',parameters('vmname'))]",
-            "resourceGroup": "[variables('backuprg')]",
+            "resourceGroup": "[parameters('backuprg')]",
             "dependsOn": [
                 "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/vmDeployment')]"
             ],
@@ -393,7 +397,7 @@
                     "value": "[variables('vmrgname')]"
                 },
                 "vaultName": {
-                    "value": "[variables('vaultName')]"
+                    "value": "[paramaters('vaultName')]"
                 },
                 "policyName": {
                     "value": "[variables('policyName')]"
