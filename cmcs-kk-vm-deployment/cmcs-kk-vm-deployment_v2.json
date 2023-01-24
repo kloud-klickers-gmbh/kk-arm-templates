@@ -397,7 +397,7 @@
                     "value": "[variables('vmrgname')]"
                 },
                 "vaultName": {
-                    "value": "[paramaters('vaultName')]"
+                    "value": "[parameters('vaultName')]"
                 },
                 "policyName": {
                     "value": "[variables('policyName')]"
