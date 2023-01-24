@@ -75,6 +75,12 @@
                 "PAYG",
                 "AHUB"
             ]
+        },
+        "vaultName": {
+            "type": "string"
+        },
+        "backuprg": {
+            "type": "string"
         }
     },
     "variables": {
@@ -151,8 +157,6 @@
         "sqlAutopatchingDayOfWeek": "Sunday",
         "sqlAutopatchingStartHour": "2",
         "sqlAutopatchingWindowDuration": "60",
-        "backuprg" : "[concat(parameters('prefix'),'-backup-rg')]",
-        "vaultName" : "[concat(parameters('prefix'),'-backup')]",
         "policyName" : "[concat(parameters('prefix'),'-daily-backup-VM')]",
         "workspaceid": "[concat(subscription().id,'/resourcegroups/',parameters('prefix'),'-security-rg/providers/microsoft.operationalinsights/workspaces/',parameters('prefix'),'-loganalytics')]"
     },
@@ -403,7 +407,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "name": "BackupDeployment",
-            "resourceGroup": "[variables('backuprg')]",
+            "resourceGroup": "[parameters('backuprg')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
             ],
@@ -420,7 +424,7 @@
                     "value": "[resourceGroup().name]"
                 },
                 "vaultName": {
-                    "value": "[variables('vaultName')]"
+                    "value": "[parameters('vaultName')]"
                 },
                 "policyName": {
                     "value": "[variables('policyName')]"
