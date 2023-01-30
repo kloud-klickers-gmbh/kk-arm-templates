@@ -381,6 +381,18 @@
                                             "count": "[parameters('PolicyRetentionDays_filestore')]",
                                             "durationType": "Days"
                                         }
+                                    },
+                                    "weeklySchedule": {
+                                        "daysOfTheWeek": [
+                                            "Sunday"
+                                        ],
+                                        "retentionTimes": [
+                                            "[parameters('BackupScheduleTime')]"
+                                        ],
+                                        "retentionDuration": {
+                                            "count": 52,
+                                            "durationType": "Weeks"
+                                        }
                                     }
                                 },
                                 "timeZone": "[parameters('ScheduleTimeZone')]"
@@ -413,6 +425,18 @@
                                             "count": "[parameters('PolicyRetentionDays_profiles')]",
                                             "durationType": "Days"
                                         }
+                                    },
+                                    "weeklySchedule": {
+                                        "daysOfTheWeek": [
+                                            "Sunday"
+                                        ],
+                                        "retentionTimes": [
+                                            "[parameters('BackupScheduleTime')]"
+                                        ],
+                                        "retentionDuration": {
+                                            "count": 52,
+                                            "durationType": "Weeks"
+                                        }
                                     }
                                 },
                                 "timeZone": "[parameters('ScheduleTimeZone')]"
@@ -443,6 +467,18 @@
                                         "retentionDuration": {
                                             "count": "[parameters('PolicyRetentionDays_vm')]",
                                             "durationType": "Days"
+                                        }
+                                    },
+                                    "weeklySchedule": {
+                                        "daysOfTheWeek": [
+                                            "Sunday"
+                                        ],
+                                        "retentionTimes": [
+                                            "[parameters('BackupScheduleTime')]"
+                                        ],
+                                        "retentionDuration": {
+                                            "count": 52,
+                                            "durationType": "Weeks"
                                         }
                                     }
                                 },
@@ -479,6 +515,18 @@
                                         "retentionDuration": {
                                             "count": "[parameters('PolicyRetentionDays_wvd')]",
                                             "durationType": "Days"
+                                        }
+                                    },
+                                    "weeklySchedule": {
+                                        "daysOfTheWeek": [
+                                            "Sunday"
+                                        ],
+                                        "retentionTimes": [
+                                            "[parameters('BackupScheduleTime')]"
+                                        ],
+                                        "retentionDuration": {
+                                            "count": 52,
+                                            "durationType": "Weeks"
                                         }
                                     }
                                 },
