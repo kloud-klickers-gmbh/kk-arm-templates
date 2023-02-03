@@ -14,10 +14,9 @@
         "storageAccountSKU": {
             "type": "string",
             "allowedValues": [
-                "Premium_LRS",
-                "Premium_GRS"
+                "Standard_LRS"
             ],
-            "defaultValue": "Premium_LRS"
+            "defaultValue": "Standard_LRS"
         },
         "fileShareName": {
             "type": "string",
@@ -45,10 +44,10 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2021-04-01",
             "location": "[parameters('location')]",
-            "kind": "FileStorage",
+            "kind": "StorageV2",
             "sku": {
-                "name": "[parameters('storageAccountSKU')]",
-                "tier": "Premium"
+                "name": "[parameters('storageAccountSKU')]"
+                //"tier": "Premium"
             },
             "properties": {
                 "networkAcls": {
@@ -72,7 +71,8 @@
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
             ],
             "properties": {
-                "shareQuota": "[parameters('quota')]"
+                "shareQuota": "[parameters('quota')]",
+                "accessTier": "TransactionOptimized"
             }
         }
     ],
