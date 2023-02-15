@@ -10,7 +10,7 @@
         },
         "vmname": {
             "type": "string"
-        },        
+        },
         "vmUsername": {
             "type": "string"
         },
@@ -31,8 +31,8 @@
         "disktype": {
             "type": "string",
             "defaultValue": "Premium_LRS"
-        },         
-        "datadisks" : {
+        },
+        "datadisks": {
             "type": "array",
             "defaultValue": []
         },
@@ -57,15 +57,15 @@
             ]
         },
         "vaultName": {
-            "type": "string",
+            "type": "string"
         },
         "backuprg": {
             "type": "string"
         }
     },
-    "variables": {        
-        "policyName" : "[concat(parameters('prefix'),'-daily-backup-VM')]",
-        "vmrgname": "[concat(parameters('vmname'),'-rg')]" 
+    "variables": {
+        "policyName": "[concat(parameters('prefix'),'-daily-backup-VM')]",
+        "vmrgname": "[concat(parameters('vmname'),'-rg')]"
     },
     "resources": [
         {
@@ -143,7 +143,7 @@
                         },
                         "vmname": {
                             "type": "string"
-                        },        
+                        },
                         "vmUsername": {
                             "type": "string"
                         },
@@ -164,8 +164,8 @@
                         "disktype": {
                             "type": "string",
                             "defaultValue": "Premium_LRS"
-                        },         
-                        "datadisks" : {
+                        },
+                        "datadisks": {
                             "type": "array",
                             "defaultValue": null
                         },
@@ -179,13 +179,13 @@
                             "type": "string"
                         },
                         "licenseType": {
-                            "type": "string"            
+                            "type": "string"
                         }
                     },
                     "variables": {
-                        "vnetrg":"[concat(parameters('prefix'),'-vnet-rg')]",
-                        "vnet":"[concat(parameters('prefix'),'-vnet')]",
-                        "subnet":"[concat(parameters('prefix'),'-lan-subnet')]",
+                        "vnetrg": "[concat(parameters('prefix'),'-vnet-rg')]",
+                        "vnet": "[concat(parameters('prefix'),'-vnet')]",
+                        "subnet": "[concat(parameters('prefix'),'-lan-subnet')]",
                         "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'))]",
                         "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnet'))]",
                         "nsgname": "[concat(parameters('vmName'),'-nsg')]",
@@ -241,13 +241,13 @@
                                 },
                                 "storageProfile": {
                                     "osDisk": {
-                                        "diskSizeGB" : "[parameters('disksize')]",
+                                        "diskSizeGB": "[parameters('disksize')]",
                                         "createOption": "fromImage",
                                         "name": "[concat(parameters('vmname'),'-OsDisk')]",
                                         "managedDisk": {
                                             "storageAccountType": "[parameters('DiskType')]"
                                         }
-                                    },            
+                                    },
                                     "Copy": [
                                         {
                                             "name": "dataDisks",
@@ -258,7 +258,7 @@
                                                 "createoption": "Empty",
                                                 "name": "[concat(parameters('vmname'),'-DataDisk-',copyIndex('dataDisks',1))]",
                                                 "managedDisk": {
-                                                    "storageAccountType": "[parameters('disktype')]"
+                                                    "storageAccountType": "[parameters('datadisks')[copyIndex('dataDisks')].sku]"
                                                 }
                                             }
                                         }
@@ -336,10 +336,10 @@
                                         },
                                         "protectedSettings": {
                                             "workspaceKey": "[listKeys(variables('workspaceId'), '2015-03-20').primarySharedKey]"
-                                        },                        
+                                        },
                                         "typeHandlerVersion": "1.0"
                                     }
-                                }                            
+                                }
                             ]
                         },
                         {
@@ -351,9 +351,9 @@
                             "name": "default",
                             "scope": "[concat(resourceGroup().id,'/providers/Microsoft.Compute/disks/',parameters('vmname'),'-OsDisk')]",
                             "properties": {
-                              "tags": "[parameters('disktag')]"
+                                "tags": "[parameters('disktag')]"
                             }
-                        },  
+                        },
                         {
                             "type": "Microsoft.Resources/tags",
                             "dependsOn": [
@@ -367,7 +367,7 @@
                             },
                             "scope": "[concat(resourceGroup().id,'/providers/Microsoft.Compute/disks/',parameters('vmname'),'-DataDisk-',copyIndex('dataDisktags',1))]",
                             "properties": {
-                              "tags": "[parameters('datadisks')[copyIndex('dataDiskTags')].tag]"
+                                "tags": "[parameters('datadisks')[copyIndex('dataDiskTags')].tag]"
                             }
                         }
                     ],
@@ -375,7 +375,7 @@
                 }
             }
         },
-            
+
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
@@ -388,23 +388,23 @@
                 "expressionEvaluationOptions": {
                     "scope": "inner"
                 },
-                "mode": "Incremental",            
+                "mode": "Incremental",
                 "parameters": {
-                "vmname": {
-                    "value": "[parameters('vmName')]"
+                    "vmname": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "vmrg": {
+                        "value": "[variables('vmrgname')]"
+                    },
+                    "vaultName": {
+                        "value": "[parameters('vaultName')]"
+                    },
+                    "policyName": {
+                        "value": "[variables('policyName')]"
+                    }
                 },
-                "vmrg": {
-                    "value": "[variables('vmrgname')]"
-                },
-                "vaultName": {
-                    "value": "[parameters('vaultName')]"
-                },
-                "policyName": {
-                    "value": "[variables('policyName')]"
-                }
-                },
-            
-                "template": {            
+
+                "template": {
                     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
                     "contentVersion": "1.0.0.0",
                     "parameters": {
@@ -414,10 +414,10 @@
                         "policyName": {
                             "type": "String"
                         },
-                        "vmname":{
+                        "vmname": {
                             "type": "string"
                         },
-                        "vmrg":{
+                        "vmrg": {
                             "type": "string"
                         }
                     },
@@ -440,6 +440,6 @@
                     ]
                 }
             }
-        } 
+        }
     ]
 }
