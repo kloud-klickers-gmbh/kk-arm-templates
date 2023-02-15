@@ -19,7 +19,7 @@
         },
         "adminPassword": {
             "type": "SecureString"
-        },        
+        },
         "sqlAuthenticationLogin": {
             "type": "String"
         },
@@ -81,72 +81,84 @@
         },
         "backuprg": {
             "type": "string"
+        },
+        "osDiskSku": {
+            "type": "string",
+            "defaultValue": "Premium_LRS"
+        },
+        "dataDiskSku": {
+            "type": "string",
+            "defaultValue": "Premium_LRS"
+        },
+        "logDiskSku": {
+            "type": "string",
+            "defaultValue": "Premium_LRS"
         }
     },
     "variables": {
         "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('nsgname'))]",
-        "vnetrg":"[concat(parameters('prefix'),'-vnet-rg')]",
-        "vnet":"[concat(parameters('prefix'),'-vnet')]",
-        "subnet":"[concat(parameters('prefix'),'-lan-subnet')]",
+        "vnetrg": "[concat(parameters('prefix'),'-vnet-rg')]",
+        "vnet": "[concat(parameters('prefix'),'-vnet')]",
+        "subnet": "[concat(parameters('prefix'),'-lan-subnet')]",
         "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'))]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnet'))]",
         "nsgname": "[concat(parameters('vmName'),'-nsg')]",
         "osDiskName": "[concat(parameters('vmName'),'-osDisk')]",
         "dataDiskName": "[concat(parameters('vmName'),'-dataDisk')]",
         "logDiskName": "[concat(parameters('vmName'),'-logDisk')]",
-        "osDiskType": "Premium_LRS",
+        "osDiskType": "[parameters('osDiskSku')]",
         "dataDiskResources": [
-                {
-                    "name": "[variables('dataDiskName')]",
-                    "sku": "Premium_LRS",
-                    "tags": "[parameters('diskTagsData')]",
-                    "properties": {
-                        "diskSizeGB": "[parameters('DiskSizeData')]",
-                        "creationData": {
-                            "createOption": "empty"
-                        }
-                    }
-                },
-                {
-                    "name": "[variables('logDiskName')]",
-                    "sku": "Premium_LRS",
-                    "tags": "[parameters('diskTagsLog')]",
-                    "properties": {
-                        "diskSizeGB": "[parameters('DiskSizeLog')]",
-                        "creationData": {
-                            "createOption": "empty"
-                        }
+            {
+                "name": "[variables('dataDiskName')]",
+                "sku": "[parameters('dataDiskSku')]",
+                "tags": "[parameters('diskTagsData')]",
+                "properties": {
+                    "diskSizeGB": "[parameters('DiskSizeData')]",
+                    "creationData": {
+                        "createOption": "empty"
                     }
                 }
-            ],
+            },
+            {
+                "name": "[variables('logDiskName')]",
+                "sku": "[parameters('logDiskSku')]",
+                "tags": "[parameters('diskTagsLog')]",
+                "properties": {
+                    "diskSizeGB": "[parameters('DiskSizeLog')]",
+                    "creationData": {
+                        "createOption": "empty"
+                    }
+                }
+            }
+        ],
         "dataDisks": [
-                {
-                    "lun": 0,
-                    "createOption": "attach",
-                    "caching": "ReadOnly",
-                    "writeAcceleratorEnabled": false,
-                    "id": null,
-                    "name": "[variables('dataDiskName')]",
-                    "storageAccountType": null,
-                    "diskSizeGB": null,
-                    "diskEncryptionSet": null
-                },
-                {
-                    "lun": 1,
-                    "createOption": "attach",
-                    "caching": "None",
-                    "writeAcceleratorEnabled": false,
-                    "id": null,
-                    "name": "[variables('logDiskName')]",
-                    "storageAccountType": null,
-                    "diskSizeGB": null,
-                    "diskEncryptionSet": null
-                }
-            ],
+            {
+                "lun": 0,
+                "createOption": "attach",
+                "caching": "ReadOnly",
+                "writeAcceleratorEnabled": false,
+                "id": null,
+                "name": "[variables('dataDiskName')]",
+                "storageAccountType": null,
+                "diskSizeGB": null,
+                "diskEncryptionSet": null
+            },
+            {
+                "lun": 1,
+                "createOption": "attach",
+                "caching": "None",
+                "writeAcceleratorEnabled": false,
+                "id": null,
+                "name": "[variables('logDiskName')]",
+                "storageAccountType": null,
+                "diskSizeGB": null,
+                "diskEncryptionSet": null
+            }
+        ],
         "dataPath": "F:\\data",
-        "dataDisksLUNs": [0],
+        "dataDisksLUNs": [ 0 ],
         "logPath": "L:\\log",
-        "logDisksLUNs": [1],
+        "logDisksLUNs": [ 1 ],
         "tempDbPath": "D:\\tempdb",
         "patchMode": "AutomaticByOS",
         "enableHotpatching": false,
@@ -157,7 +169,7 @@
         "sqlAutopatchingDayOfWeek": "Sunday",
         "sqlAutopatchingStartHour": "2",
         "sqlAutopatchingWindowDuration": "60",
-        "policyName" : "[concat(parameters('prefix'),'-daily-backup-VM')]",
+        "policyName": "[concat(parameters('prefix'),'-daily-backup-VM')]",
         "workspaceid": "[concat(subscription().id,'/resourcegroups/',parameters('prefix'),'-security-rg/providers/microsoft.operationalinsights/workspaces/',parameters('prefix'),'-loganalytics')]"
     },
     "resources": [
@@ -235,7 +247,7 @@
                             "storageAccountType": "[variables('osDiskType')]"
                         },
                         "diskSizeGB": "[parameters('DiskSizeOS')]"
-                        
+
                     },
                     "imageReference": {
                         "publisher": "microsoftsqlserver",
@@ -278,7 +290,7 @@
                         "patchSettings": {
                             "enableHotpatching": "[variables('enableHotpatching')]",
                             "patchMode": "[variables('patchMode')]"
-                        }                        
+                        }
                     }
                 },
                 "licenseType": "[if(equals('none',parameters('licensetype')),null(),parameters('licensetype'))]"
@@ -331,12 +343,12 @@
                         },
                         "protectedSettings": {
                             "workspaceKey": "[listKeys(variables('workspaceId'), '2015-03-20').primarySharedKey]"
-                        },                        
+                        },
                         "typeHandlerVersion": "1.0"
                     }
-                }                            
+                }
             ]
-        },        
+        },
         {
             "type": "Microsoft.SqlVirtualMachine/SqlVirtualMachines",
             "apiVersion": "2017-03-01-preview",
@@ -389,7 +401,7 @@
                     }
                 }
             }
-            
+
         },
         {
             "type": "Microsoft.Resources/tags",
@@ -400,7 +412,7 @@
             "name": "default",
             "scope": "[concat(resourceGroup().id,'/providers/Microsoft.Compute/disks/',parameters('vmname'),'-OsDisk')]",
             "properties": {
-              "tags": "[parameters('diskTagsOS')]"
+                "tags": "[parameters('diskTagsOS')]"
             }
         },
         {
@@ -415,23 +427,23 @@
                 "expressionEvaluationOptions": {
                     "scope": "inner"
                 },
-                "mode": "Incremental",            
+                "mode": "Incremental",
                 "parameters": {
-                "vmname": {
-                    "value": "[parameters('vmName')]"
+                    "vmname": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "vmrg": {
+                        "value": "[resourceGroup().name]"
+                    },
+                    "vaultName": {
+                        "value": "[parameters('vaultName')]"
+                    },
+                    "policyName": {
+                        "value": "[variables('policyName')]"
+                    }
                 },
-                "vmrg": {
-                    "value": "[resourceGroup().name]"
-                },
-                "vaultName": {
-                    "value": "[parameters('vaultName')]"
-                },
-                "policyName": {
-                    "value": "[variables('policyName')]"
-                }
-                },
-            
-                "template": {            
+
+                "template": {
                     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
                     "contentVersion": "1.0.0.0",
                     "parameters": {
@@ -441,10 +453,10 @@
                         "policyName": {
                             "type": "String"
                         },
-                        "vmname":{
+                        "vmname": {
                             "type": "string"
                         },
-                        "vmrg":{
+                        "vmrg": {
                             "type": "string"
                         }
                     },
@@ -467,6 +479,6 @@
                     ]
                 }
             }
-        }        
-    ]    
+        }
+    ]
 }
