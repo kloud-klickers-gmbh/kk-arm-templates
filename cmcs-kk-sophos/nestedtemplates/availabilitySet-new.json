@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "availabilitySetName": {
+            "type": "String"
+        },
+        "location": {
+            "type": "String"
+        }
+    },
+    "variables": {
+        "regionsDomain3": [
+            "eastus",
+            "eastus2",
+            "westus",
+            "centralus",
+            "northcentralus",
+            "southcentralus",
+            "canadacentral",
+            "northeurope",
+            "westeurope"
+        ]
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "apiVersion": "2019-07-01",
+            "name": "[parameters('availabilitySetName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Aligned"
+            },
+            "properties": {
+                "platformFaultDomainCount": "[if(contains(variables('regionsDomain3'), parameters('location')), 3, 2)]"
+            }
+        }
+    ],
+    "outputs": {
+        "availabilitySetId": {
+            "type": "String",
+            "value": "[resourceId('Microsoft.Compute/availabilitySets',parameters('availabilitySetName'))]"
+        }
+    }
+}
