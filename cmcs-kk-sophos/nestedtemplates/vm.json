@@ -127,7 +127,7 @@
             "name": "[concat('BackupDeployment-',parameters('vmName'))]",
             "resourceGroup": "[parameters('backuprg')]",
             "dependsOn": [
-                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/', parameters('vmName'))]"
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/SettingUpVm')]"
             ],
             "properties": {
                 "expressionEvaluationOptions": {
