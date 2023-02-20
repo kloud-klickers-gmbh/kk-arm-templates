@@ -246,6 +246,15 @@
             "metadata": {
                 "description": "Location to deploy. Default to use the same location as the Resource Group"
             }
+        },
+        "prefix": {
+            "type": "string"
+        },
+        "vaultName": {
+            "type": "string"
+        },
+        "backupRG": {
+            "type": "string"
         }
     },
     "variables": {
@@ -494,6 +503,15 @@
                     },
                     "adminPassword": {
                         "value": "[parameters('adminPassword')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "vaultName": {
+                        "value": "[parameters('vaultName')]"
+                    },
+                    "backupRG": {
+                        "value": "[parameters('backupRG')]"
                     },
                     "imageSku": {
                         "value": "[parameters('imageSku')]"

@@ -31,11 +31,22 @@
         },
         "location": {
             "type": "String"
+        },
+        "prefix": {
+            "type": "String"
+        },
+        "vaultName": {
+            "type": "string"
+        },
+        "backupRG": {
+            "type": "string"
         }
     },
     "variables": {
         "imagePublisher": "sophos",
-        "imageOffer": "sophos-xg"
+        "imageOffer": "sophos-xg",
+        "policyName": "[concat(parameters('prefix'),'-daily-backup-VM')]",
+        "vmrgname": "[concat(parameters('prefix'),'-sophos-rg')]"
     },
     "resources": [
         {
@@ -107,6 +118,71 @@
                         "enabled": "true",
                         "storageUri": "[parameters('storageAccountEndpoint')]"
                     }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat('BackupDeployment-',parameters('vmName'))]",
+            "resourceGroup": "[parameters('backuprg')]",
+            "dependsOn": [
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/', parameters('vmName'))]"
+            ],
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                    "vmname": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "vmrg": {
+                        "value": "[variables('vmrgname')]"
+                    },
+                    "vaultName": {
+                        "value": "[parameters('vaultName')]"
+                    },
+                    "policyName": {
+                        "value": "[variables('policyName')]"
+                    }
+                },
+
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "vaultName": {
+                            "type": "String"
+                        },
+                        "policyName": {
+                            "type": "String"
+                        },
+                        "vmname": {
+                            "type": "string"
+                        },
+                        "vmrg": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "ProtectedItem": "[concat('vm;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "ProtectionContainer": "[concat('IaasVMContainer;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "sourceResourceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('vmrg'),'/providers/Microsoft.Compute/virtualMachines/',parameters('vmname'))]"
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+                            "apiVersion": "2016-06-01",
+                            "name": "[concat(parameters('vaultName'), '/Azure/',variables('protectionContainer'), '/', variables('ProtectedItem'))]",
+                            "properties": {
+                                "protectedItemType": "Microsoft.ClassicCompute/virtualMachines",
+                                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('vaultName'), parameters('policyName'))]",
+                                "sourceResourceId": "[variables('sourceResourceId')]"
+                            }
+                        }
+                    ]
                 }
             }
         }
