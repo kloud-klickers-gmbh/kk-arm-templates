@@ -23,6 +23,9 @@
                 "description": "Name for the Virtual Machine."
             }
         },
+        "adminUsername": {
+            "type": "string"
+        },
         "adminPassword": {
             "type": "securestring",
             "metadata": {
@@ -485,6 +488,9 @@
                     },
                     "vmSize": {
                         "value": "[parameters('vmSize')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
                     },
                     "adminPassword": {
                         "value": "[parameters('adminPassword')]"
