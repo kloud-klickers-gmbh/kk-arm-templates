@@ -1144,7 +1144,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('deploymentNames').identitySubscriptionPlacement]",
+            "name": "identitySubscriptionPlacement",
             "location": "[deployment().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').mgmtGroupDeploymentName)]"
@@ -1209,7 +1209,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('deploymentNames').monitoringSolutionsDeploymentName]",
+            "name": "monitoringSolutionsDeploymentName",
             "location": "[deployment().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').monitoringDeploymentName)]",
@@ -1909,7 +1909,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('deploymentNames').azOpsRgDeploymentName]",
+            "name": "azOpsRgDeploymentName",
             "location": "[deployment().location]",
             "dependsOn": [
                 "alz-mgmtsub-deploy",
@@ -1941,16 +1941,16 @@
             "dependsOn": [
                 "alz-mgmtsub-deploy",
                 "azOpsRbacDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').azOpsRgDeploymentName)]",
+                "azOpsRgDeploymentName",
                 "platformLiteSubscriptionPlacement",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').vnetConnectivityHubLiteDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').vwanConnectivityHubLiteDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').nvaConnectivityHubLiteDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').monitoringSolutionsLiteDeploymentName)]",
+                "vnetConnectivityHubLiteDeploymentName",
+                "vwanConnectivityHubLiteDeploymentName",
+                "nvaConnectivityHubLiteDeploymentName",
+                "monitoringSolutionsLiteDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').policyDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').monitoringSolutionsDeploymentName)]",
+                "monitoringSolutionsDeploymentName",
                 "activityDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').identitySubscriptionPlacement)]",
+                "identitySubscriptionPlacement",
                 "vnetConnectivityHubDeploymentName",
                 "vwanConnectivityHubDeploymentName",
                 "nvaConnectivityHubDeploymentName",
@@ -2575,7 +2575,7 @@
             "location": "[deployment().location]",
             "dependsOn": [
                 "policyCompletion",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').identitySubscriptionPlacement)]"
+                "identitySubscriptionPlacement"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -2599,7 +2599,7 @@
             "location": "[deployment().location]",
             "dependsOn": [
                 "policyCompletion",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').identitySubscriptionPlacement)]"
+                "identitySubscriptionPlacement"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -2626,7 +2626,7 @@
             "location": "[deployment().location]",
             "dependsOn": [
                 "policyCompletion",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').identitySubscriptionPlacement)]"
+                "identitySubscriptionPlacement"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -2660,7 +2660,7 @@
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
                 "resourceDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').identitySubscriptionPlacement)]"
+                "identitySubscriptionPlacement"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -2706,7 +2706,7 @@
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
                 "resourceDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').identitySubscriptionPlacement)]"
+                "identitySubscriptionPlacement"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -2855,9 +2855,9 @@
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
                 "resourceDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').vwanConnectivityHubLiteDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').vnetConnectivityHubLiteDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').nvaConnectivityHubLiteDeploymentName)]",
+                "vwanConnectivityHubLiteDeploymentName",
+                "vnetConnectivityHubLiteDeploymentName",
+                "nvaConnectivityHubLiteDeploymentName",
                 "corpConnectedMoveLzs"
             ],
             "properties": {
@@ -2981,7 +2981,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('esLiteDeploymentNames').monitoringSolutionsLiteDeploymentName]",
+            "name": "monitoringSolutionsLiteDeploymentName",
             "location": "[deployment().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').monitoringLiteDeploymentName)]",
@@ -3144,9 +3144,9 @@
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
                 "resourceDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').vnetConnectivityHubLiteDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').vwanConnectivityHubLiteDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').nvaConnectivityHubLiteDeploymentName)]"
+                "vnetConnectivityHubLiteDeploymentName",
+                "vwanConnectivityHubLiteDeploymentName",
+                "nvaConnectivityHubLiteDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -3174,9 +3174,9 @@
                 "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').privateDnsZoneRgLiteDeploymentName)]",
                 "activityDiagnosticsPolicyDeploymentName",
                 "resourceDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').vnetConnectivityHubLiteDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').vwanConnectivityHubLiteDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').nvaConnectivityHubLiteDeploymentName)]"
+                "vnetConnectivityHubLiteDeploymentName",
+                "vwanConnectivityHubLiteDeploymentName",
+                "nvaConnectivityHubLiteDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -3233,7 +3233,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
-            "name": "[variables('esLitedeploymentNames').vnetConnectivityHubLiteDeploymentName]",
+            "name": "vnetConnectivityHubLiteDeploymentName",
             "location": "[deployment().location]",
             "dependsOn": [
                 "platformLiteSubscriptionPlacement",
@@ -3320,7 +3320,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
-            "name": "[variables('esLitedeploymentNames').nvaConnectivityHubLiteDeploymentName]",
+            "name": "nvaConnectivityHubLiteDeploymentName",
             "location": "[deployment().location]",
             "dependsOn": [
                 "platformLiteSubscriptionPlacement",
@@ -3392,7 +3392,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('esLitedeploymentNames').vwanConnectivityHubLiteDeploymentName]",
+            "name": "vwanConnectivityHubLiteDeploymentName",
             "location": "[deployment().location]",
             "dependsOn": [
                 "platformLiteSubscriptionPlacement",
