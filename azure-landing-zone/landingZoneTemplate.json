@@ -1528,7 +1528,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('deploymentNames').ddosDeploymentName]",
+            "name": "ddosDeploymentName",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').ddosRgDeploymentName)]",
                 "activityDiagnosticsPolicyDeploymentName",
@@ -1559,7 +1559,7 @@
             "name": "[variables('deploymentNames').ddosHubPolicyDeploymentName]",
             "location": "[deployment().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').ddosDeploymentName)]"
+                "ddosDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1594,7 +1594,7 @@
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').ddosDeploymentName)]"
+                "ddosDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1683,7 +1683,7 @@
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').ddosDeploymentName)]"
+                "ddosDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1757,7 +1757,7 @@
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').ddosDeploymentName)]"
+                "ddosDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -2144,7 +2144,7 @@
             "name": "[variables('deploymentNames').ddosLzPolicyDeploymentName]",
             "location": "[deployment().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').ddosDeploymentName)]"
+                "ddosDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
