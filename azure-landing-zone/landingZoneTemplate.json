@@ -1092,7 +1092,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('deploymentNames').mgmtSubscriptionPlacement]",
+            "name": "alz-mgmtsub-deploy",
             "location": "[deployment().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').mgmtGroupDeploymentName)]"
@@ -1173,7 +1173,7 @@
             "name": "[variables('deploymentNames').monitoringDeploymentName]",
             "location": "[deployment().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').mgmtSubscriptionPlacement)]",
+                "alz-mgmtsub-deploy",
                 "policyCompletion"
             ],
             "properties": {
@@ -1269,7 +1269,7 @@
             "name": "[variables('deploymentNames').logAnalyticsPolicyDeploymentName]",
             "location": "[deployment().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').mgmtSubscriptionPlacement)]",
+                "alz-mgmtsub-deploy",
                 "policyCompletion"
             ],
             "properties": {
@@ -1311,7 +1311,7 @@
             "name": "[variables('deploymentNames').asbPolicyDeploymentName]",
             "location": "[deployment().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').mgmtSubscriptionPlacement)]",
+                "alz-mgmtsub-deploy",
                 "policyCompletion",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').monitoringDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').monitoringLiteDeploymentName)]"
@@ -1333,7 +1333,7 @@
             "name": "[variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName]",
             "location": "[deployment().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').mgmtSubscriptionPlacement)]",
+                "alz-mgmtsub-deploy",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').platformLiteSubscriptionPlacement)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').monitoringDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').monitoringLiteDeploymentName)]"
@@ -1885,7 +1885,7 @@
             "name": "[variables('deploymentNames').azOpsRbacDeploymentName]",
             "location": "[deployment().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').mgmtSubscriptionPlacement)]",
+                "alz-mgmtsub-deploy",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').platformLiteSubscriptionPlacement)]"
             ],
             "properties": {
@@ -1912,7 +1912,7 @@
             "name": "[variables('deploymentNames').azOpsRgDeploymentName]",
             "location": "[deployment().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').mgmtSubscriptionPlacement)]",
+                "alz-mgmtsub-deploy",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').azOpsRbacDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').platformLiteSubscriptionPlacement)]"
             ],
@@ -1939,7 +1939,7 @@
             "apiVersion": "2020-10-01",
             "name": "[variables('deploymentNames').azOpsSetupDeploymentName]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').mgmtSubscriptionPlacement)]",
+                "alz-mgmtsub-deploy",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').azOpsRbacDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').azOpsRgDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').platformLiteSubscriptionPlacement)]",
