@@ -1,0 +1,273 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "enterpriseScaleCompanyPrefix": {
+            "value": "ew"
+        },
+        "singlePlatformSubscriptionId": {
+            "value": "a9a6df49-a8c4-49d3-986f-42083acccaf7"
+        },
+        "telemetryOptOut": {
+            "value": "No"
+        },
+        "enableLogAnalytics": {
+            "value": "Yes"
+        },
+        "retentionInDays": {
+            "value": "30"
+        },
+        "managementSubscriptionId": {
+            "value": ""
+        },
+        "enableAgentHealth": {
+            "value": "Yes"
+        },
+        "enableChangeTracking": {
+            "value": "Yes"
+        },
+        "enableUpdateMgmt": {
+            "value": "Yes"
+        },
+        "enableVmInsights": {
+            "value": "Yes"
+        },
+        "enableServiceMap": {
+            "value": "Yes"
+        },
+        "enableSqlAssessment": {
+            "value": "Yes"
+        },
+        "enableSqlVulnerabilityAssessment": {
+            "value": "Yes"
+        },
+        "enableSqlAdvancedThreatProtection": {
+            "value": "Yes"
+        },
+        "enableAsc": {
+            "value": "Yes"
+        },
+        "emailContactAsc": {
+            "value": "test@info.de"
+        },
+        "enableAscForServers": {
+            "value": "DeployIfNotExists"
+        },
+        "enableAscForOssDb": {
+            "value": "Disabled"
+        },
+        "enableAscForCosmosDbs": {
+            "value": "Disabled"
+        },
+        "enableAscForAppServices": {
+            "value": "DeployIfNotExists"
+        },
+        "enableAscForStorage": {
+            "value": "DeployIfNotExists"
+        },
+        "enableAscForSql": {
+            "value": "DeployIfNotExists"
+        },
+        "enableAscForSqlOnVm": {
+            "value": "DeployIfNotExists"
+        },
+        "enableAscForKeyVault": {
+            "value": "DeployIfNotExists"
+        },
+        "enableAscForArm": {
+            "value": "DeployIfNotExists"
+        },
+        "enableAscForDns": {
+            "value": "DeployIfNotExists"
+        },
+        "enableAscForContainers": {
+            "value": "Disabled"
+        },
+        "enableSecuritySolution": {
+            "value": "No"
+        },
+        "enableAzOps": {
+            "value": "No"
+        },
+        "gitHubUserNameOrOrg": {
+            "value": ""
+        },
+        "repositoryName": {
+            "value": ""
+        },
+        "paToken": {
+            "value": null
+        },
+        "principalId": {
+            "value": []
+        },
+        "principalSecret": {
+            "value": null
+        },
+        "appId": {
+            "value": ""
+        },
+        "azOpsSubscriptionId": {
+            "value": ""
+        },
+        "connectivitySubscriptionId": {
+            "value": ""
+        },
+        "addressPrefix": {
+            "value": ""
+        },
+        "connectivityLocation": {
+            "value": "westeurope"
+        },
+        "enableDdoS": {
+            "value": "No"
+        },
+        "enablePrivateDnsZones": {
+            "value": "No"
+        },
+        "enableVpnGw": {
+            "value": "No"
+        },
+        "gwRegionalOrAz": {
+            "value": ""
+        },
+        "gwRegionalSku": {
+            "value": ""
+        },
+        "gwAzSku": {
+            "value": ""
+        },
+        "vpnGateWayScaleUnit": {
+            "value": "1"
+        },
+        "subnetMaskForGw": {
+            "value": ""
+        },
+        "enableErGw": {
+            "value": "No"
+        },
+        "erAzSku": {
+            "value": ""
+        },
+        "erRegionalSku": {
+            "value": ""
+        },
+        "erRegionalOrAz": {
+            "value": ""
+        },
+        "expressRouteScaleUnit": {
+            "value": "1"
+        },
+        "enableHub": {
+            "value": "No"
+        },
+        "enableAzFw": {
+            "value": "No"
+        },
+        "enableAzFwDnsProxy": {
+            "value": "No"
+        },
+        "firewallSku": {
+            "value": "Standard"
+        },
+        "firewallZones": {
+            "value": []
+        },
+        "subnetMaskForAzFw": {
+            "value": ""
+        },
+        "identitySubscriptionId": {
+            "value": ""
+        },
+        "denyRdpForIdentity": {
+            "value": "Yes"
+        },
+        "denySubnetWithoutNsgForIdentity": {
+            "value": "Yes"
+        },
+        "denyPipForIdentity": {
+            "value": "No"
+        },
+        "enableVmBackupForIdentity": {
+            "value": "Yes"
+        },
+        "identityAddressPrefix": {
+            "value": ""
+        },
+        "corpConnectedLzSubscriptionId": {
+            "value": []
+        },
+        "corpLzSubscriptionId": {
+            "value": []
+        },
+        "onlineLzSubscriptionId": {
+            "value": []
+        },
+        "enableLzDdoS": {
+            "value": "No"
+        },
+        "denyPublicEndpoints": {
+            "value": "Yes"
+        },
+        "enablePrivateDnsZonesForLzs": {
+            "value": "No"
+        },
+        "enableEncryptionInTransit": {
+            "value": "Yes"
+        },
+        "enableVmMonitoring": {
+            "value": "Yes"
+        },
+        "enableVmssMonitoring": {
+            "value": "Yes"
+        },
+        "enableAksPolicy": {
+            "value": "Yes"
+        },
+        "denyAksPrivileged": {
+            "value": "Yes"
+        },
+        "denyAksPrivilegedEscalation": {
+            "value": "Yes"
+        },
+        "denyHttpIngressForAks": {
+            "value": "Yes"
+        },
+        "denyDatabricksPip": {
+            "value": "Yes"
+        },
+        "denyDatabricksVnet": {
+            "value": "Yes"
+        },
+        "denyDatabricksSku": {
+            "value": "Yes"
+        },
+        "enableVmBackup": {
+            "value": "Yes"
+        },
+        "denyRdp": {
+            "value": "Yes"
+        },
+        "denySubnetWithoutNsg": {
+            "value": "Yes"
+        },
+        "denyIpForwarding": {
+            "value": "Yes"
+        },
+        "enableSqlEncryption": {
+            "value": "Yes"
+        },
+        "enableSqlAudit": {
+            "value": "Yes"
+        },
+        "enableStorageHttps": {
+            "value": "Yes"
+        },
+        "delayCount": {
+            "value": 30
+        },
+        "currentDateTimeUtcNow": {
+            "value": "20230315T134733Z"
+        }
+    }
+}
