@@ -3204,7 +3204,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('esLiteDeploymentNames').ddosHubLitePolicyDeploymentName]",
+            "name": "ddosHubLitePolicyDeploymentName",
             "location": "[deployment().location]",
             "dependsOn": [
                 "ddosLiteDeploymentName"
@@ -3240,7 +3240,7 @@
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').ddosHubLitePolicyDeploymentName)]"
+                "ddosHubLitePolicyDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -3327,7 +3327,7 @@
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').ddosHubLitePolicyDeploymentName)]"
+                "ddosHubLitePolicyDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -3399,7 +3399,7 @@
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').ddosHubLitePolicyDeploymentName)]",
+                "ddosHubLitePolicyDeploymentName",
                 "activityDiagnosticsPolicyDeploymentName",
                 "resourceDiagnosticsPolicyDeploymentName"
             ],
