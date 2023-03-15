@@ -1330,7 +1330,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName]",
+            "name": "resourceDiagnosticsPolicyDeploymentName",
             "location": "[deployment().location]",
             "dependsOn": [
                 "alz-mgmtsub-deploy",
@@ -1505,7 +1505,7 @@
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]"
+                "resourceDiagnosticsPolicyDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1532,7 +1532,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').ddosRgDeploymentName)]",
                 "activityDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]"
+                "resourceDiagnosticsPolicyDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1590,7 +1590,7 @@
             "dependsOn": [
                 "connectivitySubscriptionPlacement",
                 "activityDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]",
+                "resourceDiagnosticsPolicyDeploymentName",
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
@@ -1679,7 +1679,7 @@
             "dependsOn": [
                 "connectivitySubscriptionPlacement",
                 "activityDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]",
+                "resourceDiagnosticsPolicyDeploymentName",
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
@@ -1753,7 +1753,7 @@
             "dependsOn": [
                 "connectivitySubscriptionPlacement",
                 "activityDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]",
+                "resourceDiagnosticsPolicyDeploymentName",
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
@@ -1821,7 +1821,7 @@
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]",
+                "resourceDiagnosticsPolicyDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vnetConnectivityHubDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vwanConnectivityHubDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').nvaConnectivityHubDeploymentName)]"
@@ -1851,7 +1851,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').privateDnsZoneRgDeploymentName)]",
                 "activityDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]",
+                "resourceDiagnosticsPolicyDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vnetConnectivityHubDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vwanConnectivityHubDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').nvaConnectivityHubDeploymentName)]"
@@ -1954,7 +1954,7 @@
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vnetConnectivityHubDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vwanConnectivityHubDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').nvaConnectivityHubDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]",
+                "resourceDiagnosticsPolicyDeploymentName",
                 "corpLzs",
                 "onlineLzs"
             ],
@@ -2659,7 +2659,7 @@
                 "activityDiagnosticsPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]",
+                "resourceDiagnosticsPolicyDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').identitySubscriptionPlacement)]"
             ],
             "properties": {
@@ -2705,7 +2705,7 @@
                 "activityDiagnosticsPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]",
+                "resourceDiagnosticsPolicyDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').identitySubscriptionPlacement)]"
             ],
             "properties": {
@@ -2748,7 +2748,7 @@
                 "activityDiagnosticsPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]"
+                "resourceDiagnosticsPolicyDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -2782,7 +2782,7 @@
                 "activityDiagnosticsPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]"
+                "resourceDiagnosticsPolicyDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -2816,7 +2816,7 @@
                 "activityDiagnosticsPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]"
+                "resourceDiagnosticsPolicyDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -2854,7 +2854,7 @@
                 "activityDiagnosticsPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]",
+                "resourceDiagnosticsPolicyDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').vwanConnectivityHubLiteDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').vnetConnectivityHubLiteDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').nvaConnectivityHubLiteDeploymentName)]",
@@ -3143,7 +3143,7 @@
                 "asbPolicyDeploymentName",
                 "ascPolicyDeploymentName",
                 "ascGovPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]",
+                "resourceDiagnosticsPolicyDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').vnetConnectivityHubLiteDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').vwanConnectivityHubLiteDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').nvaConnectivityHubLiteDeploymentName)]"
@@ -3173,7 +3173,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').privateDnsZoneRgLiteDeploymentName)]",
                 "activityDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]",
+                "resourceDiagnosticsPolicyDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').vnetConnectivityHubLiteDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').vwanConnectivityHubLiteDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').nvaConnectivityHubLiteDeploymentName)]"
@@ -3401,7 +3401,7 @@
                 "ascGovPolicyDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLiteDeploymentNames').ddosHubLitePolicyDeploymentName)]",
                 "activityDiagnosticsPolicyDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').resourceDiagnosticsPolicyDeploymentName)]"
+                "resourceDiagnosticsPolicyDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
