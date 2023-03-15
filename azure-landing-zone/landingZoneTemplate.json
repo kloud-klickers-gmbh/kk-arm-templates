@@ -1674,7 +1674,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('deploymentNames').nvaConnectivityHubDeploymentName]",
+            "name": "nvaConnectivityHubDeploymentName",
             "location": "[deployment().location]",
             "dependsOn": [
                 "connectivitySubscriptionPlacement",
@@ -1748,7 +1748,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('deploymentNames').vwanConnectivityHubDeploymentName]",
+            "name": "vwanConnectivityHubDeploymentName",
             "location": "[deployment().location]",
             "dependsOn": [
                 "connectivitySubscriptionPlacement",
@@ -1823,8 +1823,8 @@
                 "ascGovPolicyDeploymentName",
                 "resourceDiagnosticsPolicyDeploymentName",
                 "vnetConnectivityHubDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vwanConnectivityHubDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').nvaConnectivityHubDeploymentName)]"
+                "vwanConnectivityHubDeploymentName",
+                "nvaConnectivityHubDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1853,8 +1853,8 @@
                 "activityDiagnosticsPolicyDeploymentName",
                 "resourceDiagnosticsPolicyDeploymentName",
                 "vnetConnectivityHubDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vwanConnectivityHubDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').nvaConnectivityHubDeploymentName)]"
+                "vwanConnectivityHubDeploymentName",
+                "nvaConnectivityHubDeploymentName"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1882,7 +1882,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
-            "name": "[variables('deploymentNames').azOpsRbacDeploymentName]",
+            "name": "azOpsRbacDeploymentName",
             "location": "[deployment().location]",
             "dependsOn": [
                 "alz-mgmtsub-deploy",
@@ -1913,7 +1913,7 @@
             "location": "[deployment().location]",
             "dependsOn": [
                 "alz-mgmtsub-deploy",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').azOpsRbacDeploymentName)]",
+                "azOpsRbacDeploymentName",
                 "platformLiteSubscriptionPlacement"
             ],
             "properties": {
@@ -1940,7 +1940,7 @@
             "name": "[variables('deploymentNames').azOpsSetupDeploymentName]",
             "dependsOn": [
                 "alz-mgmtsub-deploy",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').azOpsRbacDeploymentName)]",
+                "azOpsRbacDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').azOpsRgDeploymentName)]",
                 "platformLiteSubscriptionPlacement",
                 "[resourceId('Microsoft.Resources/deployments', variables('esLitedeploymentNames').vnetConnectivityHubLiteDeploymentName)]",
@@ -1952,8 +1952,8 @@
                 "activityDiagnosticsPolicyDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').identitySubscriptionPlacement)]",
                 "vnetConnectivityHubDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vwanConnectivityHubDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').nvaConnectivityHubDeploymentName)]",
+                "vwanConnectivityHubDeploymentName",
+                "nvaConnectivityHubDeploymentName",
                 "resourceDiagnosticsPolicyDeploymentName",
                 "corpLzs",
                 "onlineLzs"
@@ -2653,8 +2653,8 @@
             "location": "[parameters('connectivityLocation')]",
             "dependsOn": [
                 "vnetConnectivityHubDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vwanConnectivityHubDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').nvaConnectivityHubDeploymentName)]",
+                "vwanConnectivityHubDeploymentName",
+                "nvaConnectivityHubDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').policyDeploymentName)]",
                 "activityDiagnosticsPolicyDeploymentName",
                 "ascPolicyDeploymentName",
@@ -2699,8 +2699,8 @@
             "location": "[parameters('connectivityLocation')]",
             "dependsOn": [
                 "vnetConnectivityHubDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vwanConnectivityHubDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').nvaConnectivityHubDeploymentName)]",
+                "vwanConnectivityHubDeploymentName",
+                "nvaConnectivityHubDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').policyDeploymentName)]",
                 "activityDiagnosticsPolicyDeploymentName",
                 "ascPolicyDeploymentName",
@@ -2847,8 +2847,8 @@
             "location": "[parameters('connectivityLocation')]",
             "dependsOn": [
                 "vnetConnectivityHubDeploymentName",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').vwanConnectivityHubDeploymentName)]",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').nvaConnectivityHubDeploymentName)]",
+                "vwanConnectivityHubDeploymentName",
+                "nvaConnectivityHubDeploymentName",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').ddosLzPolicyDeploymentName)]",
                 "[resourceId('Microsoft.Resources/deployments', variables('deploymentNames').policyDeploymentName)]",
                 "activityDiagnosticsPolicyDeploymentName",
