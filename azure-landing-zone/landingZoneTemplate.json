@@ -3213,7 +3213,7 @@
                 "mode": "Incremental",
                 "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "uri": "[variables('esLiteDeploymentNames').ddosHubLitePolicyDeploymentName]"
+                    "uri": "DDoSHubPolicyLite"
                 },
                 "parameters": {
                     "ddosPlanResourceId": {
