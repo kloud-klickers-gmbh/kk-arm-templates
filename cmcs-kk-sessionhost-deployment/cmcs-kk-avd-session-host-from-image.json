@@ -28,7 +28,7 @@
         },
         "vmOSDiskSize": {
             "type": "int",
-            "defaultValue": 128
+            "defaultValue": 256
         },
         "storageAccountType": {
             "type": "string",
