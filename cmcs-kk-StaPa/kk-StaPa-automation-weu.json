@@ -70,7 +70,7 @@
         "PolicyName_daily_filestore": "[concat(parameters('prefix'),'-daily-backup-Filestore')]",
         "PolicyName_daily_profiles": "[concat(parameters('prefix'),'-daily-backup-Profiles')]",
         "PolicyName_daily_vm": "[concat(parameters('prefix'),'-daily-backup-VM')]",
-        "PolicyName_daily_wvd": "[concat(parameters('prefix'),'-daily-backup-WVD')]",
+        "PolicyName_daily_wvd": "[concat(parameters('prefix'),'-daily-backup-AVD')]",
         "PolicyRetentionDays_filestore": 60,
         "PolicyRetentionDays_profiles": 30,
         "PolicyRetentionDays_vm": 30,
@@ -1354,9 +1354,9 @@
                             "properties": {
                                 "securityRules": [
                                     {
-                                        "name": "allow_rdp_itsure_inbound",
+                                        "name": "allow_rdp_inbound",
                                         "properties": {
-                                            "description": "Allow RDP from IT sure Office Neu-Ulm and Azure",
+                                            "description": "Allow RDP from Office and Azure",
                                             "protocol": "Tcp",
                                             "sourcePortRange": "*",
                                             "destinationPortRange": "3389",
@@ -1646,9 +1646,9 @@
                             "properties": {
                                 "securityRules": [
                                     {
-                                        "name": "allow_rdp_itsure_inbound",
+                                        "name": "allow_rdp_inbound",
                                         "properties": {
-                                            "description": "Allow RDP from IT sure Office Neu-Ulm and Azure",
+                                            "description": "Allow RDP from Office and Azure",
                                             "protocol": "Tcp",
                                             "sourcePortRange": "*",
                                             "destinationPortRange": "3389",

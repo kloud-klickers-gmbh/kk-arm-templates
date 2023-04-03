@@ -51,7 +51,7 @@
     },
     "PolicyName_daily_wvd": {
         "type": "string",
-        "defaultValue": "cmcs-daily-backup-WVD"
+        "defaultValue": "cmcs-daily-backup-AVD"
     },
     "PolicyRetentionDays_wvd": {
         "type": "int",

@@ -29,14 +29,14 @@
         },
         "JumpHostAdminUsername": {
             "type": "String"
-        },        
+        },
         "JumpHostAdminPassword": {
             "type": "SecureString"
-        },        
+        },
         "JumpHostImageSku": {
             "defaultValue": "20h2-pro-g2",
             "type": "String"
-        },        
+        },
         "JumpHostPublicIpDnsName": {
             "type": "String"
         },
@@ -50,16 +50,16 @@
         "PolicyName_daily_filestore": "[concat(parameters('prefix'),'-daily-backup-Filestore')]",
         "PolicyName_daily_profiles": "[concat(parameters('prefix'),'-daily-backup-Profiles')]",
         "PolicyName_daily_vm": "[concat(parameters('prefix'),'-daily-backup-VM')]",
-        "PolicyName_daily_wvd": "[concat(parameters('prefix'),'-daily-backup-WVD')]",        
+        "PolicyName_daily_wvd": "[concat(parameters('prefix'),'-daily-backup-AVD')]",
         "PolicyRetentionDays_filestore": 60,
         "PolicyRetentionDays_profiles": 30,
         "PolicyRetentionDays_vm": 30,
         "PolicyRetentionDays_wvd": 7,
         "vaultStorageType": "LocallyRedundant",
         "enableCRR": false,
-        "BackupScheduleTime": "22:00",        
+        "BackupScheduleTime": "22:00",
         "JumpHostRgName": "[concat(parameters('prefix'),'-jumphost-rg')]",
-        "jumphostName": "[concat(parameters('prefix'),'-jumphost')]",        
+        "jumphostName": "[concat(parameters('prefix'),'-jumphost')]",
         "JumpHostVmSize": "Standard_B2S",
         "JumpHostDeployPublicIp": true,
         "vnetRgName": "[concat(parameters('prefix'),'-vnet-rg')]",
@@ -73,14 +73,14 @@
         "UpdateRgName": "[concat(parameters('prefix'),'-update-rg')]",
         "updateAutomationAccountName": "[concat(parameters('prefix'),'-update-automation')]",
         "udpateScheduleFrequency": "Week",
-        "udpateScheduleInterval": 1,        
+        "udpateScheduleInterval": 1,
         "updateDuration": "PT2H",
         "updateIncludedClassifications": "Critical, Security, Definition",
-        "updateRebootSetting": "IfRequired",        
+        "updateRebootSetting": "IfRequired",
         "updateScheduleName": "Weekly",
         "updateScheduleStartTime": "22:00:00",
         "updateScheduleTimeZone": "Europe/Berlin",
-        "updateScheduleWeekDays": ["Thursday"],        
+        "updateScheduleWeekDays": [ "Thursday" ],
         "ScheduleTimeZone": "W. Europe Standard Time"
     },
     "resources": [
@@ -95,23 +95,23 @@
                 "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8"
             }
         },
-        { 
-          "name": "VirtualMachines", 
-          "type": "Microsoft.Security/pricings", 
-          "apiVersion": "2022-03-01", 
-          "properties": { 
-              "subPlan": "P1", 
-              "pricingTier": "Standard" 
-          }
+        {
+            "name": "VirtualMachines",
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2022-03-01",
+            "properties": {
+                "subPlan": "P1",
+                "pricingTier": "Standard"
+            }
         },
-        { 
-          "name": "StorageAccounts", 
-          "type": "Microsoft.Security/pricings", 
-          "apiVersion": "2022-03-01", 
-          "properties": { 
-              "subPlan": "PerTransaction", 
-              "pricingTier": "Standard" 
-          }
+        {
+            "name": "StorageAccounts",
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2022-03-01",
+            "properties": {
+                "subPlan": "PerTransaction",
+                "pricingTier": "Standard"
+            }
         },
         {
             "type": "Microsoft.Resources/resourceGroups",
@@ -954,9 +954,9 @@
                             "properties": {
                                 "securityRules": [
                                     {
-                                        "name": "allow_rdp_itsure_inbound",
+                                        "name": "allow_rdp_inbound",
                                         "properties": {
-                                            "description": "Allow RDP from IT sure Office Neu-Ulm and Azure",
+                                            "description": "Allow RDP from Office and Azure",
                                             "protocol": "Tcp",
                                             "sourcePortRange": "*",
                                             "destinationPortRange": "3389",
@@ -1143,7 +1143,7 @@
                     }
                 }
             }
-        },        
+        },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
@@ -1246,9 +1246,9 @@
                             "properties": {
                                 "securityRules": [
                                     {
-                                        "name": "allow_rdp_itsure_inbound",
+                                        "name": "allow_rdp_inbound",
                                         "properties": {
-                                            "description": "Allow RDP from IT sure Office Neu-Ulm and Azure",
+                                            "description": "Allow RDP from Office and Azure",
                                             "protocol": "Tcp",
                                             "sourcePortRange": "*",
                                             "destinationPortRange": "3389",

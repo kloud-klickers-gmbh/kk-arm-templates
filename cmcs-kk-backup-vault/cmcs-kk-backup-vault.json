@@ -22,7 +22,7 @@
     "PolicyRetentionDays_profiles": 30,
     "PolicyName_daily_vm": "[concat(parameters('prefix') , '-daily-backup-VM')]",
     "PolicyRetentionDays_vm": 30,
-    "PolicyName_daily_wvd": "[concat(parameters('prefix') , '-daily-backup-WVD')]",
+    "PolicyName_daily_wvd": "[concat(parameters('prefix') , '-daily-backup-AVD')]",
     "PolicyRetentionDays_wvd": 7,
     "ScheduleTime": "22:00",
     "ScheduleTimeZone": "W. Europe Standard Time"
