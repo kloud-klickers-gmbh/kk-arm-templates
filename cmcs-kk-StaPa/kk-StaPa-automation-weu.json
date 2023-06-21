@@ -1206,6 +1206,149 @@
                 "workspaceId": "[concat(subscription().id,'/resourceGroups/',variables('SecurityRgName'),'/providers/microsoft.operationalinsights/workspaces/',variables('workspaceName'))]"
             }
         },
+
+
+        {
+            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+            "apiVersion": "2020-08-01",
+            "name": "[format('{0}/{1}', variables('workspaceName'), 'WindowsPerfProcessorPercentage')]",
+            "kind": "WindowsPerformanceCounter",
+            "properties": {
+                "objectName": "Processor",
+                "instanceName": "_Total",
+                "intervalSeconds": 60,
+                "counterName": "% Processor Time"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+            "apiVersion": "2020-08-01",
+            "name": "[format('{0}/{1}', variables('workspaceName'), 'WindowsPerfLogDiskFreeSpace')]",
+            "kind": "WindowsPerformanceCounter",
+            "properties": {
+                "objectName": "LogicalDisk",
+                "instanceName": "*",
+                "intervalSeconds": 300,
+                "counterName": "% Free Space"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+            "apiVersion": "2020-08-01",
+            "name": "[format('{0}/{1}', variables('workspaceName'), 'WindowsPerfLogDiskFreeMb')]",
+            "kind": "WindowsPerformanceCounter",
+            "properties": {
+                "objectName": "LogicalDisk",
+                "instanceName": "*",
+                "intervalSeconds": 300,
+                "counterName": "Free Megabytes"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+            "apiVersion": "2020-08-01",
+            "name": "[format('{0}/{1}', variables('workspaceName'), 'WindowsPerfMemBytesUsed')]",
+            "kind": "WindowsPerformanceCounter",
+            "properties": {
+                "objectName": "Memory",
+                "instanceName": "*",
+                "intervalSeconds": 60,
+                "counterName": "% Committed Bytes In Use"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+            "apiVersion": "2020-08-01",
+            "name": "[format('{0}/{1}', variables('workspaceName'), 'WindowsPerfMemAvailMbytes')]",
+            "kind": "WindowsPerformanceCounter",
+            "properties": {
+                "objectName": "Memory",
+                "instanceName": "*",
+                "intervalSeconds": 60,
+                "counterName": "Available MBytes"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+            "apiVersion": "2020-08-01",
+            "name": "[format('{0}/{1}', variables('workspaceName'), 'LinuxPerformanceLogicalDisk')]",
+            "kind": "LinuxPerformanceObject",
+            "properties": {
+                "objectName": "Logical Disk",
+                "instanceName": "*",
+                "intervalSeconds": 60,
+                "performanceCounters": [
+                    {
+                        "counterName": "% Free Space"
+                    },
+                    {
+                        "counterName": "Free Megabytes"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+            "apiVersion": "2020-08-01",
+            "name": "[format('{0}/{1}', variables('workspaceName'), 'LinuxPerformanceMemory')]",
+            "kind": "LinuxPerformanceObject",
+            "properties": {
+                "objectName": "Memory",
+                "instanceName": "*",
+                "intervalSeconds": 60,
+                "performanceCounters": [
+                    {
+                        "counterName": "% Used Memory"
+                    },
+                    {
+                        "counterName": "Available MBytes Memory"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+            "apiVersion": "2020-08-01",
+            "name": "[format('{0}/{1}', variables('workspaceName'), 'LinuxPerformanceProcessor')]",
+            "kind": "LinuxPerformanceObject",
+            "properties": {
+                "objectName": "Processor",
+                "instanceName": "*",
+                "intervalSeconds": 60,
+                "performanceCounters": [
+                    {
+                        "counterName": "% Processor Time"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+            ]
+        },
+
+
+
         {
             "type": "Microsoft.Security/autoProvisioningSettings",
             "apiVersion": "2017-08-01-preview",
