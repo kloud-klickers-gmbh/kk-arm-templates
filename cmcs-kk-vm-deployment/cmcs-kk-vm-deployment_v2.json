@@ -229,7 +229,7 @@
                         {
                             "name": "[parameters('vmname')]",
                             "type": "Microsoft.Compute/virtualMachines",
-                            "apiVersion": "2019-07-01",
+                            "apiVersion": "2022-11-01",
                             "location": "[parameters('location')]",
                             "dependsOn": [
                                 "[concat('Microsoft.Network/networkInterfaces/', parameters('vmName'))]"
