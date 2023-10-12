@@ -164,10 +164,10 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "communityGalleryImageId": "[if(equals(parameters('communityGalleryImageId'), 'None'), json('null'), parameters('communityGalleryImageId'))]",
-                        "publisher": "[if(equals(parameters('vmGalleryImagePublisher'), 'None'), json('null'), parameters('vmGalleryImagePublisher'))]",
-                        "offer": "[if(equals(parameters('vmGalleryImageOffer'), 'None'), json('null'), parameters('vmGalleryImageOffer'))]",
-                        "sku": "[if(equals(parameters('vmGalleryImageSKU'), 'None'), json('null'), parameters('vmGalleryImageSKU'))]",
+                        "communityGalleryImageId": "[if(equals(parameters('communityGalleryImageId'), 'None'), json('null'), array(parameters('communityGalleryImageId')))]",
+                        "publisher": "[if(equals(parameters('vmGalleryImagePublisher'), 'None'), json('null'), array(parameters('vmGalleryImagePublisher')))]",
+                        "offer": "[if(equals(parameters('vmGalleryImageOffer'), 'None'), json('null'), array(parameters('vmGalleryImageOffer')))]",
+                        "sku": "[if(equals(parameters('vmGalleryImageSKU'), 'None'), json('null'), array(parameters('vmGalleryImageSKU')))]",
                         "version": "[parameters('vmGalleryImageVersion')]"
                     },
                     "osDisk": {
