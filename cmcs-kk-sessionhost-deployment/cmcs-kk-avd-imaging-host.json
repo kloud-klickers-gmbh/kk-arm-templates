@@ -164,10 +164,10 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "communityGalleryImageId": "[if(empty(parameters('communityGalleryImageId')), json('null'), parameters('communityGalleryImageId'))]",
-                        "publisher": "[if(empty(parameters('vmGalleryImagePublisher')), json('null'), parameters('vmGalleryImagePublisher'))]",
-                        "offer": "[if(empty(parameters('vmGalleryImageOffer')), json('null'), parameters('vmGalleryImageOffer'))]",
-                        "sku": "[if(empty(parameters('vmGalleryImageSKU')), json('null'), parameters('vmGalleryImageSKU'))]",
+                        "communityGalleryImageId": "[if(equals(parameters('communityGalleryImageId'), 'None'), json('null'), parameters('communityGalleryImageId'))]",
+                        "publisher": "[if(equals(parameters('vmGalleryImagePublisher'), 'None'), json('null'), parameters('vmGalleryImagePublisher'))]",
+                        "offer": "[if(equals(parameters('vmGalleryImageOffer'), 'None'), json('null'), parameters('vmGalleryImageOffer'))]",
+                        "sku": "[if(equals(parameters('vmGalleryImageSKU'), 'None'), json('null'), parameters('vmGalleryImageSKU'))]",
                         "version": "[parameters('vmGalleryImageVersion')]"
                     },
                     "osDisk": {
