@@ -151,6 +151,7 @@
             }
         },
         {
+            "condition": "[not(equals(parameters('communityGalleryImageId'),'None'))]",
             "name": "[parameters('vmName')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2021-03-01",
@@ -164,10 +165,53 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "communityGalleryImageId": "[if(equals(parameters('communityGalleryImageId'), 'None'), json('null'), array(parameters('communityGalleryImageId')))]",
-                        "publisher": "[if(equals(parameters('vmGalleryImagePublisher'), 'None'), json('null'), array(parameters('vmGalleryImagePublisher')))]",
-                        "offer": "[if(equals(parameters('vmGalleryImageOffer'), 'None'), json('null'), array(parameters('vmGalleryImageOffer')))]",
-                        "sku": "[if(equals(parameters('vmGalleryImageSKU'), 'None'), json('null'), array(parameters('vmGalleryImageSKU')))]",
+                        "communityGalleryImageId": "[parameters('communityGalleryImageId')]"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "diskSizeGB": "[parameters('vmOSDiskSize')]",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('storageAccountType')]"
+                        }
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('vmName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmname')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true
+                    }
+                },
+                "licenseType": "Windows_Client"
+            }
+        },
+        {
+            "condition": "[not(equals(parameters('vmGalleryImageSKU'),'None'))]",
+            "name": "[parameters('vmName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2021-03-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('vmName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachineSize')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('vmGalleryImagePublisher')]",
+                        "offer": "[parameters('vmGalleryImageOffer')]",
+                        "sku": "[parameters('vmGalleryImageSKU')]",
                         "version": "[parameters('vmGalleryImageVersion')]"
                     },
                     "osDisk": {
