@@ -36,8 +36,9 @@
             "type": "string",
             "defaultValue": "latest"
         },
-        "imageId": {
-            "type": "string"
+        "communityGalleryImageId": {
+            "type": "string",
+            "defaultValue": ""
         },
         "vmOSDiskSize": {
             "type": "int",
@@ -163,11 +164,11 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[parameters('imageId')]"
-                        // "publisher": "[parameters('vmGalleryImagePublisher')]",
-                        // "offer": "[parameters('vmGalleryImageOffer')]",
-                        // "sku": "[parameters('vmGalleryImageSKU')]",
-                        // "version": "[parameters('vmGalleryImageVersion')]"
+                        "communityGalleryImageId": "[parameters('communityGalleryImageId')]",
+                        "publisher": "[parameters('vmGalleryImagePublisher')]",
+                        "offer": "[parameters('vmGalleryImageOffer')]",
+                        "sku": "[parameters('vmGalleryImageSKU')]",
+                        "version": "[parameters('vmGalleryImageVersion')]"
                     },
                     "osDisk": {
                         "createOption": "FromImage",
