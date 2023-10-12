@@ -22,15 +22,15 @@
         },
         "vmGalleryImageOffer": {
             "type": "string",
-            "defaultValue": "office-365"
+            "defaultValue": null
         },
         "vmGalleryImagePublisher": {
             "type": "string",
-            "defaultValue": "MicrosoftWindowsDesktop"
+            "defaultValue": null
         },
         "vmGalleryImageSKU": {
             "type": "string",
-            "defaultValue": "20h2-evd-o365pp-g2"
+            "defaultValue": null
         },
         "vmGalleryImageVersion": {
             "type": "string",
@@ -38,7 +38,7 @@
         },
         "communityGalleryImageId": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": null
         },
         "vmOSDiskSize": {
             "type": "int",
@@ -164,10 +164,10 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "communityGalleryImageId": "[parameters('communityGalleryImageId')]",
-                        "publisher": "[parameters('vmGalleryImagePublisher')]",
-                        "offer": "[parameters('vmGalleryImageOffer')]",
-                        "sku": "[parameters('vmGalleryImageSKU')]",
+                        "communityGalleryImageId": "[if(empty(parameters('communityGalleryImageId')), json('null'), parameters('communityGalleryImageId'))]",
+                        "publisher": "[if(empty(parameters('vmGalleryImagePublisher')), json('null'), parameters('vmGalleryImagePublisher'))]",
+                        "offer": "[if(empty(parameters('vmGalleryImageOffer')), json('null'), parameters('vmGalleryImageOffer'))]",
+                        "sku": "[if(empty(parameters('vmGalleryImageSKU')), json('null'), parameters('vmGalleryImageSKU'))]",
                         "version": "[parameters('vmGalleryImageVersion')]"
                     },
                     "osDisk": {
