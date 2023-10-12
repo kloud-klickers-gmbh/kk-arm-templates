@@ -36,7 +36,7 @@
             "type": "string",
             "defaultValue": "latest"
         },
-        "communityGalleryImageId": {
+        "ImageId": {
             "type": "string",
             "defaultValue": null
         },
@@ -151,7 +151,7 @@
             }
         },
         {
-            "condition": "[not(equals(parameters('communityGalleryImageId'),'None'))]",
+            "condition": "[not(equals(parameters('ImageId'),'None'))]",
             "name": "[parameters('vmName')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2021-03-01",
@@ -165,7 +165,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "communityGalleryImageId": "[parameters('communityGalleryImageId')]"
+                        "communityGalleryImageId": "[parameters('ImageId')]"
                     },
                     "osDisk": {
                         "createOption": "FromImage",
