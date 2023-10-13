@@ -154,7 +154,7 @@
             "condition": "[not(equals(parameters('ImageId'),'None'))]",
             "name": "[parameters('vmName')]",
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2021-03-01",
+            "apiVersion": "2022-03-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', parameters('vmName'))]"
