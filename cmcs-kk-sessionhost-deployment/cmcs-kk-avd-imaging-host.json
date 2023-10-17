@@ -165,7 +165,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "communityGalleryImageId": "[concat(parameters('ImageId'),'/Versions/latest')]"
+                        "id": "[concat(parameters('ImageId'),'/Versions/latest')]"
                     },
                     "osDisk": {
                         "createOption": "FromImage",
