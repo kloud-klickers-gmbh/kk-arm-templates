@@ -165,7 +165,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "/subscriptions/db60f9b7-28b8-49e3-8309-5daf2a3f00b3/resourceGroups/avd-image-rg/providers/Microsoft.Compute/galleries/kkimagegallery/images/kkwin10emulti21h2v1/versions/latest"
+                        "id": "[concat(parameters('ImageId'),'/Versions/latest')]"
                     },
                     "osDisk": {
                         "createOption": "FromImage",
