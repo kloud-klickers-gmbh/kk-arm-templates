@@ -296,60 +296,7 @@
                                     }
                                 }
                             },
-                            "tags": "[parameters('vmtags')]",
-                            "resources": [
-                                {
-                                    "type": "Microsoft.Compute/virtualMachines/extensions",
-                                    "apiVersion": "2021-03-01",
-                                    "dependsOn": [
-                                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
-                                    ],
-                                    "name": "[concat(parameters('vmname'),'/Microsoft.Azure.Security')]",
-                                    "location": "[parameters('location')]",
-                                    "properties": {
-                                        "publisher": "Microsoft.Azure.Security",
-                                        "type": "IaaSAntimalware",
-                                        "typeHandlerVersion": "1.3",
-                                        "autoUpgradeMinorVersion": true,
-                                        "settings": {
-                                            "AntimalwareEnabled": true,
-                                            "Exclusions": {
-                                                "Extensions": "",
-                                                "Paths": "",
-                                                "Processes": ""
-                                            },
-                                            "RealtimeProtectionEnabled": "true",
-                                            "ScheduledScanSettings": {
-                                                "isEnabled": "false",
-                                                "scanType": "Quick",
-                                                "day": "7",
-                                                "time": "120"
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    "type": "Microsoft.Compute/virtualMachines/extensions",
-                                    "apiVersion": "2021-03-01",
-                                    "dependsOn": [
-                                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
-                                    ],
-                                    "name": "[concat(parameters('vmname'),'/MicrosoftMonitoringAgent')]",
-                                    "location": "[parameters('location')]",
-                                    "properties": {
-                                        "autoUpgradeMinorVersion": true,
-                                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                                        "type": "MicrosoftMonitoringAgent",
-                                        "settings": {
-                                            "workspaceId": "[reference(variables('workspaceId'), '2015-03-20').customerid]"
-                                        },
-                                        "protectedSettings": {
-                                            "workspaceKey": "[listKeys(variables('workspaceId'), '2015-03-20').primarySharedKey]"
-                                        },
-                                        "typeHandlerVersion": "1.0"
-                                    }
-                                }
-                            ]
+                            "tags": "[parameters('vmtags')]"
                         },
                         {
                             "condition": "[not(equals(parameters('imagesku'),'None'))]",
@@ -413,60 +360,58 @@
                                     }
                                 }
                             },
-                            "tags": "[parameters('vmtags')]",
-                            "resources": [
-                                {
-                                    "type": "Microsoft.Compute/virtualMachines/extensions",
-                                    "apiVersion": "2021-03-01",
-                                    "dependsOn": [
-                                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
-                                    ],
-                                    "name": "[concat(parameters('vmname'),'/Microsoft.Azure.Security')]",
-                                    "location": "[parameters('location')]",
-                                    "properties": {
-                                        "publisher": "Microsoft.Azure.Security",
-                                        "type": "IaaSAntimalware",
-                                        "typeHandlerVersion": "1.3",
-                                        "autoUpgradeMinorVersion": true,
-                                        "settings": {
-                                            "AntimalwareEnabled": true,
-                                            "Exclusions": {
-                                                "Extensions": "",
-                                                "Paths": "",
-                                                "Processes": ""
-                                            },
-                                            "RealtimeProtectionEnabled": "true",
-                                            "ScheduledScanSettings": {
-                                                "isEnabled": "false",
-                                                "scanType": "Quick",
-                                                "day": "7",
-                                                "time": "120"
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    "type": "Microsoft.Compute/virtualMachines/extensions",
-                                    "apiVersion": "2021-03-01",
-                                    "dependsOn": [
-                                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
-                                    ],
-                                    "name": "[concat(parameters('vmname'),'/MicrosoftMonitoringAgent')]",
-                                    "location": "[parameters('location')]",
-                                    "properties": {
-                                        "autoUpgradeMinorVersion": true,
-                                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                                        "type": "MicrosoftMonitoringAgent",
-                                        "settings": {
-                                            "workspaceId": "[reference(variables('workspaceId'), '2015-03-20').customerid]"
-                                        },
-                                        "protectedSettings": {
-                                            "workspaceKey": "[listKeys(variables('workspaceId'), '2015-03-20').primarySharedKey]"
-                                        },
-                                        "typeHandlerVersion": "1.0"
+                            "tags": "[parameters('vmtags')]"
+                        },
+                        {
+                            "type": "Microsoft.Compute/virtualMachines/extensions",
+                            "apiVersion": "2021-03-01",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
+                            ],
+                            "name": "[concat(parameters('vmname'),'/Microsoft.Azure.Security')]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "publisher": "Microsoft.Azure.Security",
+                                "type": "IaaSAntimalware",
+                                "typeHandlerVersion": "1.3",
+                                "autoUpgradeMinorVersion": true,
+                                "settings": {
+                                    "AntimalwareEnabled": true,
+                                    "Exclusions": {
+                                        "Extensions": "",
+                                        "Paths": "",
+                                        "Processes": ""
+                                    },
+                                    "RealtimeProtectionEnabled": "true",
+                                    "ScheduledScanSettings": {
+                                        "isEnabled": "false",
+                                        "scanType": "Quick",
+                                        "day": "7",
+                                        "time": "120"
                                     }
                                 }
-                            ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Compute/virtualMachines/extensions",
+                            "apiVersion": "2021-03-01",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
+                            ],
+                            "name": "[concat(parameters('vmname'),'/MicrosoftMonitoringAgent')]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "autoUpgradeMinorVersion": true,
+                                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                                "type": "MicrosoftMonitoringAgent",
+                                "settings": {
+                                    "workspaceId": "[reference(variables('workspaceId'), '2015-03-20').customerid]"
+                                },
+                                "protectedSettings": {
+                                    "workspaceKey": "[listKeys(variables('workspaceId'), '2015-03-20').primarySharedKey]"
+                                },
+                                "typeHandlerVersion": "1.0"
+                            }
                         },
                         {
                             "type": "Microsoft.Resources/tags",
