@@ -298,70 +298,70 @@
                             },
                             "tags": "[parameters('vmtags')]"
                         },
-                        {
-                            "condition": "[not(equals(parameters('imagesku'),'None'))]",
-                            "name": "[parameters('vmname')]",
-                            "type": "Microsoft.Compute/virtualMachines",
-                            "apiVersion": "2022-11-01",
-                            "location": "[parameters('location')]",
-                            "dependsOn": [
-                                "[concat('Microsoft.Network/networkInterfaces/', parameters('vmName'))]"
-                            ],
-                            "properties": {
-                                "licenseType": "[if(equals('none',parameters('licensetype')),null(),parameters('licensetype'))]",
-                                "hardwareProfile": {
-                                    "vmSize": "[parameters('vmsize')]"
-                                },
-                                "storageProfile": {
-                                    "osDisk": {
-                                        "diskSizeGB": "[parameters('disksize')]",
-                                        "createOption": "fromImage",
-                                        "name": "[concat(parameters('vmname'),'-OsDisk')]",
-                                        "managedDisk": {
-                                            "storageAccountType": "[parameters('DiskType')]"
-                                        }
-                                    },
-                                    "Copy": [
-                                        {
-                                            "name": "dataDisks",
-                                            "count": "[length(parameters('datadisks'))]",
-                                            "input": {
-                                                "diskSizeGB": "[parameters('datadisks')[copyIndex('dataDisks')].size]",
-                                                "lun": "[copyIndex('dataDisks')]",
-                                                "createoption": "Empty",
-                                                "name": "[concat(parameters('vmname'),'-DataDisk-',copyIndex('dataDisks',1))]",
-                                                "managedDisk": {
-                                                    "storageAccountType": "[parameters('datadisks')[copyIndex('dataDisks')].sku]"
-                                                }
-                                            }
-                                        }
-                                    ],
-                                    "imageReference": {
-                                        "publisher": "MicrosoftWindowsServer",
-                                        "offer": "[parameters('imageoffer')]",
-                                        "sku": "[parameters('imagesku')]",
-                                        "version": "latest"
-                                    }
-                                },
-                                "networkProfile": {
-                                    "networkInterfaces": [
-                                        {
-                                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('vmName'))]"
-                                        }
-                                    ]
-                                },
-                                "osProfile": {
-                                    "computerName": "[parameters('vmName')]",
-                                    "adminUsername": "[parameters('vmUsername')]",
-                                    "adminPassword": "[parameters('vmPassword')]",
-                                    "windowsConfiguration": {
-                                        "enableAutomaticUpdates": true,
-                                        "provisionVmAgent": true
-                                    }
-                                }
-                            },
-                            "tags": "[parameters('vmtags')]"
-                        },
+                        // {
+                        //     "condition": "[not(equals(parameters('imagesku'),'None'))]",
+                        //     "name": "[parameters('vmname')]",
+                        //     "type": "Microsoft.Compute/virtualMachines",
+                        //     "apiVersion": "2022-11-01",
+                        //     "location": "[parameters('location')]",
+                        //     "dependsOn": [
+                        //         "[concat('Microsoft.Network/networkInterfaces/', parameters('vmName'))]"
+                        //     ],
+                        //     "properties": {
+                        //         "licenseType": "[if(equals('none',parameters('licensetype')),null(),parameters('licensetype'))]",
+                        //         "hardwareProfile": {
+                        //             "vmSize": "[parameters('vmsize')]"
+                        //         },
+                        //         "storageProfile": {
+                        //             "osDisk": {
+                        //                 "diskSizeGB": "[parameters('disksize')]",
+                        //                 "createOption": "fromImage",
+                        //                 "name": "[concat(parameters('vmname'),'-OsDisk')]",
+                        //                 "managedDisk": {
+                        //                     "storageAccountType": "[parameters('DiskType')]"
+                        //                 }
+                        //             },
+                        //             "Copy": [
+                        //                 {
+                        //                     "name": "dataDisks",
+                        //                     "count": "[length(parameters('datadisks'))]",
+                        //                     "input": {
+                        //                         "diskSizeGB": "[parameters('datadisks')[copyIndex('dataDisks')].size]",
+                        //                         "lun": "[copyIndex('dataDisks')]",
+                        //                         "createoption": "Empty",
+                        //                         "name": "[concat(parameters('vmname'),'-DataDisk-',copyIndex('dataDisks',1))]",
+                        //                         "managedDisk": {
+                        //                             "storageAccountType": "[parameters('datadisks')[copyIndex('dataDisks')].sku]"
+                        //                         }
+                        //                     }
+                        //                 }
+                        //             ],
+                        //             "imageReference": {
+                        //                 "publisher": "MicrosoftWindowsServer",
+                        //                 "offer": "[parameters('imageoffer')]",
+                        //                 "sku": "[parameters('imagesku')]",
+                        //                 "version": "latest"
+                        //             }
+                        //         },
+                        //         "networkProfile": {
+                        //             "networkInterfaces": [
+                        //                 {
+                        //                     "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('vmName'))]"
+                        //                 }
+                        //             ]
+                        //         },
+                        //         "osProfile": {
+                        //             "computerName": "[parameters('vmName')]",
+                        //             "adminUsername": "[parameters('vmUsername')]",
+                        //             "adminPassword": "[parameters('vmPassword')]",
+                        //             "windowsConfiguration": {
+                        //                 "enableAutomaticUpdates": true,
+                        //                 "provisionVmAgent": true
+                        //             }
+                        //         }
+                        //     },
+                        //     "tags": "[parameters('vmtags')]"
+                        // },
                         {
                             "type": "Microsoft.Compute/virtualMachines/extensions",
                             "apiVersion": "2021-03-01",
