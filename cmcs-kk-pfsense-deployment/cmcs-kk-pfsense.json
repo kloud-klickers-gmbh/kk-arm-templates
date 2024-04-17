@@ -31,7 +31,7 @@
         },
         "imageoffer": {
             "type": "string",
-            "defaultvalue": "netgate-pfsense-plus-fw-vpn-router"
+            "defaultvalue": "pfsense-plus-public-tac-lite"
         },
         "imagesku": {
             "type": "string",
@@ -239,7 +239,7 @@
                             "plan": {
                                 "name": "netgate-pfsense-plus",
                                 "publisher": "netgate",
-                                "product": "netgate-pfsense-plus-fw-vpn-router"
+                                "product": "pfsense-plus-public-tac-lite"
                             },
                             "tags": "[parameters('vmtags')]",
                             "resources": [
