@@ -46,7 +46,7 @@
                 "typeHandlerVersion": "2.9",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/AVD-FSLShrink/DSC-AVD-FSLShrink.zip",
+                    "modulesUrl": "https://raw.githubusercontent.com/kloud-klickers-gmbh/kk-dsc-extensions/main/AVD-FSLShrink/DSC-AVD-FSLShrink.zip",
                     "configurationFunction": "DSC-AVD-FSLShrink.ps1\\FSLShrink",
                     "properties": {
                         "ProfilesUNCPath": "[parameters('ProfilesUNCPath')]",

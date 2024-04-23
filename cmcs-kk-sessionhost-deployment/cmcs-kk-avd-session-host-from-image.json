@@ -173,7 +173,7 @@
                 "typeHandlerVersion": "2.73",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/AVD-PrepareRolloutHost/DSC-AVD-PrepareRolloutHost.zip",
+                    "modulesUrl": "https://raw.githubusercontent.com/kloud-klickers-gmbh/kk-dsc-extensions/main/AVD-PrepareRolloutHost/DSC-AVD-PrepareRolloutHost.zip",
                     "configurationFunction": "DSC-AVD-PrepareRolloutHost.ps1\\PrepareHost",
                     "properties": {
                         "registration": "[parameters('registration')]",

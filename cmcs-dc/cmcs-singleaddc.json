@@ -161,7 +161,7 @@
                 "type": "DSC",
                 "typeHandlerVersion": "2.9",
                 "settings": {
-                    "modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/CMCS-InstallSingleADDC/DSC-CMCS-InstallSingleADDC.zip",
+                    "modulesUrl": "https://raw.githubusercontent.com/kloud-klickers-gmbh/kk-dsc-extensions/main/CMCS-InstallSingleADDC/DSC-CMCS-InstallSingleADDC.zip",
                     "configurationFunction": "DSC-CMCS-InstallSingleADDC.ps1\\InstallSingleADDC",
                     "properties": {
                         "DomainName": "[parameters('DomainName')]",

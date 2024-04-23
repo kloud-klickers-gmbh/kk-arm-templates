@@ -199,7 +199,7 @@
                 "typeHandlerVersion": "2.73",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/AVD-PrepareHost/DSC-AVD-PrepareHost.zip",
+                    "modulesUrl": "https://raw.githubusercontent.com/kloud-klickers-gmbh/kk-dsc-extensions/main/AVD-PrepareHost/DSC-AVD-PrepareHost.zip",
                     "configurationFunction": "DSC-AVD-PrepareHost.ps1\\PrepareHost",
                     "properties": {
                         "VHDLocations": "[parameters('VHDLocations')]",

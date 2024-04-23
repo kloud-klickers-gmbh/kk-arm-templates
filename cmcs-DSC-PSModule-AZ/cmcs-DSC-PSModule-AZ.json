@@ -22,7 +22,7 @@
                 "typeHandlerVersion": "2.73",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "modulesUrl": "https://raw.githubusercontent.com/IT-sure/Azure-DSC-Extensions/main/Install-PSModule-AZ/DSC-Install-PSModule-AZ.zip",
+                    "modulesUrl": "https://raw.githubusercontent.com/kloud-klickers-gmbh/kk-dsc-extensions/main/Install-PSModule-AZ/DSC-Install-PSModule-AZ.zip",
                     "configurationFunction": "DSC-Install-PSModule-AZ.ps1\\InstallPSAz"
                 }
             }
