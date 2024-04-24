@@ -8,6 +8,9 @@
     "location": {
       "type": "string"
     },
+    "VNetName": {
+      "type": "string"
+    },
     "GwSubnetAddressPrefix": {
       "type": "string"
     },
@@ -25,7 +28,6 @@
     }
   },
   "variables": {
-    "VNetName": "[concat(parameters('Prefix'),'-vnet')]",
     "GwName": "[concat(parameters('Prefix'),'-vnetgw')]",
     "GwPublicIpName": "[concat(variables('GwName'), '-pip')]"
   },
@@ -33,7 +35,7 @@
   {
     "type": "Microsoft.Network/virtualNetworks/subnets",
     "apiVersion": "2020-11-01",
-    "name": "[concat(variables('VNetName'), '/GatewaySubnet')]",
+    "name": "[concat(parameters('VNetName'), '/GatewaySubnet')]",
     "location": "[parameters('location')]",
     "properties": {
       "addressPrefix": "[parameters('GwSubnetAddressPrefix')]"
@@ -64,7 +66,7 @@
     "location": "[parameters('location')]",
     "dependsOn": [
       "[resourceId('Microsoft.Network/publicIPAddresses', variables('GwPublicIpName'))]",
-      "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VNetName'), 'GatewaySubnet')]"
+      "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), 'GatewaySubnet')]"
     ],
     "properties": {
       "enablePrivateIpAddress": false,
@@ -77,7 +79,7 @@
               "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('GwPublicIpName'))]"
             },
             "subnet": {
-              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VNetName'), 'GatewaySubnet')]"
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), 'GatewaySubnet')]"
             }
           }
         }
