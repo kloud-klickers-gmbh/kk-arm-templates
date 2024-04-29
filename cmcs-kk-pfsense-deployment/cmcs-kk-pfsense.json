@@ -35,7 +35,7 @@
         },
         "imagesku": {
             "type": "string",
-            "defaultValue": "netgate-pfsense-plus"
+            "defaultValue": "pfsense-plus-public-tac-lite"
         },
         "vmsize": {
             "type": "string"
