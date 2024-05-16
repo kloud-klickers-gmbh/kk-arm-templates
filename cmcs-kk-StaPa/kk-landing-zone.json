@@ -1000,7 +1000,7 @@
             "apiVersion": "2021-04-01",
             "name": "Update-Automation-Assignments-Deployment",
             "dependsOn": [
-                "[resourceId('Microsoft.Maintenance/maintenanceConfigurations', variables('maintenanceName'))]"
+                "[concat('Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]"
             ],
             "properties": {
                 "mode": "Incremental",
