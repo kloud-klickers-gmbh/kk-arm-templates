@@ -55,15 +55,10 @@
         "JumpHostVmSize": {
             "type": "string",
             "defaultValue": "Standard_B2S"
-        },
-        "DeployUpdateAutomationScope": {
-            "type": "bool",
-            "defaultValue": false
         }
     },
     "variables": {
-        "loganalyticslocation": "westeurope",
-        "automationlocation": "westeurope",
+        "updateLocation": "westeurope",
         "backupRgName": "[concat(parameters('prefix'),'-backup-rg')]",
         "vaultName": "[concat(parameters('prefix'),'-backup-lrs')]",
         "vaultName_grs": "[concat(parameters('prefix'),'-backup-grs')]",
@@ -88,16 +83,13 @@
         "SubnetLANName": "[concat(parameters('prefix'),'-lan-subnet')]",
         "SubnetWANName": "[concat(parameters('prefix'),'-wan-subnet')]",
         "NSGName": "[concat(parameters('prefix'),'-nsg')]",
-        "SecurityRgName": "[concat(parameters('prefix'),'-security-rg')]",
-        "workspaceName": "[concat(parameters('prefix'),'-loganalytics')]",
         "UpdateRgName": "[concat(parameters('prefix'),'-update-rg')]",
-        "updateAutomationAccountName": "[concat(parameters('prefix'),'-update-automation')]",
+        "updateScheduleName": "[concat(parameters('prefix'),'-update-schedule')]",
         "udpateScheduleFrequency": "Week",
         "udpateScheduleInterval": 1,
         "updateDuration": "PT2H",
         "updateIncludedClassifications": "Critical, Security, Definition",
         "updateRebootSetting": "IfRequired",
-        "updateScheduleName": "Weekly",
         "updateScheduleStartTime": "22:00:00",
         "updateScheduleTimeZone": "Europe/Berlin",
         "updateScheduleWeekDays": [ "Thursday" ],
@@ -149,7 +141,7 @@
         {
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2020-09-01",
-            "name": "[concat('ASC Default - (',subscription().subscriptionId,')')]",
+            "name": "[concat('Microsoft Cloud Security Default - (',subscription().subscriptionId,')')]",
             "location": "[parameters('location')]",
             "properties": {
                 "displayName": "KK Security Center",
@@ -160,7 +152,7 @@
         {
             "name": "VirtualMachines",
             "dependsOn": [
-                "[concat('ASC Default - (',subscription().subscriptionId,')')]"
+                "[concat('Microsoft Cloud Security Default - (',subscription().subscriptionId,')')]"
             ],
             "type": "Microsoft.Security/pricings",
             "apiVersion": "2022-03-01",
@@ -172,7 +164,7 @@
         {
             "name": "StorageAccounts",
             "dependsOn": [
-                "[concat('ASC Default - (',subscription().subscriptionId,')')]"
+                "[concat('Microsoft Cloud Security Default - (',subscription().subscriptionId,')')]"
             ],
             "type": "Microsoft.Security/pricings",
             "apiVersion": "2022-03-01",
@@ -198,15 +190,8 @@
         {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
-            "name": "[variables('SecurityRgName')]",
-            "location": "[variables('loganalyticslocation')]",
-            "properties": {}
-        },
-        {
-            "type": "Microsoft.Resources/resourceGroups",
-            "apiVersion": "2020-06-01",
             "name": "[variables('UpdateRgName')]",
-            "location": "[variables('automationlocation')]",
+            "location": "[variables('updateLocation')]",
             "properties": {}
         },
         {
@@ -219,7 +204,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "backupDeployment",
+            "name": "Backup Vault LRS",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/resourceGroups', variables('backupRgName'))]"
             ],
@@ -547,7 +532,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "backupDeploymentGRS",
+            "name": "Backup Vault GRS",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/resourceGroups', variables('backupRgName'))]"
             ],
@@ -873,487 +858,41 @@
             "resourceGroup": "[variables('backupRgName')]"
         },
         {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2021-04-01",
-            "name": "createautomationaccount",
-            "dependsOn": [
-                "[variables('UpdateRgName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "expressionEvaluationOptions": {
-                    "scope": "inner"
-                },
-                "parameters": {
-                    "updateAutomationAccountName": {
-                        "value": "[variables('updateAutomationAccountName')]"
-                    },
-                    "location": {
-                        "value": "[variables('automationlocation')]"
-                    },
-                    "tags": {
-                        "value": "[parameters('tags')]"
-                    },
-                    "updateScheduleName": {
-                        "value": "[variables('updateScheduleName')]"
-                    },
-                    "updateScheduleStartTime": {
-                        "value": "[variables('updateScheduleStartTime')]"
-                    },
-                    "udpateScheduleInterval": {
-                        "value": "[variables('udpateScheduleInterval')]"
-                    },
-                    "udpateScheduleFrequency": {
-                        "value": "[variables('udpateScheduleFrequency')]"
-                    },
-                    "updateScheduleTimeZone": {
-                        "value": "[variables('updateScheduleTimeZone')]"
-                    },
-                    "updateIncludedClassifications": {
-                        "value": "[variables('updateIncludedClassifications')]"
-                    },
-                    "updateRebootSetting": {
-                        "value": "[variables('updateRebootSetting')]"
-                    },
-                    "updateDuration": {
-                        "value": "[variables('updateDuration')]"
-                    },
-                    "updateScheduleWeekDays": {
-                        "value": "[variables('updateScheduleWeekDays')]"
-                    }
-                },
-                "template": {
-                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                    "contentVersion": "1.0.0.0",
-                    "parameters": {
-                        "updateAutomationAccountName": {
-                            "type": "String"
-                        },
-                        "location": {
-                            "type": "string"
-                        },
-                        "tags": {
-                            "type": "object"
-                        },
-                        "updateScheduleName": {
-                            "type": "string"
-                        },
-                        "updateScheduleStartTime": {
-                            "type": "string"
-                        },
-                        "udpateScheduleInterval": {
-                            "type": "int"
-                        },
-                        "udpateScheduleFrequency": {
-                            "type": "string"
-                        },
-                        "updateScheduleTimeZone": {
-                            "type": "string"
-                        },
-                        "updateIncludedClassifications": {
-                            "type": "string"
-                        },
-                        "updateRebootSetting": {
-                            "type": "string"
-                        },
-                        "updateDuration": {
-                            "type": "string"
-                        },
-                        "updateScheduleWeekDays": {
-                            "type": "array"
-                        }
-                    },
-                    "variables": {
-                        "location": "[parameters('location')]"
-                    },
-                    "resources": [
-                        {
-                            "type": "Microsoft.Automation/automationAccounts",
-                            "apiVersion": "2020-01-13-preview",
-                            "name": "[parameters('updateAutomationAccountName')]",
-                            "location": "[variables('location')]",
-                            "tags": "[parameters('tags')]",
-                            "properties": {
-                                "sku": {
-                                    "name": "Basic"
-                                }
-                            }
-                        },
-                        {
-                            "type": "Microsoft.Automation/automationAccounts/softwareUpdateConfigurations",
-                            "apiVersion": "2019-06-01",
-                            "name": "[concat(parameters('updateAutomationAccountName'), '/', parameters('updateScheduleName'))]",
-                            "dependsOn": [
-                                "[resourceId('Microsoft.Automation/automationAccounts', parameters('updateAutomationAccountName'))]"
-                            ],
-                            "properties": {
-                                "updateConfiguration": {
-                                    "operatingSystem": "Windows",
-                                    "windows": {
-                                        "includedUpdateClassifications": "[parameters('updateIncludedClassifications')]",
-                                        "rebootSetting": "[parameters('updateRebootSetting')]"
-                                    },
-                                    "targets": {
-                                        "azureQueries": [
-                                            {
-                                                "scope": [
-                                                    "[subscription().id]"
-                                                ],
-                                                "tagSettings": {
-                                                    "tags": {},
-                                                    "filterOperator": "Any"
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "duration": "[parameters('updateDuration')]"
-                                },
-                                "tasks": {},
-                                "scheduleInfo": {
-                                    "startTime": "[parameters('updateScheduleStartTime')]",
-                                    "expiryTime": "8999-12-31T23:59:59Z",
-                                    "interval": "[parameters('udpateScheduleInterval')]",
-                                    "frequency": "[parameters('udpateScheduleFrequency')]",
-                                    "timeZone": "[parameters('updateScheduleTimeZone')]",
-                                    "advancedSchedule": {
-                                        "weekDays": "[parameters('updateScheduleWeekDays')]"
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                }
+            "type": "Microsoft.Authorization/policyassignments",
+            "apiVersion": "2023-04-01",
+            "name": "[concat('Update Policy Windows - (',subscription().subscriptionId,')')]",
+            "location": "[parameters('updateLocation')]",
+            "identity": {
+                "type": "SystemAssigned"
             },
-            "resourceGroup": "[variables('UpdateRgName')]"
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2021-04-01",
-            "name": "createloganalytics",
-            "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('UpdateRgName'))]",
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('SecurityRgName'))]",
-                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('UpdateRgName'),'/providers/Microsoft.Resources/deployments/createautomationaccount')]"
-            ],
             "properties": {
-                "mode": "Incremental",
-                "expressionEvaluationOptions": {
-                    "scope": "inner"
-                },
+                "displayName": "KK Update Policy Windows",
+                "enforcementMode": "Default",
+                "policyDefinitionId": "/providers/microsoft.authorization/policydefinitions/59efceea-0c96-497e-a4a1-4eb2290dac15",
+                "nonComplianceMessages": [
+                    "The VM is not compliant with the periodic update policy."
+                ],
+                "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
                 "parameters": {
-                    "location": {
-                        "value": "[variables('loganalyticslocation')]"
+                    "osType": {
+                        "value": "Windows"
                     },
-                    "tags": {
-                        "value": "[parameters('tags')]"
-                    },
-                    "workspaceName": {
-                        "value": "[variables('workspaceName')]"
-                    },
-                    "updateAutomationAccountRgName": {
-                        "value": "[variables('updateRgName')]"
-                    },
-                    "updateAutomationAccountName": {
-                        "value": "[variables('updateAutomationAccountName')]"
-                    },
-                    "DeployUpdateAutomationScope": {
-                        "value": "[parameters('DeployUpdateAutomationScope')]"
+                    "assessmentMode": {
+                        "value": "AutomaticByPlatform"
                     }
-                },
-                "template": {
-                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                    "contentVersion": "1.0.0.0",
-                    "parameters": {
-                        "location": {
-                            "type": "string"
-                        },
-                        "tags": {
-                            "type": "object"
-                        },
-                        "workspaceName": {
-                            "type": "string"
-                        },
-                        "updateAutomationAccountRgName": {
-                            "type": "string"
-                        },
-                        "updateAutomationAccountName": {
-                            "type": "string"
-                        },
-                        "DeployUpdateAutomationScope": {
-                            "type": "bool"
-                        }
-
-                    },
-                    "variables": {
-                        "location": "[parameters('location')]"
-                    },
-                    "resources": [
-                        {
-                            "type": "microsoft.operationalinsights/workspaces",
-                            "apiVersion": "2020-10-01",
-                            "name": "[parameters('workspaceName')]",
-                            "location": "[variables('location')]",
-                            "tags": "[parameters('tags')]",
-                            "properties": {
-                                "sku": {
-                                    "name": "PerGB2018"
-                                }
-                            }
-                        },
-                        {
-                            "type": "microsoft.operationalinsights/workspaces/linkedservices",
-                            "apiVersion": "2020-08-01",
-                            "condition": "[if(not(equals(parameters('location'),'germanywestcentral')),true(),false())]",
-                            "name": "[concat(parameters('workspaceName'), '/Automation')]",
-                            "dependsOn": [
-                                "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
-                            ],
-                            "properties": {
-                                "resourceId": "[resourceId(parameters('updateAutomationAccountRgName'), 'Microsoft.Automation/automationAccounts', parameters('updateAutomationAccountName'))]"
-                            }
-                        },
-                        {
-                            "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
-                            "apiVersion": "2020-08-01",
-                            "name": "[concat(parameters('workspaceName'), '/updates|microsoftdefaultcomputergroup')]",
-                            "condition": "[parameters('DeployUpdateAutomationScope')]",
-                            "dependsOn": [
-                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
-                            ],
-                            "properties": {
-                                "etag": "*",
-                                "category": "Updates",
-                                "displayName": "MicrosoftDefaultComputerGroup",
-                                "query": "Heartbeat | where Computer in~ (\"\") or VMUUID in~ (\"\") | distinct Computer",
-                                "tags": [
-                                    {
-                                        "name": "Group",
-                                        "value": "Computer"
-                                    }
-                                ],
-                                "functionAlias": "Updates__MicrosoftDefaultComputerGroup"
-                            }
-                        },
-                        {
-                            "type": "Microsoft.OperationalInsights/workspaces/configurationScopes",
-                            "apiVersion": "2015-11-01-preview",
-                            "name": "[concat(parameters('workspaceName'), '/MicrosoftDefaultScopeConfig-Updates')]",
-                            "condition": "[parameters('DeployUpdateAutomationScope')]",
-                            "location": "[variables('location')]",
-                            "dependsOn": [
-                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
-                            ],
-                            "kind": "SearchComputerGroup",
-                            "properties": {
-                                "Include": [
-                                    "Updates__MicrosoftDefaultComputerGroup"
-                                ]
-                            }
-                        },
-                        {
-                            "type": "Microsoft.OperationsManagement/solutions",
-                            "apiVersion": "2015-11-01-preview",
-                            "name": "[concat('SecurityCenterFree(', parameters('workspaceName'), ')')]",
-                            "location": "[variables('location')]",
-                            "dependsOn": [
-                                "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
-                            ],
-                            "tags": "[parameters('tags')]",
-                            "plan": {
-                                "name": "[concat('SecurityCenterFree(', parameters('workspaceName'), ')')]",
-                                "product": "OMSGallery/SecurityCenterFree",
-                                "promotionCode": "",
-                                "publisher": "Microsoft"
-                            },
-                            "properties": {
-                                "workspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
-                            }
-                        },
-                        {
-                            "type": "Microsoft.OperationsManagement/solutions",
-                            "apiVersion": "2015-11-01-preview",
-                            "name": "[concat('Updates(', parameters('workspaceName'), ')')]",
-                            "location": "[variables('location')]",
-                            "dependsOn": [
-                                "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]"
-                            ],
-                            "tags": "[parameters('tags')]",
-                            "plan": {
-                                "name": "[concat('Updates(', parameters('workspaceName'), ')')]",
-                                "product": "OMSGallery/Updates",
-                                "promotionCode": "",
-                                "publisher": "Microsoft"
-                            },
-                            "properties": {
-                                "workspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', parameters('workspaceName'))]",
-                                "configurations": "[if(parameters('DeployUpdateAutomationScope'),json('[{\"Name\": \"SolutionTargeting\",\"Value\": \"MicrosoftDefaultScopeConfig-Updates\"}]'),json('null'))]"
-                            }
-                        },
-
-                        {
-                            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
-                            "apiVersion": "2020-08-01",
-                            "name": "[format('{0}/{1}', parameters('workspaceName'), 'WindowsPerfProcessorPercentage')]",
-                            "kind": "WindowsPerformanceCounter",
-                            "properties": {
-                                "objectName": "Processor",
-                                "instanceName": "_Total",
-                                "intervalSeconds": 60,
-                                "counterName": "% Processor Time"
-                            },
-                            "dependsOn": [
-                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
-                            ]
-                        },
-                        {
-                            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
-                            "apiVersion": "2020-08-01",
-                            "name": "[format('{0}/{1}', parameters('workspaceName'), 'WindowsPerfLogDiskFreeSpace')]",
-                            "kind": "WindowsPerformanceCounter",
-                            "properties": {
-                                "objectName": "LogicalDisk",
-                                "instanceName": "*",
-                                "intervalSeconds": 300,
-                                "counterName": "% Free Space"
-                            },
-                            "dependsOn": [
-                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
-                            ]
-                        },
-                        {
-                            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
-                            "apiVersion": "2020-08-01",
-                            "name": "[format('{0}/{1}', parameters('workspaceName'), 'WindowsPerfLogDiskFreeMb')]",
-                            "kind": "WindowsPerformanceCounter",
-                            "properties": {
-                                "objectName": "LogicalDisk",
-                                "instanceName": "*",
-                                "intervalSeconds": 300,
-                                "counterName": "Free Megabytes"
-                            },
-                            "dependsOn": [
-                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
-                            ]
-                        },
-                        {
-                            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
-                            "apiVersion": "2020-08-01",
-                            "name": "[format('{0}/{1}', parameters('workspaceName'), 'WindowsPerfMemBytesUsed')]",
-                            "kind": "WindowsPerformanceCounter",
-                            "properties": {
-                                "objectName": "Memory",
-                                "instanceName": "*",
-                                "intervalSeconds": 60,
-                                "counterName": "% Committed Bytes In Use"
-                            },
-                            "dependsOn": [
-                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
-                            ]
-                        },
-                        {
-                            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
-                            "apiVersion": "2020-08-01",
-                            "name": "[format('{0}/{1}', parameters('workspaceName'), 'WindowsPerfMemAvailMbytes')]",
-                            "kind": "WindowsPerformanceCounter",
-                            "properties": {
-                                "objectName": "Memory",
-                                "instanceName": "*",
-                                "intervalSeconds": 60,
-                                "counterName": "Available MBytes"
-                            },
-                            "dependsOn": [
-                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
-                            ]
-                        },
-                        {
-                            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
-                            "apiVersion": "2020-08-01",
-                            "name": "[format('{0}/{1}', parameters('workspaceName'), 'LinuxPerformanceLogicalDisk')]",
-                            "kind": "LinuxPerformanceObject",
-                            "properties": {
-                                "objectName": "Logical Disk",
-                                "instanceName": "*",
-                                "intervalSeconds": 60,
-                                "performanceCounters": [
-                                    {
-                                        "counterName": "% Free Space"
-                                    },
-                                    {
-                                        "counterName": "Free Megabytes"
-                                    }
-                                ]
-                            },
-                            "dependsOn": [
-                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
-                            ]
-                        },
-                        {
-                            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
-                            "apiVersion": "2020-08-01",
-                            "name": "[format('{0}/{1}', parameters('workspaceName'), 'LinuxPerformanceMemory')]",
-                            "kind": "LinuxPerformanceObject",
-                            "properties": {
-                                "objectName": "Memory",
-                                "instanceName": "*",
-                                "intervalSeconds": 60,
-                                "performanceCounters": [
-                                    {
-                                        "counterName": "% Used Memory"
-                                    },
-                                    {
-                                        "counterName": "Available MBytes Memory"
-                                    }
-                                ]
-                            },
-                            "dependsOn": [
-                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
-                            ]
-                        },
-                        {
-                            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
-                            "apiVersion": "2020-08-01",
-                            "name": "[format('{0}/{1}', parameters('workspaceName'), 'LinuxPerformanceProcessor')]",
-                            "kind": "LinuxPerformanceObject",
-                            "properties": {
-                                "objectName": "Processor",
-                                "instanceName": "*",
-                                "intervalSeconds": 60,
-                                "performanceCounters": [
-                                    {
-                                        "counterName": "% Processor Time"
-                                    }
-                                ]
-                            },
-                            "dependsOn": [
-                                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
-                            ]
-                        }
-                    ]
                 }
-            },
-            "resourceGroup": "[variables('SecurityRgName')]"
-        },
-        {
-            "type": "Microsoft.Security/workspaceSettings",
-            "apiVersion": "2017-08-01-preview",
-            "name": "default",
-            "dependsOn": [
-                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('securityRgName'),'/providers/Microsoft.Resources/deployments/createloganalytics')]"
-            ],
-            "properties": {
-                "scope": "[subscription().id]",
-                "workspaceId": "[concat(subscription().id,'/resourceGroups/',variables('SecurityRgName'),'/providers/microsoft.operationalinsights/workspaces/',variables('workspaceName'))]"
             }
         },
         {
-            "type": "Microsoft.Security/autoProvisioningSettings",
-            "apiVersion": "2017-08-01-preview",
-            "name": "default",
+            "type": "Microsoft.PolicyInsights/remediations",
+            "apiVersion": "2021-10-01",
+            "name": "[concat('Update Policy Windows Remediation - (',subscription().subscriptionId,')')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Security/workspaceSettings', 'default')]"
+                "[concat('Update Policy Windows - (',subscription().subscriptionId,')')]"
             ],
             "properties": {
-                "autoProvision": "On"
+              "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Policy Windows - (',subscription().subscriptionId,')'))]",
+              "resourceDiscoveryMode": "ReEvaluateCompliance"
             }
         },
         {
