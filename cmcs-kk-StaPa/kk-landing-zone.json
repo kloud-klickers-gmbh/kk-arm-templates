@@ -1014,7 +1014,7 @@
                             "type": "Microsoft.Maintenance/configurationAssignments",
                             "name": "[concat(variables('maintenanceName'), '-assignments')]",
                             "properties": {
-                                "maintenanceConfigurationId": "[resourceId('Microsoft.Maintenance/maintenanceConfigurations', variables('maintenanceName'))]",
+                                "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('maintenanceRgName'), '/providers/Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]",
                                 "filter": {
                                     "resourceTypes": [
                                         "microsoft.compute/virtualmachines"
