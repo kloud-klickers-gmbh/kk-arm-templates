@@ -941,6 +941,7 @@
             "type": "Microsoft.Maintenance/maintenanceConfigurations",
             "name": "[variables('maintenanceName')]",
             "location": "[variables('maintenanceLocation')]",
+            "resourceGroup": "[variables('maintenanceRgName')]",
             "tags": {},
             "properties": {
                 "maintenanceScope": "InGuestPatch",
@@ -980,6 +981,8 @@
             "apiVersion": "2023-04-01",
             "type": "Microsoft.Maintenance/configurationAssignments",
             "name": "[concat(variables('maintenanceName'), '-assignments')]",
+            "location": "[variables('maintenanceLocation')]",
+            "resourceGroup": "[variables('maintenanceRgName')]",
             "dependsOn": [
                 "[concat('Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]"
             ],
