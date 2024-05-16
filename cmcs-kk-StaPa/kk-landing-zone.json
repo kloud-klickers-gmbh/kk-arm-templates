@@ -956,7 +956,6 @@
                             "apiVersion": "2023-04-01",
                             "type": "Microsoft.Maintenance/maintenanceConfigurations",
                             "name": "[variables('maintenanceName')]",
-                            "location": "[variables('maintenanceLocation')]",
                             "tags": {},
                             "properties": {
                                 "maintenanceScope": "InGuestPatch",
