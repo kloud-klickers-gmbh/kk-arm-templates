@@ -979,7 +979,7 @@
         {
             "apiVersion": "2023-04-01",
             "type": "Microsoft.Maintenance/configurationAssignments",
-            "name": "kk-update-scheduleDynamicAssignment1",
+            "name": "[concat(variables('maintenanceConfigName'), '-assignments')]",
             "dependsOn": [
                 "[concat('Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceConfigName'))]"
             ],
