@@ -141,7 +141,7 @@
         {
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2020-09-01",
-            "name": "[concat('Microsoft Cloud Security Default - (',subscription().subscriptionId,')')]",
+            "name": "[concat('Microsoft Cloud Security ', subscription().subscriptionId)]",
             "location": "[parameters('location')]",
             "properties": {
                 "displayName": "KK Security Center",
@@ -152,7 +152,7 @@
         {
             "name": "VirtualMachines",
             "dependsOn": [
-                "[concat('Microsoft Cloud Security Default - (',subscription().subscriptionId,')')]"
+                "[concat('Microsoft Cloud Security ', subscription().subscriptionId)]"
             ],
             "type": "Microsoft.Security/pricings",
             "apiVersion": "2022-03-01",
@@ -164,7 +164,7 @@
         {
             "name": "StorageAccounts",
             "dependsOn": [
-                "[concat('Microsoft Cloud Security Default - (',subscription().subscriptionId,')')]"
+                "[concat('Microsoft Cloud Security ', subscription().subscriptionId)]"
             ],
             "type": "Microsoft.Security/pricings",
             "apiVersion": "2022-03-01",
