@@ -93,6 +93,7 @@
             "recurEvery": "1Week Thursday"
         },
         "maintenanceScope": "InGuestPatch",
+        "ScheduleTimeZone": "W. Europe Standard Time",
         "SecurityPricing": [
             {
                 "Name": "SqlServers",
@@ -860,6 +861,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "Update-Automation-Deployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('maintenanceRgName'))]"
+            ],
             "resourceGroup": "[variables('maintenanceRgName')]",
             "properties": {
                 "mode": "Incremental",
