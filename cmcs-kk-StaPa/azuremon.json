@@ -1,0 +1,158 @@
+{
+    "type": "Microsoft.Resources/deployments",
+    "apiVersion": "2021-04-01",
+    "name": "Update-Automation-Deployment",
+    "resourceGroup": "[variables('maintenanceRgName')]",
+    "properties": {
+        "mode": "Incremental",
+        "parameters": {},
+        "template": {
+            "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "resources": [
+                {
+                    "type": "Microsoft.Authorization/policyassignments",
+                    "apiVersion": "2023-04-01",
+                    "name": "[concat('Update Policy Windows ', subscription().subscriptionId)]",
+                    "location": "[variables('maintenanceLocation')]",
+                    "identity": {
+                        "type": "SystemAssigned"
+                    },
+                    "properties": {
+                        "displayName": "KK Periodic Update Policy (Windows)",
+                        "enforcementMode": "Default",
+                        "policyDefinitionId": "/providers/microsoft.authorization/policydefinitions/59efceea-0c96-497e-a4a1-4eb2290dac15",
+                        "nonComplianceMessages": [
+                            {
+                                "message": "The VM is not compliant with the periodic update policy (Windows)."
+                            }
+                        ],
+                        "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
+                        "parameters": {
+                            "osType": {
+                                "value": "Windows"
+                            },
+                            "assessmentMode": {
+                                "value": "AutomaticByPlatform"
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "Microsoft.Authorization/policyassignments",
+                    "apiVersion": "2023-04-01",
+                    "name": "[concat('Update Policy Linux ', subscription().subscriptionId)]",
+                    "location": "[variables('maintenanceLocation')]",
+                    "identity": {
+                        "type": "SystemAssigned"
+                    },
+                    "properties": {
+                        "displayName": "KK Periodic Update Policy (Linux)",
+                        "enforcementMode": "Default",
+                        "policyDefinitionId": "/providers/microsoft.authorization/policydefinitions/59efceea-0c96-497e-a4a1-4eb2290dac15",
+                        "nonComplianceMessages": [
+                            {
+                                "message": "The VM is not compliant with the periodic update policy (Linux)."
+                            }
+                        ],
+                        "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
+                        "parameters": {
+                            "osType": {
+                                "value": "Linux"
+                            },
+                            "assessmentMode": {
+                                "value": "AutomaticByPlatform"
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "Microsoft.PolicyInsights/remediations",
+                    "apiVersion": "2021-10-01",
+                    "name": "[concat('Update Policy Windows Remediation ', subscription().subscriptionId)]",
+                    "dependsOn": [
+                        "[concat('Update Policy Windows ', subscription().subscriptionId)]"
+                    ],
+                    "properties": {
+                        "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Policy Windows ', subscription().subscriptionId))]",
+                        "resourceDiscoveryMode": "ReEvaluateCompliance"
+                    }
+                },
+                {
+                    "type": "Microsoft.PolicyInsights/remediations",
+                    "apiVersion": "2021-10-01",
+                    "name": "[concat('Update Policy Linux Remediation ', subscription().subscriptionId)]",
+                    "dependsOn": [
+                        "[concat('Update Policy Linux ', subscription().subscriptionId)]"
+                    ],
+                    "properties": {
+                        "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Policy Linux ', subscription().subscriptionId))]",
+                        "resourceDiscoveryMode": "ReEvaluateCompliance"
+                    }
+                },
+                {
+                    "apiVersion": "2023-04-01",
+                    "type": "Microsoft.Maintenance/maintenanceConfigurations",
+                    "name": "[variables('maintenanceName')]",
+                    "location": "[variables('maintenanceLocation')]",
+                    "tags": {},
+                    "properties": {
+                        "maintenanceScope": "InGuestPatch",
+                        "installPatches": {
+                            "linuxParameters": {
+                                "classificationsToInclude": [
+                                    "Critical",
+                                    "Security"
+                                ],
+                                "packageNameMasksToExclude": null,
+                                "packageNameMasksToInclude": null
+                            },
+                            "windowsParameters": {
+                                "classificationsToInclude": [
+                                    "Critical",
+                                    "Security",
+                                    "Definition"
+                                ],
+                                "kbNumbersToExclude": null,
+                                "kbNumbersToInclude": null
+                            },
+                            "rebootSetting": "RebootIfRequired"
+                        },
+                        "extensionProperties": {
+                            "InGuestPatchMode": "User"
+                        },
+                        "maintenanceWindow": {
+                            "startDateTime": "2024-05-16 00:00",
+                            "duration": "02:00",
+                            "timeZone": "W. Europe Standard Time",
+                            "expirationDateTime": null,
+                            "recurEvery": "1Week Thursday"
+                        }
+                    }
+                },
+                {
+                    "apiVersion": "2023-04-01",
+                    "type": "Microsoft.Maintenance/configurationAssignments",
+                    "name": "[concat(variables('maintenanceName'), '-assignments')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]"
+                    ],
+                    "properties": {
+                        "maintenanceConfigurationId": "[resourceId('Microsoft.Maintenance/maintenanceConfigurations', variables('maintenanceName'))]",
+                        "filter": {
+                            "resourceTypes": [
+                                "microsoft.compute/virtualmachines"
+                            ],
+                            "resourceGroups": [],
+                            "osTypes": [
+                                "Linux",
+                                "Windows"
+                            ],
+                            "locations": []
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
