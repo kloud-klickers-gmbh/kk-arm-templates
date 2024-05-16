@@ -904,7 +904,7 @@
                 "name": "SecurityPricingLoop"
             },
             "apiVersion": "2018-06-01",
-            "name": "[concat('Security-Pricing-', variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].Name])",
+            "name": "[concat('Security-Pricing-', variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].Name)]",
             "properties": {
                 "pricingTier": "[variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].PricingTier]"
             }
