@@ -84,7 +84,7 @@
         "NSGName": "[concat(parameters('prefix'),'-nsg')]",
         "maintenanceRgName": "[concat(parameters('prefix'),'-update-rg')]",
         "maintenanceLocation": "westeurope",
-        "maintenanceConfigName": "[concat(parameters('prefix'),'-update-schedule')]",
+        "maintenanceName": "[concat(parameters('prefix'),'-update-schedule')]",
         "maintenanceSchedule": {
             "startDateTime": "2024-05-16 00:00",
             "duration": "02:00",
@@ -939,8 +939,8 @@
         {
             "apiVersion": "2023-04-01",
             "type": "Microsoft.Maintenance/maintenanceConfigurations",
-            "name": "[variables('maintenanceConfigName')]",
-            "location": "[variables('maintenanceConfigLocation')]",
+            "name": "[variables('maintenanceName')]",
+            "location": "[variables('maintenanceLocation')]",
             "tags": {},
             "properties": {
                 "maintenanceScope": "InGuestPatch",
@@ -979,12 +979,12 @@
         {
             "apiVersion": "2023-04-01",
             "type": "Microsoft.Maintenance/configurationAssignments",
-            "name": "[concat(variables('maintenanceConfigName'), '-assignments')]",
+            "name": "[concat(variables('maintenanceName'), '-assignments')]",
             "dependsOn": [
-                "[concat('Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceConfigName'))]"
+                "[concat('Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]"
             ],
             "properties": {
-                "maintenanceConfigurationId": "[resourceId('Microsoft.Maintenance/maintenanceConfigurations', variables('maintenanceConfigName'))]",
+                "maintenanceConfigurationId": "[resourceId('Microsoft.Maintenance/maintenanceConfigurations', variables('maintenanceName'))]",
                 "filter": {
                     "resourceTypes": [
                         "microsoft.compute/virtualmachines"
