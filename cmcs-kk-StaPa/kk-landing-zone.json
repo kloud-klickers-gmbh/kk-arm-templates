@@ -58,7 +58,6 @@
         }
     },
     "variables": {
-        "updateLocation": "westeurope",
         "backupRgName": "[concat(parameters('prefix'),'-backup-rg')]",
         "vaultName": "[concat(parameters('prefix'),'-backup-lrs')]",
         "vaultName_grs": "[concat(parameters('prefix'),'-backup-grs')]",
@@ -83,17 +82,17 @@
         "SubnetLANName": "[concat(parameters('prefix'),'-lan-subnet')]",
         "SubnetWANName": "[concat(parameters('prefix'),'-wan-subnet')]",
         "NSGName": "[concat(parameters('prefix'),'-nsg')]",
-        "UpdateRgName": "[concat(parameters('prefix'),'-update-rg')]",
-        "updateScheduleName": "[concat(parameters('prefix'),'-update-schedule')]",
-        "udpateScheduleFrequency": "Week",
-        "udpateScheduleInterval": 1,
-        "updateDuration": "PT2H",
-        "updateIncludedClassifications": "Critical, Security, Definition",
-        "updateRebootSetting": "IfRequired",
-        "updateScheduleStartTime": "22:00:00",
-        "updateScheduleTimeZone": "Europe/Berlin",
-        "updateScheduleWeekDays": [ "Thursday" ],
-        "ScheduleTimeZone": "W. Europe Standard Time",
+        "maintenanceRgName": "[concat(parameters('prefix'),'-update-rg')]",
+        "maintenanceLocation": "westeurope",
+        "maintenanceConfigName": "[concat(parameters('prefix'),'-update-schedule')]",
+        "maintenanceSchedule": {
+            "startDateTime": "2024-05-16 00:00",
+            "duration": "02:00",
+            "timeZone": "W. Europe Standard Time",
+            "expirationDateTime": null,
+            "recurEvery": "1Week Thursday"
+        },
+        "maintenanceScope": "InGuestPatch",
         "SecurityPricing": [
             {
                 "Name": "SqlServers",
@@ -190,8 +189,8 @@
         {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
-            "name": "[variables('UpdateRgName')]",
-            "location": "[variables('updateLocation')]",
+            "name": "[variables('maintenanceRgName')]",
+            "location": "[variables('maintenanceLocation')]",
             "properties": {}
         },
         {
@@ -861,7 +860,7 @@
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
             "name": "[concat('Update Policy Windows ', subscription().subscriptionId)]",
-            "location": "[variables('updateLocation')]",
+            "location": "[variables('maintenanceLocation')]",
             "identity": {
                 "type": "SystemAssigned"
             },
@@ -889,7 +888,7 @@
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
             "name": "[concat('Update Policy Linux ', subscription().subscriptionId)]",
-            "location": "[variables('updateLocation')]",
+            "location": "[variables('maintenanceLocation')]",
             "identity": {
                 "type": "SystemAssigned"
             },
@@ -935,6 +934,68 @@
             "properties": {
               "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Policy Linux ', subscription().subscriptionId))]",
               "resourceDiscoveryMode": "ReEvaluateCompliance"
+            }
+        },
+        {
+            "apiVersion": "2023-04-01",
+            "type": "Microsoft.Maintenance/maintenanceConfigurations",
+            "name": "[variables('maintenanceConfigName')]",
+            "location": "[variables('maintenanceConfigLocation')]",
+            "tags": {},
+            "properties": {
+                "maintenanceScope": "InGuestPatch",
+                "installPatches": {
+                    "linuxParameters": {
+                        "classificationsToInclude": [
+                            "Critical",
+                            "Security"
+                        ],
+                        "packageNameMasksToExclude": null,
+                        "packageNameMasksToInclude": null
+                    },
+                    "windowsParameters": {
+                        "classificationsToInclude": [
+                            "Critical",
+                            "Security",
+                            "Definition"
+                        ],
+                        "kbNumbersToExclude": null,
+                        "kbNumbersToInclude": null
+                    },
+                    "rebootSetting": "RebootIfRequired"
+                },
+                "extensionProperties": {
+                    "InGuestPatchMode": "User"
+                },
+                "maintenanceWindow": {
+                    "startDateTime": "2024-05-16 00:00",
+                    "duration": "02:00",
+                    "timeZone": "W. Europe Standard Time",
+                    "expirationDateTime": null,
+                    "recurEvery": "1Week Thursday"
+                }
+            }
+        },
+        {
+            "apiVersion": "2023-04-01",
+            "type": "Microsoft.Maintenance/configurationAssignments",
+            "name": "kk-update-scheduleDynamicAssignment1",
+            "dependsOn": [
+                "[concat('Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceConfigName'))]"
+            ],
+            "properties": {
+                "maintenanceConfigurationId": "[resourceId('Microsoft.Maintenance/maintenanceConfigurations', variables('maintenanceConfigName'))]",
+                "filter": {
+                    "resourceTypes": [
+                        "microsoft.compute/virtualmachines"
+                    ],
+                    "resourceGroups": [],
+                    "osTypes": [
+                        "Linux",
+                        "Windows"
+                    ],
+                    "locations": []
+                }
             }
         },
         {
