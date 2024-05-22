@@ -86,7 +86,7 @@
         "maintenanceLocation": "westeurope",
         "maintenanceName": "[concat(parameters('prefix'),'-update-schedule')]",
         "maintenanceSchedule": {
-            "startDateTime": "2024-05-16 00:00",
+            "startDateTime": "2024-05-16 00:00", // TODO
             "duration": "02:00",
             "timeZone": "W. Europe Standard Time",
             "expirationDateTime": null,
@@ -956,6 +956,7 @@
                             "apiVersion": "2023-04-01",
                             "type": "Microsoft.Maintenance/maintenanceConfigurations",
                             "name": "[variables('maintenanceName')]",
+                            "location": "[variables('maintenanceLocation')]",
                             "tags": {},
                             "properties": {
                                 "maintenanceScope": "InGuestPatch",
