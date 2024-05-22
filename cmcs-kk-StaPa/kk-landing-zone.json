@@ -1010,6 +1010,7 @@
                                             "apiVersion": "2023-04-01",
                                             "type": "Microsoft.Maintenance/configurationAssignments",
                                             "name": "[concat(variables('maintenanceName'), '-assignments')]",
+                                            "location": "[variables('maintenanceLocation')]",
                                             "properties": {
                                                 "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('maintenanceRgName'), '/providers/Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]",
                                                 "filter": {
