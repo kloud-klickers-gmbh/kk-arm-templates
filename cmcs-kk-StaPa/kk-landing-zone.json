@@ -996,6 +996,8 @@
                             "type": "Microsoft.Resources/deployments",
                             "apiVersion": "2021-04-01",
                             "name": "Update-Automation-Assignments-Deployment",
+                            "subscriptionId": "[subscription().subscriptionId]",
+                            "location": "[variables('maintenanceLocation')]",
                             "dependsOn": [
                                 "[concat('Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]"
                             ],
@@ -1010,7 +1012,6 @@
                                             "apiVersion": "2023-04-01",
                                             "type": "Microsoft.Maintenance/configurationAssignments",
                                             "name": "[concat(variables('maintenanceName'), '-assignments')]",
-                                            "location": "[variables('maintenanceLocation')]",
                                             "properties": {
                                                 "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('maintenanceRgName'), '/providers/Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]",
                                                 "filter": {
