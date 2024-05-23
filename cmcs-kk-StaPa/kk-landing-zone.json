@@ -2,6 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "baseTime": {
+            "type": "string",
+            "defaultValue": "[utcNow()]"
+        },
         "prefix": {
             "type": "string"
         },
@@ -86,7 +90,7 @@
         "maintenanceLocation": "[parameters('location')]",
         "maintenanceName": "[concat(parameters('prefix'),'-update-schedule')]",
         "maintenanceSchedule": {
-            "startDateTime": "[dateTimeAdd(utcNow(), 'P1D', 'yyyy-MM-dd 00:00')]",
+            "startDateTime": "[dateTimeAdd(parameters('baseTime'), 'P1D', 'yyyy-MM-dd 00:00')]",
             "duration": "02:00",
             "timeZone": "W. Europe Standard Time",
             "expirationDateTime": null,
