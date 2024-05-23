@@ -990,11 +990,11 @@
                                     "InGuestPatchMode": "User"
                                 },
                                 "maintenanceWindow": {
-                                    "startDateTime": "[variables('maintenanceSchedule.startDateTime')]",
-                                    "duration": "[variables('maintenanceSchedule.duration')]",
-                                    "timeZone": "[variables('maintenanceSchedule.timeZone')]",
-                                    "expirationDateTime": "[variables('maintenanceSchedule.expirationDateTime')]",
-                                    "recurEvery": "[variables('maintenanceSchedule.recurEvery')]"
+                                    "startDateTime": "[variables('maintenanceSchedule').startDateTime]",
+                                    "duration": "[variables('maintenanceSchedule').duration]",
+                                    "timeZone": "[variables('maintenanceSchedule').timeZone]",
+                                    "expirationDateTime": "[variables('maintenanceSchedule').expirationDateTime]",
+                                    "recurEvery": "[variables('maintenanceSchedule').recurEvery]"
                                 }
                             }
                         },
