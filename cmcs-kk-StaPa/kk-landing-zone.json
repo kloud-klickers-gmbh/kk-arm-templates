@@ -38,7 +38,7 @@
             "type": "SecureString"
         },
         "JumpHostImageSku": {
-            "defaultValue": "win10-21h2-pro-g2",
+            "defaultValue": "win11-23h2-pro",
             "type": "String"
         },
         "JumpHostPublicIpDnsName": {
