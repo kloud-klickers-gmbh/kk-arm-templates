@@ -83,10 +83,10 @@
         "SubnetWANName": "[concat(parameters('prefix'),'-wan-subnet')]",
         "NSGName": "[concat(parameters('prefix'),'-nsg')]",
         "maintenanceRgName": "[concat(parameters('prefix'),'-update-rg')]",
-        "maintenanceLocation": "westeurope",
+        "maintenanceLocation": "[parameters('location')]",
         "maintenanceName": "[concat(parameters('prefix'),'-update-schedule')]",
         "maintenanceSchedule": {
-            "startDateTime": "2024-05-16 00:00", // TODO
+            "startDateTime": "[dateTimeAdd(utcNow(), 'P1D', 'yyyy-MM-dd 00:00')]",
             "duration": "02:00",
             "timeZone": "W. Europe Standard Time",
             "expirationDateTime": null,
