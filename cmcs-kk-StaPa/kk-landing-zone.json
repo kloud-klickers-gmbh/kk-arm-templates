@@ -90,7 +90,7 @@
         "maintenanceLocation": "[parameters('location')]",
         "maintenanceName": "[concat(parameters('prefix'),'-update-schedule')]",
         "maintenanceSchedule": {
-            "startDateTime": "[dateTimeAdd(parameters('baseTime'), 'P1D', 'yyyy-MM-dd 00:00')]",
+            "startDateTime": "[dateTimeAdd(parameters('baseTime'), 'P1D', 'yyyy-MM-dd 22:00')]",
             "duration": "02:00",
             "timeZone": "W. Europe Standard Time",
             "expirationDateTime": null,
@@ -990,11 +990,11 @@
                                     "InGuestPatchMode": "User"
                                 },
                                 "maintenanceWindow": {
-                                    "startDateTime": "2024-05-16 00:00",
-                                    "duration": "02:00",
-                                    "timeZone": "W. Europe Standard Time",
-                                    "expirationDateTime": null,
-                                    "recurEvery": "1Week Thursday"
+                                    "startDateTime": "[variables('maintenanceSchedule.startDateTime')]",
+                                    "duration": "[variables('maintenanceSchedule.duration')]",
+                                    "timeZone": "[variables('maintenanceSchedule.timeZone')]",
+                                    "expirationDateTime": "[variables('maintenanceSchedule.expirationDateTime')]",
+                                    "recurEvery": "[variables('maintenanceSchedule.recurEvery')]"
                                 }
                             }
                         },
