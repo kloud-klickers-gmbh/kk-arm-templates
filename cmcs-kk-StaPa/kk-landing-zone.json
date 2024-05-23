@@ -924,6 +924,7 @@
             "dependsOn": [
                 "[concat('Update Policy Windows ', subscription().subscriptionId)]"
             ],
+            "condition": false,
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Policy Windows ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance"
@@ -936,6 +937,7 @@
             "dependsOn": [
                 "[concat('Update Policy Linux ', subscription().subscriptionId)]"
             ],
+            "condition": false,
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Policy Linux ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance"
