@@ -1477,7 +1477,7 @@
                         "JumpHostPublicIpAllocationMethod": "Static",
                         "JumpHostStorageAccountType": "StandardSSD_LRS",
                         "imagePublisher": "MicrosoftWindowsDesktop",
-                        "imageOffer": "Windows-10",
+                        "imageOffer": "Windows-11",
                         "jumphost_pip_name": "[concat(parameters('jumphostName'),'-pip')]",
                         "jumphost_nsg_name": "[concat(parameters('jumphostName'),'-nsg')]",
                         "jumphost_nic_name": "[concat(parameters('jumphostName'),'-nic')]",
