@@ -1041,6 +1041,88 @@
             }
         },
         {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "createloganalytics",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('UpdateRgName'))]",
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('SecurityRgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[variables('loganalyticslocation')]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "workspaceName": {
+                        "value": "[variables('workspaceName')]"
+                    }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "location": {
+                            "type": "string"
+                        },
+                        "tags": {
+                            "type": "object"
+                        },
+                        "workspaceName": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "location": "[parameters('location')]"
+                    },
+                    "resources": [
+                        {
+                            "type": "microsoft.operationalinsights/workspaces",
+                            "apiVersion": "2020-10-01",
+                            "name": "[parameters('workspaceName')]",
+                            "location": "[variables('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                                "sku": {
+                                    "name": "PerGB2018"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "resourceGroup": "[variables('SecurityRgName')]"
+        },
+        {
+            "type": "Microsoft.Security/workspaceSettings",
+            "apiVersion": "2017-08-01-preview",
+            "name": "default",
+            "dependsOn": [
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('securityRgName'),'/providers/Microsoft.Resources/deployments/createloganalytics')]"
+            ],
+            "properties": {
+                "scope": "[subscription().id]",
+                "workspaceId": "[concat(subscription().id,'/resourceGroups/',variables('SecurityRgName'),'/providers/microsoft.operationalinsights/workspaces/',variables('workspaceName'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/autoProvisioningSettings",
+            "apiVersion": "2017-08-01-preview",
+            "name": "default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/workspaceSettings', 'default')]"
+            ],
+            "properties": {
+                "autoProvision": "On"
+            }
+        },
+        {
             "type": "Microsoft.Security/pricings",
             "copy": {
                 "count": "[length(variables('SecurityPricing'))]",
