@@ -86,7 +86,7 @@
         "SubnetLANName": "[concat(parameters('prefix'),'-lan-subnet')]",
         "SubnetWANName": "[concat(parameters('prefix'),'-wan-subnet')]",
         "NSGName": "[concat(parameters('prefix'),'-nsg')]",
-        "maintenanceRgName": "[concat(parameters('prefix'),'-update-rg')]",
+        "maintenanceRgName": "[concat(parameters('prefix'),'-maintenance-rg')]",
         "maintenanceLocation": "[parameters('location')]",
         "maintenanceName": "[concat(parameters('prefix'),'-update-schedule')]",
         "maintenanceSchedule": {
@@ -98,6 +98,7 @@
         },
         "maintenanceScope": "InGuestPatch",
         "ScheduleTimeZone": "W. Europe Standard Time",
+        "workspaceName": "[concat(parameters('prefix'),'-loganalytics')]",
         "SecurityPricing": [
             {
                 "Name": "SqlServers",
@@ -1043,10 +1044,10 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "createloganalytics",
+            "name": "Log-Analytics-Workspace",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/resourceGroups', variables('UpdateRgName'))]",
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('SecurityRgName'))]"
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('maintenanceRgName'))]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1055,7 +1056,7 @@
                 },
                 "parameters": {
                     "location": {
-                        "value": "[variables('loganalyticslocation')]"
+                        "value": "[variables('maintenanceLocation')]"
                     },
                     "tags": {
                         "value": "[parameters('tags')]"
@@ -1097,18 +1098,18 @@
                     ]
                 }
             },
-            "resourceGroup": "[variables('SecurityRgName')]"
+            "resourceGroup": "[variables('maintenanceRgName')]"
         },
         {
             "type": "Microsoft.Security/workspaceSettings",
             "apiVersion": "2017-08-01-preview",
             "name": "default",
             "dependsOn": [
-                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('securityRgName'),'/providers/Microsoft.Resources/deployments/createloganalytics')]"
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('maintenanceRgName'),'/providers/Microsoft.Resources/deployments/Log-Analytics-Workspace')]"
             ],
             "properties": {
                 "scope": "[subscription().id]",
-                "workspaceId": "[concat(subscription().id,'/resourceGroups/',variables('SecurityRgName'),'/providers/microsoft.operationalinsights/workspaces/',variables('workspaceName'))]"
+                "workspaceId": "[concat(subscription().id,'/resourceGroups/',variables('maintenanceRgName'),'/providers/microsoft.operationalinsights/workspaces/',variables('workspaceName'))]"
             }
         },
         {
