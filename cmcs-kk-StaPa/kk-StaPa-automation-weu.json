@@ -1046,7 +1046,6 @@
             "apiVersion": "2021-04-01",
             "name": "Log-Analytics-Workspace",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('UpdateRgName'))]",
                 "[resourceId('Microsoft.Resources/resourceGroups', variables('maintenanceRgName'))]"
             ],
             "properties": {
