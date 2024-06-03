@@ -335,8 +335,7 @@
             "tags": "[parameters('vmTags')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
-                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/Microsoft.Azure.Security')]",
-                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/MicrosoftMonitoringAgent')]"
+                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/Microsoft.Azure.Security')]"
             ],
             "properties": {
                 "virtualMachineResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
