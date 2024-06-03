@@ -202,7 +202,10 @@
             "kind": "AzureServersSetting",
             "properties": {
                 "selectedProvider": "MdeTvm"
-            }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/serverVulnerabilityAssessments', 'default')]"
+            ]
         },
         {
             "type": "Microsoft.Security/settings",
