@@ -192,8 +192,7 @@
         {
             "type": "Microsoft.Security/serverVulnerabilityAssessments",
             "apiVersion": "2020-01-01",
-            "name": "default",
-            "scope": "[concat('/subscriptions/', subscription().subscriptionId)]"
+            "name": "default"
         },
         {
             "type": "Microsoft.Security/serverVulnerabilityAssessmentsSettings",
@@ -213,7 +212,7 @@
             "name": "WDATP",
             "kind": "DataExportSettings",
             "properties": {
-                "enabled": "bool"
+                "enabled": true
             }
         },
         {
