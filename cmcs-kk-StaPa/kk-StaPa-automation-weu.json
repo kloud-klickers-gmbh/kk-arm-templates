@@ -190,9 +190,12 @@
             }
         },
         {
-            "type": "Microsoft.Security/serverVulnerabilityAssessments",
-            "apiVersion": "2020-01-01",
-            "name": "default"
+            "type": "Microsoft.Security/autoProvisioningSettings",
+            "apiVersion": "2017-08-01-preview",
+            "name": "KK-Security-AutoProvisioning",
+            "properties": {
+              "autoProvision": "On"
+            }
         },
         {
             "type": "Microsoft.Security/serverVulnerabilityAssessmentsSettings",
@@ -201,10 +204,7 @@
             "kind": "AzureServersSetting",
             "properties": {
                 "selectedProvider": "MdeTvm"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Security/serverVulnerabilityAssessments', 'default')]"
-            ]
+            }
         },
         {
             "type": "Microsoft.Security/settings",
