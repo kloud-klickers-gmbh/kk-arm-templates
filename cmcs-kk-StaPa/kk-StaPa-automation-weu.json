@@ -216,6 +216,15 @@
             }
         },
         {
+            "type": "Microsoft.Security/settings",
+            "apiVersion": "2022-05-01",
+            "name": "WDATP_UNIFIED_SOLUTION",
+            "kind": "DataExportSettings",
+            "properties": {
+                "enabled": true
+            }
+        },
+        {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
             "name": "[variables('backupRgName')]",
