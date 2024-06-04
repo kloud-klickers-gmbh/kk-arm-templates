@@ -286,28 +286,7 @@
                             }
                         }
                     }
-                },
-                {
-                    "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "apiVersion": "2021-03-01",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
-                    ],
-                    "name": "[concat(parameters('vmname'),'/MicrosoftMonitoringAgent')]",
-                    "location": "[parameters('location')]",
-                    "properties": {
-                        "autoUpgradeMinorVersion": true,
-                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                        "type": "MicrosoftMonitoringAgent",
-                        "settings": {
-                            "workspaceId": "[reference(parameters('workspaceId'), '2015-03-20').customerid]"
-                        },
-                        "protectedSettings": {
-                            "workspaceKey": "[listKeys(parameters('workspaceId'), '2015-03-20').primarySharedKey]"
-                        },                        
-                        "typeHandlerVersion": "1.0"
-                    }
-                }                            
+                }                       
             ]
         },        
         {

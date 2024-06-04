@@ -86,7 +86,7 @@
         "SubnetLANName": "[concat(parameters('prefix'),'-lan-subnet')]",
         "SubnetWANName": "[concat(parameters('prefix'),'-wan-subnet')]",
         "NSGName": "[concat(parameters('prefix'),'-nsg')]",
-        "maintenanceRgName": "[concat(parameters('prefix'),'-update-rg')]",
+        "maintenanceRgName": "[concat(parameters('prefix'),'-maintenance-rg')]",
         "maintenanceLocation": "[parameters('location')]",
         "maintenanceName": "[concat(parameters('prefix'),'-update-schedule')]",
         "maintenanceSchedule": {
@@ -175,6 +175,45 @@
             "properties": {
                 "subPlan": "PerTransaction",
                 "pricingTier": "Standard"
+            }
+        },
+        {
+            "type": "Microsoft.Security/pricings",
+            "copy": {
+                "count": "[length(variables('SecurityPricing'))]",
+                "name": "SecurityPricingLoop"
+            },
+            "apiVersion": "2018-06-01",
+            "name": "[variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].Name]",
+            "properties": {
+                "pricingTier": "[variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].PricingTier]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/serverVulnerabilityAssessmentsSettings",
+            "apiVersion": "2023-05-01",
+            "name": "azureServersSetting",
+            "kind": "AzureServersSetting",
+            "properties": {
+                "selectedProvider": "MdeTvm"
+            }
+        },
+        {
+            "type": "Microsoft.Security/settings",
+            "apiVersion": "2022-05-01",
+            "name": "WDATP",
+            "kind": "DataExportSettings",
+            "properties": {
+                "enabled": true
+            }
+        },
+        {
+            "type": "Microsoft.Security/settings",
+            "apiVersion": "2022-05-01",
+            "name": "WDATP_UNIFIED_SOLUTION",
+            "kind": "DataExportSettings",
+            "properties": {
+                "enabled": true
             }
         },
         {
@@ -1038,18 +1077,6 @@
                         }
                     ]
                 }
-            }
-        },
-        {
-            "type": "Microsoft.Security/pricings",
-            "copy": {
-                "count": "[length(variables('SecurityPricing'))]",
-                "name": "SecurityPricingLoop"
-            },
-            "apiVersion": "2018-06-01",
-            "name": "[variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].Name]",
-            "properties": {
-                "pricingTier": "[variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].PricingTier]"
             }
         },
         {
