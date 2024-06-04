@@ -192,7 +192,7 @@
         {
             "type": "Microsoft.Security/autoProvisioningSettings",
             "apiVersion": "2017-08-01-preview",
-            "name": "KK-Security-AutoProvisioning",
+            "name": "default",
             "properties": {
               "autoProvision": "On"
             }
