@@ -198,6 +198,14 @@
             }
         },
         {
+            "type": "Microsoft.Security/autoProvisioningSettings",
+            "apiVersion": "2017-08-01-preview",
+            "name": "arc",
+            "properties": {
+                "autoProvision": "Off"
+            }
+        },
+        {
             "type": "Microsoft.Security/serverVulnerabilityAssessmentsSettings",
             "apiVersion": "2023-05-01",
             "name": "azureServersSetting",
