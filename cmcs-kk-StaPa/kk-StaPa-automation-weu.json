@@ -1103,6 +1103,10 @@
                 "enforcementMode": "Default",
                 "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/ba0df93e-e4ac-479a-aac2-134bbae39a1a",
                 "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
+                "nonComplianceMessages": [],
+                "notScopes": [],
+                "overrides": [],
+                "resourceSelectors": [],
                 "parameters": {
                     "maintenanceConfigurationResourceId": {
                         "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('maintenanceRgName'), '/providers/Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]"
