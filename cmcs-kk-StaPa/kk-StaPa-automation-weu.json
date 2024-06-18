@@ -1091,9 +1091,6 @@
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
             "name": "[concat('Update Schedule Policy ', subscription().subscriptionId)]",
-            "dependsOn": [
-                "[concat('Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]"
-            ],
             "location": "[variables('maintenanceLocation')]",
             "identity": {
                 "type": "SystemAssigned"
