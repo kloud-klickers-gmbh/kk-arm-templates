@@ -333,6 +333,26 @@
                                                     "locations": []
                                                 }
                                             }
+                                        },
+                                        {
+                                            "type": "Microsoft.Authorization/policyassignments",
+                                            "apiVersion": "2023-04-01",
+                                            "name": "[concat('Update Schedule Policy ', subscription().subscriptionId)]",
+                                            "location": "[variables('maintenanceLocation')]",
+                                            "identity": {
+                                                "type": "SystemAssigned"
+                                            },
+                                            "properties": {
+                                                "displayName": "KK Periodic Update Schedule Policy",
+                                                "enforcementMode": "Default",
+                                                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/ba0df93e-e4ac-479a-aac2-134bbae39a1a",
+                                                "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
+                                                "parameters": {
+                                                    "maintenanceConfigurationResourceId": {
+                                                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('maintenanceRgName'), '/providers/Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]"
+                                                    }
+                                                }
+                                            }
                                         }
                                     ]
                                 }
@@ -341,7 +361,6 @@
                     ]
                 }
             }
-        },
-  
+        }
     ]
 }
