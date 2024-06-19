@@ -365,6 +365,20 @@
                     }
                 }
             }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2021-04-01-preview",
+            "name": "[concat('Update Schedule Policy Role ', subscription().subscriptionId)]",
+            "dependsOn": [
+                "[concat('Update Schedule Policy ', subscription().subscriptionId)]"
+            ],
+            "properties": {
+                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+                "principalType": "ServicePrincipal",
+                "delegatedManagedIdentityResourceId": "[concat(subscription().id, '/providers/Microsoft.Authorization/policyAssignments/', 'Update Schedule Policy ', subscription().subscriptionId)]",
+                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'Update Schedule Policy ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]"
+            }
         }
     ]
 }
