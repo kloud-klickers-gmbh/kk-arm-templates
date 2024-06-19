@@ -973,7 +973,8 @@
             ],
             "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'Update Policy Windows ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]"
+                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'Update Policy Windows ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
+                "principalType": "ServicePrincipal"
             }
         },
         {
@@ -985,7 +986,8 @@
             ],
             "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'Update Policy Linux ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]"
+                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'Update Policy Linux ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
+                "principalType": "ServicePrincipal"
             }
         },
         {
@@ -1144,7 +1146,8 @@
             ],
             "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'Update Schedule Policy ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]"
+                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'Update Schedule Policy ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
+                "principalType": "ServicePrincipal"
             }
         },
         {
