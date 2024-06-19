@@ -369,7 +369,7 @@
         {
             "type": "Microsoft.Authorization/roleAssignments",
             "apiVersion": "2021-04-01-preview",
-            "name": "[concat('Update Schedule Policy Role ', subscription().subscriptionId)]",
+            "name": "[guid(concat('Update Schedule Policy Role ', subscription().subscriptionId))]",
             "dependsOn": [
                 "[concat('Update Schedule Policy ', subscription().subscriptionId)]"
             ],
