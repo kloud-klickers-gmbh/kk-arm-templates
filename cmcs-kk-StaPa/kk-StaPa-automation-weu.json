@@ -967,7 +967,7 @@
         {
             "type": "Microsoft.Authorization/roleAssignments",
             "apiVersion": "2021-04-01-preview",
-            "name": "[guid(concat('Update Policy Windows Role ', subscription().subscriptionId))]",
+            "name": "[guid(concat('Update Policy Windows Role ', subscription().subscriptionId, parameters('baseTime')))]",
             "dependsOn": [
                 "[concat('Update Policy Windows ', subscription().subscriptionId)]"
             ],
@@ -980,7 +980,7 @@
         {
             "type": "Microsoft.Authorization/roleAssignments",
             "apiVersion": "2021-04-01-preview",
-            "name": "[guid(concat('Update Policy Linux Role ', subscription().subscriptionId))]",
+            "name": "[guid(concat('Update Policy Linux Role ', subscription().subscriptionId, parameters('baseTime')))]",
             "dependsOn": [
                 "[concat('Update Policy Linux ', subscription().subscriptionId)]"
             ],
@@ -1140,7 +1140,7 @@
         {
             "type": "Microsoft.Authorization/roleAssignments",
             "apiVersion": "2021-04-01-preview",
-            "name": "[guid(concat('Update Schedule Policy Role ', subscription().subscriptionId))]",
+            "name": "[guid(concat('Update Schedule Policy Role ', subscription().subscriptionId, parameters('baseTime')))]",
             "dependsOn": [
                 "[concat('Update Schedule Policy ', subscription().subscriptionId)]"
             ],
