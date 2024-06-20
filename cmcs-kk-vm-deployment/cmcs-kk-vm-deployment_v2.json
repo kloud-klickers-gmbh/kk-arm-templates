@@ -418,13 +418,25 @@
                             "properties": {
                                 "tags": "[parameters('datadisks')[copyIndex('dataDiskTags')].tag]"
                             }
+                        },
+                        {
+                            "type": "Microsoft.PolicyInsights/remediations",
+                            "apiVersion": "2021-10-01",
+                            "name": "[concat('KK Periodic Update Schedule Remediation ', subscription().subscriptionId)]",
+                            "dependsOn": [
+                                "[concat('Update Schedule Policy ', subscription().subscriptionId)]"
+                            ],
+                            "condition": true,
+                            "properties": {
+                                "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Schedule Policy ', subscription().subscriptionId))]",
+                                "resourceDiscoveryMode": "ReEvaluateCompliance"
+                            }
                         }
                     ],
                     "outputs": {}
                 }
             }
         },
-
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
