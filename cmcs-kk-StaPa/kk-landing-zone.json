@@ -176,7 +176,7 @@
             "type": "Microsoft.Security/pricings",
             "apiVersion": "2022-03-01",
             "properties": {
-                "subPlan": "DefenderForStorageV2",
+                "subPlan": "PerStorageAccount",
                 "pricingTier": "Standard",
                 "extensions": [
                     {
