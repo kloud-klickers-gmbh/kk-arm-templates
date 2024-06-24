@@ -278,10 +278,6 @@
             "apiVersion": "2022-09-01",
             "properties": {
                 "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('templateLogOperations')]",
-                    "contentVersion": "1.0.0.0"
-                },
                 "parameters": {
                     "location": {
                         "value": "[parameters('location')]"
@@ -289,6 +285,10 @@
                     "prefix": {
                         "value": "[parameters('prefix')]"
                     }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateLogOperations')]",
+                    "contentVersion": "1.0.0.0"
                 }
             }
         },
