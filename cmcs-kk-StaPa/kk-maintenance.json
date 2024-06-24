@@ -202,30 +202,14 @@
             "resourceGroup": "[variables('logOperationsRg')]",
             "properties": {
                 "mode": "Incremental",
-                "parameters": {
-                    "location": {
-                        "value": "[parameters('location')]"
-                    },
-                    "logAnalyticsWorkspaceName": {
-                        "value": "[variables('logAnalyticsWorkspaceName')]"
-                    }
-                },
                 "template": {
                     "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
                     "contentVersion": "1.0.0.0",
-                    "parameters": {
-                        "location": {
-                            "type": "string"
-                        },
-                        "logAnalyticsWorkspaceName": {
-                            "type": "string"
-                        }
-                    },
                     "resources": [
                         {
                             "type": "microsoft.operationalinsights/workspaces",
                             "apiVersion": "2020-10-01",
-                            "name": "[parameters('logAnalyticsWorkspaceName')]",
+                            "name": "[variables('logAnalyticsWorkspaceName')]",
                             "location": "[parameters('location')]",
                             "properties": {
                                 "sku": {
