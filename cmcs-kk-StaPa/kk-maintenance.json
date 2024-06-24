@@ -200,9 +200,24 @@
                 "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]"
             ],
             "resourceGroup": "[variables('logOperationsRg')]",
+            "parameters": {
+                "location": {
+                    "value": "[variables('location')]"
+                },
+                "logAnalyticsWorkspaceName": {
+                    "value": "[variables('logAnalyticsWorkspaceName')]"
+                }
+            },
             "properties": {
                 "mode": "Incremental",
-                "parameters": {},
+                "parameters": {
+                    "location": {
+                            "type": "string"
+                    },
+                    "logAnalyticsWorkspaceName": {
+                        "type": "string"
+                    }
+                },
                 "template": {
                     "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
                     "contentVersion": "1.0.0.0",
@@ -210,8 +225,8 @@
                         {
                             "type": "microsoft.operationalinsights/workspaces",
                             "apiVersion": "2020-10-01",
-                            "name": "[variables('logAnalyticsWorkspaceName')]",
-                            "location": "[variables('location')]",
+                            "name": "[parameters('logAnalyticsWorkspaceName')]",
+                            "location": "[parameters('location')]",
                             "properties": {
                                 "sku": {
                                     "name": "PerGB2018"
