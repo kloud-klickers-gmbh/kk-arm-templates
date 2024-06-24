@@ -18,8 +18,11 @@
         }
     },
     "variables": {
-        "maintenanceRgName": "[concat(parameters('prefix'),'-maintenance-rg')]",
-        "maintenanceLocation": "[parameters('location')]",
+        "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
+        "logAnalyticsWorkspaceName": "[concat(parameters('prefix'),'-log-analytics')]",
+        "managedIdentityRg": "[concat(parameters('prefix'),'-managed-identity-rg')]",
+        "updateRgName": "[concat(parameters('prefix'),'-update-rg')]",
+        "updateLocation": "[parameters('location')]",
         "maintenanceName": "[concat(parameters('prefix'),'-update-schedule')]",
         "maintenanceSchedule": {
             "startDateTime": "[dateTimeAdd(parameters('baseTime'), 'P1D', 'yyyy-MM-dd 22:00')]",
@@ -77,8 +80,22 @@
         {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
-            "name": "[variables('maintenanceRgName')]",
-            "location": "[variables('maintenanceLocation')]",
+            "name": "[variables('logOperationsRg')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('managedIdentityRg')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('updateRgName')]",
+            "location": "[variables('updateLocation')]",
             "properties": {}
         },
         {
@@ -112,8 +129,20 @@
             "type": "Microsoft.Security/pricings",
             "apiVersion": "2022-03-01",
             "properties": {
-                "subPlan": "PerTransaction",
-                "pricingTier": "Standard"
+                "subPlan": "DefenderForStorageV2",
+                "pricingTier": "Standard",
+                "extensions": [
+                    {
+                    "name": "OnUploadMalwareScanning",
+                    "isEnabled": false,
+                    "additionalExtensionProperties": null
+                    },
+                    {
+                    "name": "SensitiveDataDiscovery",
+                    "isEnabled": false,
+                    "additionalExtensionProperties": null
+                    }
+                ]
             }
         },
         {
@@ -164,10 +193,25 @@
             }
         },
         {
+            "type": "microsoft.operationalinsights/workspaces",
+            "apiVersion": "2020-10-01",
+            "name": "[variables('logAnalyticsWorkspaceName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]"
+            ],
+            "location": "[variables('location')]",
+            "resourceGroup": "[variables('logOperationsRg')]",
+            "properties": {
+                "sku": {
+                    "name": "PerGB2018"
+                }
+            }
+        },
+        {
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
             "name": "[concat('Update Policy Windows ', subscription().subscriptionId)]",
-            "location": "[variables('maintenanceLocation')]",
+            "location": "[variables('updateLocation')]",
             "identity": {
                 "type": "SystemAssigned"
             },
@@ -195,7 +239,7 @@
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
             "name": "[concat('Update Policy Linux ', subscription().subscriptionId)]",
-            "location": "[variables('maintenanceLocation')]",
+            "location": "[variables('updateLocation')]",
             "identity": {
                 "type": "SystemAssigned"
             },
@@ -276,9 +320,9 @@
             "apiVersion": "2021-04-01",
             "name": "Update-Automation-Deployment",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('maintenanceRgName'))]"
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('updateRgName'))]"
             ],
-            "resourceGroup": "[variables('maintenanceRgName')]",
+            "resourceGroup": "[variables('updateRgName')]",
             "properties": {
                 "mode": "Incremental",
                 "parameters": {},
@@ -290,7 +334,7 @@
                             "apiVersion": "2023-04-01",
                             "type": "Microsoft.Maintenance/maintenanceConfigurations",
                             "name": "[variables('maintenanceName')]",
-                            "location": "[variables('maintenanceLocation')]",
+                            "location": "[variables('updateLocation')]",
                             "tags": {},
                             "properties": {
                                 "maintenanceScope": "InGuestPatch",
@@ -344,9 +388,9 @@
                                             "apiVersion": "2023-04-01",
                                             "type": "Microsoft.Maintenance/configurationAssignments",
                                             "name": "[concat(variables('maintenanceName'), '-assignments')]",
-                                            "location": "[variables('maintenanceLocation')]",
+                                            "location": "[variables('updateLocation')]",
                                             "properties": {
-                                                "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('maintenanceRgName'), '/providers/Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]",
+                                                "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('updateRgName'), '/providers/Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]",
                                                 "filter": {
                                                     "resourceTypes": [
                                                         "microsoft.compute/virtualmachines"
@@ -372,7 +416,7 @@
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
             "name": "[concat('Update Schedule Policy ', subscription().subscriptionId)]",
-            "location": "[variables('maintenanceLocation')]",
+            "location": "[variables('updateLocation')]",
             "identity": {
                 "type": "SystemAssigned"
             },
@@ -387,7 +431,7 @@
                 "resourceSelectors": [],
                 "parameters": {
                     "maintenanceConfigurationResourceId": {
-                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('maintenanceRgName'), '/providers/Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]"
+                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('updateRgName'), '/providers/Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]"
                     }
                 }
             }
