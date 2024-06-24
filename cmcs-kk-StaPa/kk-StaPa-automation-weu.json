@@ -945,27 +945,27 @@
                 "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]"
             ],
             "resourceGroup": "[variables('logOperationsRg')]",
-            "parameters": {
-                "location": {
-                    "value": "[variables('location')]"
-                },
-                "logAnalyticsWorkspaceName": {
-                    "value": "[variables('logAnalyticsWorkspaceName')]"
-                }
-            },
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
                     "location": {
-                            "type": "string"
+                        "value": "[variables('location')]"
                     },
                     "logAnalyticsWorkspaceName": {
-                        "type": "string"
+                        "value": "[variables('logAnalyticsWorkspaceName')]"
                     }
                 },
                 "template": {
                     "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
                     "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "location": {
+                            "type": "string"
+                        },
+                        "logAnalyticsWorkspaceName": {
+                            "type": "string"
+                        }
+                    },
                     "resources": [
                         {
                             "type": "microsoft.operationalinsights/workspaces",
