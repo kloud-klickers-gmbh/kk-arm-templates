@@ -949,7 +949,7 @@
                 "mode": "Incremental",
                 "parameters": {
                     "location": {
-                        "value": "[variables('location')]"
+                        "value": "[parameters('location')]"
                     },
                     "logAnalyticsWorkspaceName": {
                         "value": "[variables('logAnalyticsWorkspaceName')]"
