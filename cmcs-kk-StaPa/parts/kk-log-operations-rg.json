@@ -1,0 +1,256 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        
+
+        "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
+        "logAnalyticsWorkspaceName": "[concat(parameters('prefix'),'-log-analytics')]",
+
+        
+
+        "policySetId": "/providers/Microsoft.Authorization/policySetDefinitions/924bfe3a-762f-40e7-86dd-5c8b95eb09e6",
+
+        "mangedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]",
+        "dataCollectionRuleVmName": "[concat(parameters('prefix'),'-dcr-vm')]"
+
+        
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('logOperationsRg')]",
+            "location": "[parameters('Location')]",
+            "properties": {}
+        },
+
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "Log-Analytics-Workspace-Deployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]"
+            ],
+            "resourceGroup": "[variables('logOperationsRg')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "microsoft.operationalinsights/workspaces",
+                            "apiVersion": "2020-10-01",
+                            "name": "[variables('logAnalyticsWorkspaceName')]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "sku": {
+                                    "name": "PerGB2018"
+                                }
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Insights/dataCollectionRules",
+                            "name": "[variables('dataCollectionRuleVmName')]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "dataSources": {
+                                    "performanceCounters": [
+                                        {
+                                            "streams": [
+                                                "Microsoft-Perf"
+                                            ],
+                                            "samplingFrequencyInSeconds": 60,
+                                            "counterSpecifiers": [
+                                                "\\Processor Information(_Total)\\% Processor Time",
+                                                "\\Processor Information(_Total)\\% Privileged Time",
+                                                "\\Processor Information(_Total)\\% User Time",
+                                                "\\Processor Information(_Total)\\Processor Frequency",
+                                                "\\System\\Processes",
+                                                "\\Process(_Total)\\Thread Count",
+                                                "\\Process(_Total)\\Handle Count",
+                                                "\\System\\System Up Time",
+                                                "\\System\\Context Switches/sec",
+                                                "\\System\\Processor Queue Length",
+                                                "\\Memory\\% Committed Bytes In Use",
+                                                "\\Memory\\Available Bytes",
+                                                "\\Memory\\Committed Bytes",
+                                                "\\Memory\\Cache Bytes",
+                                                "\\Memory\\Pool Paged Bytes",
+                                                "\\Memory\\Pool Nonpaged Bytes",
+                                                "\\Memory\\Pages/sec",
+                                                "\\Memory\\Page Faults/sec",
+                                                "\\Process(_Total)\\Working Set",
+                                                "\\Process(_Total)\\Working Set - Private",
+                                                "\\LogicalDisk(_Total)\\% Disk Time",
+                                                "\\LogicalDisk(_Total)\\% Disk Read Time",
+                                                "\\LogicalDisk(_Total)\\% Disk Write Time",
+                                                "\\LogicalDisk(_Total)\\% Idle Time",
+                                                "\\LogicalDisk(_Total)\\Disk Bytes/sec",
+                                                "\\LogicalDisk(_Total)\\Disk Read Bytes/sec",
+                                                "\\LogicalDisk(_Total)\\Disk Write Bytes/sec",
+                                                "\\LogicalDisk(_Total)\\Disk Transfers/sec",
+                                                "\\LogicalDisk(_Total)\\Disk Reads/sec",
+                                                "\\LogicalDisk(_Total)\\Disk Writes/sec",
+                                                "\\LogicalDisk(_Total)\\Avg. Disk sec/Transfer",
+                                                "\\LogicalDisk(_Total)\\Avg. Disk sec/Read",
+                                                "\\LogicalDisk(_Total)\\Avg. Disk sec/Write",
+                                                "\\LogicalDisk(_Total)\\Avg. Disk Queue Length",
+                                                "\\LogicalDisk(_Total)\\Avg. Disk Read Queue Length",
+                                                "\\LogicalDisk(_Total)\\Avg. Disk Write Queue Length",
+                                                "\\LogicalDisk(_Total)\\% Free Space",
+                                                "\\LogicalDisk(_Total)\\Free Megabytes",
+                                                "\\Network Interface(*)\\Bytes Total/sec",
+                                                "\\Network Interface(*)\\Bytes Sent/sec",
+                                                "\\Network Interface(*)\\Bytes Received/sec",
+                                                "\\Network Interface(*)\\Packets/sec",
+                                                "\\Network Interface(*)\\Packets Sent/sec",
+                                                "\\Network Interface(*)\\Packets Received/sec",
+                                                "\\Network Interface(*)\\Packets Outbound Errors",
+                                                "\\Network Interface(*)\\Packets Received Errors",
+                                                "Processor(*)\\% Processor Time",
+                                                "Processor(*)\\% Idle Time",
+                                                "Processor(*)\\% User Time",
+                                                "Processor(*)\\% Nice Time",
+                                                "Processor(*)\\% Privileged Time",
+                                                "Processor(*)\\% IO Wait Time",
+                                                "Processor(*)\\% Interrupt Time",
+                                                "Processor(*)\\% DPC Time",
+                                                "Memory(*)\\Available MBytes Memory",
+                                                "Memory(*)\\% Available Memory",
+                                                "Memory(*)\\Used Memory MBytes",
+                                                "Memory(*)\\% Used Memory",
+                                                "Memory(*)\\Pages/sec",
+                                                "Memory(*)\\Page Reads/sec",
+                                                "Memory(*)\\Page Writes/sec",
+                                                "Memory(*)\\Available MBytes Swap",
+                                                "Memory(*)\\% Available Swap Space",
+                                                "Memory(*)\\Used MBytes Swap Space",
+                                                "Memory(*)\\% Used Swap Space",
+                                                "Process(*)\\Pct User Time",
+                                                "Process(*)\\Pct Privileged Time",
+                                                "Process(*)\\Used Memory",
+                                                "Process(*)\\Virtual Shared Memory",
+                                                "Logical Disk(*)\\% Free Inodes",
+                                                "Logical Disk(*)\\% Used Inodes",
+                                                "Logical Disk(*)\\Free Megabytes",
+                                                "Logical Disk(*)\\% Free Space",
+                                                "Logical Disk(*)\\% Used Space",
+                                                "Logical Disk(*)\\Logical Disk Bytes/sec",
+                                                "Logical Disk(*)\\Disk Read Bytes/sec",
+                                                "Logical Disk(*)\\Disk Write Bytes/sec",
+                                                "Logical Disk(*)\\Disk Transfers/sec",
+                                                "Logical Disk(*)\\Disk Reads/sec",
+                                                "Logical Disk(*)\\Disk Writes/sec",
+                                                "Network(*)\\Total Bytes Transmitted",
+                                                "Network(*)\\Total Bytes Received",
+                                                "Network(*)\\Total Bytes",
+                                                "Network(*)\\Total Packets Transmitted",
+                                                "Network(*)\\Total Packets Received",
+                                                "Network(*)\\Total Rx Errors",
+                                                "Network(*)\\Total Tx Errors",
+                                                "Network(*)\\Total Collisions",
+                                                "System(*)\\Uptime",
+                                                "System(*)\\Load1",
+                                                "System(*)\\Load5",
+                                                "System(*)\\Load15",
+                                                "System(*)\\Users",
+                                                "System(*)\\Unique Users",
+                                                "System(*)\\CPUs"
+                                            ],
+                                            "name": "perfCounterDataSource60"
+                                        }
+                                    ]
+                                },
+                                "destinations": {
+                                    "logAnalytics": [
+                                        {
+                                            "workspaceResourceId": "/subscriptions/846453aa-de38-4f00-9c6a-42e91ac7e955/resourceGroups/KK-log-operations-rg/providers/microsoft.operationalinsights/workspaces/KK-log-analytics",
+                                            "workspaceId": "3c6ca658-66b4-4c2e-b419-4b32819bc958",
+                                            "name": "[concat(variables('dataCollectionRuleVmName'), '-la-dest]"
+                                        }
+                                    ]
+                                },
+                                "dataFlows": [
+                                    {
+                                        "streams": [
+                                            "Microsoft-Perf"
+                                        ],
+                                        "destinations": [
+                                            "[concat(variables('dataCollectionRuleVmName'), '-la-dest]"
+                                        ],
+                                        "transformKql": "source",
+                                        "outputStream": "Microsoft-Perf"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        
+
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "Create-AMA-Policy",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "variables": {
+                        "dataCollectionRuleVmId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dataCollectionRuleVmName'))]"
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.Authorization/policyassignments",
+                            "apiVersion": "2023-04-01",
+                            "name": "[concat('Update Policy Windows ', subscription().subscriptionId)]",
+                            "location": "[parameters'location')]",
+                            "identity": {
+                                "type": "SystemAssigned"
+                            },
+                            "properties": {
+                                "displayName": "KK Enable Azure Monitor for VMs with Azure Monitoring Agent (AMA)",
+                                "enforcementMode": "Default",
+                                "policyDefinitionId": "[variables('policySetId')]",
+                                "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
+                                "parameters": {
+                                    "bringYourOwnUserAssignedManagedIdentity": {
+                                        "value": false
+                                    },
+                                    "userAssignedManagedIdentityResourceGroup": {
+                                        "value": "[variables('logOperationsRg')]"
+                                    },
+                                    "userAssignedManagedIdentityName": {
+                                        "value": "[variables('mangedIdentityName')]"
+                                    },
+                                    "dcrResourceId": {
+                                        "value": "[variables('dataCollectionRuleVmId')]"
+                                    }
+                                }
+                            }
+                        },
+                    ],
+                    "outputs": {}
+                }
+            }
+        }
+    ]
+}
+
+
