@@ -84,8 +84,8 @@
                                 "destinations": {
                                     "logAnalytics": [
                                         {
-                                            "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]",
-                                            "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName')), '2020-10-01', 'Full').customerId]",
+                                            "workspaceResourceId": "[resourceId(variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]",
+                                            "workspaceId": "[reference(resourceId(variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName')), '2020-10-01', 'Full').customerId]",
                                             "name": "[concat(variables('dataCollectionRuleVmName'), '-Dest')]"
                                         }
                                     ]
