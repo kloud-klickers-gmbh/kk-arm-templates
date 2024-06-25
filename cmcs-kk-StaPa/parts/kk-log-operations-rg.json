@@ -115,6 +115,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]"
             ],
+            "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
                 "template": {
