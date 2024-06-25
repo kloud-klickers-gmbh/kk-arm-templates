@@ -56,11 +56,11 @@
             "apiVersion": "2021-04-01-preview",
             "name": "[guid(concat(variables('managedIdentityName'), subscription().subscriptionId, parameters('baseTime')))]",
             "dependsOn": [
-                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]"
+                "Managed-Identity-Deployment"
             ],
             "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                "delegatedManagedIdentityResourceId": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]"
+                "delegatedManagedIdentityResourceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]"
             }
         }
     ]
