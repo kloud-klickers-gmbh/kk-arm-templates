@@ -85,7 +85,7 @@
                                     "logAnalytics": [
                                         {
                                             "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]",
-                                            "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))).customerId]",
+                                            "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName')), '2020-10-01').customerId]",
                                             "name": "[concat(variables('dataCollectionRuleVmName'), '-Dest')]"
                                         }
                                     ]
