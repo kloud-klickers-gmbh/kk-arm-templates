@@ -120,9 +120,6 @@
                 "template": {
                     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
                     "contentVersion": "1.0.0.0",
-                    "variables": {
-                        "dataCollectionRuleVmId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dataCollectionRuleVmName'))]"
-                    },
                     "resources": [
                         {
                             "type": "Microsoft.Authorization/policyassignments",
@@ -148,7 +145,7 @@
                                         "value": "[variables('mangedIdentityName')]"
                                     },
                                     "dcrResourceId": {
-                                        "value": "[variables('dataCollectionRuleVmId')]"
+                                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dataCollectionRuleVmName'))]"
                                     }
                                 }
                             }
