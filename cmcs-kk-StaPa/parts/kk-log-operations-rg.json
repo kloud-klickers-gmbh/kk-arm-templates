@@ -85,7 +85,7 @@
                                     "logAnalytics": [
                                         {
                                             "workspaceResourceId": "[resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]",
-                                            "workspaceId": "[reference(resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName')), '2020-10-01', 'Full').customerId]",
+                                            "workspaceId": "[reference(resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName')), '2020-10-01', 'Full').properties.customerId]",
                                             "name": "[concat(variables('dataCollectionRuleVmName'), '-Dest')]"
                                         }
                                     ]
