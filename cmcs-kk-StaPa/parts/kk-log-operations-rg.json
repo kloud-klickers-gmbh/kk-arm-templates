@@ -64,7 +64,7 @@
                             "name": "[variables('dataCollectionRuleVmName')]",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[resourceId(variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
+                                "[resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
                             ],
                             "properties": {
                                 "dataSources": {
@@ -84,8 +84,8 @@
                                 "destinations": {
                                     "logAnalytics": [
                                         {
-                                            "workspaceResourceId": "[resourceId(variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]",
-                                            "workspaceId": "[reference(resourceId(variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName')), '2020-10-01', 'Full').customerId]",
+                                            "workspaceResourceId": "[resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]",
+                                            "workspaceId": "[reference(resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName')), '2020-10-01', 'Full').customerId]",
                                             "name": "[concat(variables('dataCollectionRuleVmName'), '-Dest')]"
                                         }
                                     ]
