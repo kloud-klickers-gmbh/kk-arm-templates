@@ -182,7 +182,7 @@
                 "[concat('Microsoft Cloud Security ', subscription().subscriptionId)]"
             ],
             "type": "Microsoft.Security/pricings",
-            "apiVersion": "2024-01-01",
+            "apiVersion": "2022-03-01",
             "properties": {
                 "subPlan": "DefenderForStorageV2",
                 "pricingTier": "Standard",
