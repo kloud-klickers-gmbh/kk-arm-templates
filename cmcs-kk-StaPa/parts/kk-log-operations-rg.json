@@ -176,7 +176,7 @@
                                         {
                                             "workspaceResourceId": "/subscriptions/846453aa-de38-4f00-9c6a-42e91ac7e955/resourceGroups/KK-log-operations-rg/providers/microsoft.operationalinsights/workspaces/KK-log-analytics",
                                             "workspaceId": "3c6ca658-66b4-4c2e-b419-4b32819bc958",
-                                            "name": "[concat(variables('dataCollectionRuleVmName'), '-la-dest]"
+                                            "name": "[concat(variables('dataCollectionRuleVmName'), '-la-dest')]"
                                         }
                                     ]
                                 },
@@ -186,7 +186,7 @@
                                             "Microsoft-Perf"
                                         ],
                                         "destinations": [
-                                            "[concat(variables('dataCollectionRuleVmName'), '-la-dest]"
+                                            "[concat(variables('dataCollectionRuleVmName'), '-la-dest')]"
                                         ],
                                         "transformKql": "source",
                                         "outputStream": "Microsoft-Perf"
