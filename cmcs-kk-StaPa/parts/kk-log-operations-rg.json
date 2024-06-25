@@ -125,7 +125,7 @@
                         {
                             "type": "Microsoft.Authorization/policyassignments",
                             "apiVersion": "2023-04-01",
-                            "name": "[concat('Update Policy Windows ', subscription().subscriptionId)]",
+                            "name": "[concat('AMA Policy ', subscription().subscriptionId)]",
                             "location": "[parameters('location')]",
                             "identity": {
                                 "type": "SystemAssigned"
