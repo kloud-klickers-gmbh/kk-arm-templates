@@ -189,12 +189,12 @@
                 "extensions": [
                     {
                     "name": "OnUploadMalwareScanning",
-                    "isEnabled": false,
+                    "isEnabled": "False",
                     "additionalExtensionProperties": null
                     },
                     {
                     "name": "SensitiveDataDiscovery",
-                    "isEnabled": false,
+                    "isEnabled": "False",
                     "additionalExtensionProperties": null
                     }
                 ]
