@@ -20,7 +20,8 @@
         "policySetId": "/providers/Microsoft.Authorization/policySetDefinitions/924bfe3a-762f-40e7-86dd-5c8b95eb09e6",
 
         "mangedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]",
-        "dataCollectionRuleVmName": "[concat(parameters('prefix'),'-dcr-vm')]"
+        "dataCollectionRuleVmName": "[concat(parameters('prefix'),'-dcr-vm')]",
+        "dataCollectionRuleAvdName": "[concat(parameters('prefix'),'-dcr-avd')]"
 
         
     },
@@ -101,6 +102,95 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "type": "Microsoft.Insights/dataCollectionRules",
+                            "apiVersion": "2022-06-01",
+                            "name": "[variables('dataCollectionRuleAvdName')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
+                            ],
+                            "properties": {
+                                "dataSources": {
+                                    "performanceCounters": [
+                                        {
+                                            "streams": [
+                                                "Microsoft-Perf"
+                                            ],
+                                            "samplingFrequencyInSeconds": 30,
+                                            "counterSpecifiers": [
+                                                "\\LogicalDisk(C:)\\Avg. Disk Queue Length",
+                                                "\\LogicalDisk(C:)\\Current Disk Queue Length",
+                                                "\\Memory\\Available Mbytes",
+                                                "\\Memory\\Page Faults/sec",
+                                                "\\Memory\\Pages/sec",
+                                                "\\Memory\\% Committed Bytes In Use",
+                                                "\\PhysicalDisk(*)\\Avg. Disk Queue Length",
+                                                "\\PhysicalDisk(*)\\Avg. Disk sec/Read",
+                                                "\\PhysicalDisk(*)\\Avg. Disk sec/Transfer",
+                                                "\\PhysicalDisk(*)\\Avg. Disk sec/Write",
+                                                "\\Processor Information(_Total)\\% Processor Time",
+                                                "\\User Input Delay per Process(*)\\Max Input Delay",
+                                                "\\User Input Delay per Session(*)\\Max Input Delay",
+                                                "\\RemoteFX Network(*)\\Current TCP RTT",
+                                                "\\RemoteFX Network(*)\\Current UDP Bandwidth"
+                                            ],
+                                            "name": "perfCounterDataSource10"
+                                        },
+                                        {
+                                            "streams": [
+                                                "Microsoft-Perf"
+                                            ],
+                                            "samplingFrequencyInSeconds": 60,
+                                            "counterSpecifiers": [
+                                                "\\LogicalDisk(C:)\\% Free Space",
+                                                "\\LogicalDisk(C:)\\Avg. Disk sec/Transfer",
+                                                "\\Terminal Services(*)\\Active Sessions",
+                                                "\\Terminal Services(*)\\Inactive Sessions",
+                                                "\\Terminal Services(*)\\Total Sessions"
+                                            ],
+                                            "name": "perfCounterDataSource30"
+                                        }
+                                    ],
+                                    "windowsEventLogs": [
+                                        {
+                                            "streams": [
+                                                "Microsoft-Event"
+                                            ],
+                                            "xPathQueries": [
+                                                "Microsoft-Windows-TerminalServices-RemoteConnectionManager/Admin!*[System[(Level=2 or Level=3 or Level=4 or Level=0)]]",
+                                                "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational!*[System[(Level=2 or Level=3 or Level=4 or Level=0)]]",
+                                                "System!*",
+                                                "Microsoft-FSLogix-Apps/Operational!*[System[(Level=2 or Level=3 or Level=4 or Level=0)]]",
+                                                "Application!*[System[(Level=2 or Level=3)]]",
+                                                "Microsoft-FSLogix-Apps/Admin!*[System[(Level=2 or Level=3 or Level=4 or Level=0)]]"
+                                            ],
+                                            "name": "eventLogsDataSource"
+                                        }
+                                    ]
+                                },
+                                "destinations": {
+                                    "logAnalytics": [
+                                        {
+                                            "workspaceResourceId": "[resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]",
+                                            "workspaceId": "[reference(resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName')), '2020-10-01', 'Full').properties.customerId]",
+                                            "name": "[concat(variables('dataCollectionRuleAvdName'), '-Dest')]"
+                                        }
+                                    ]
+                                },
+                                "dataFlows": [
+                                    {
+                                        "streams": [
+                                            "Microsoft-Perf",
+                                            "Microsoft-Event"
+                                        ],
+                                        "destinations": [
+                                            "[concat(variables('dataCollectionRuleAvdName'), '-Dest')]"
+                                        ]
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -125,7 +215,7 @@
                         {
                             "type": "Microsoft.Authorization/policyassignments",
                             "apiVersion": "2023-04-01",
-                            "name": "[concat('AMA Policy ', subscription().subscriptionId)]",
+                            "name": "[concat('AMA Policy VM ', subscription().subscriptionId)]",
                             "location": "[parameters('location')]",
                             "identity": {
                                 "type": "SystemAssigned"
@@ -137,7 +227,7 @@
                                 "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
                                 "parameters": {
                                     "bringYourOwnUserAssignedManagedIdentity": {
-                                        "value": false
+                                        "value": true
                                     },
                                     "userAssignedManagedIdentityResourceGroup": {
                                         "value": "[variables('logOperationsRg')]"
@@ -147,6 +237,36 @@
                                     },
                                     "dcrResourceId": {
                                         "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dataCollectionRuleVmName'))]"
+                                    }
+                                }
+                            }
+                        },
+
+                        {
+                            "type": "Microsoft.Authorization/policyassignments",
+                            "apiVersion": "2023-04-01",
+                            "name": "[concat('AMA Policy AVD ', subscription().subscriptionId)]",
+                            "location": "[parameters('location')]",
+                            "identity": {
+                                "type": "SystemAssigned"
+                            },
+                            "properties": {
+                                "displayName": "KK Enable Azure Monitor for AVDs with Azure Monitoring Agent (AMA)",
+                                "enforcementMode": "Default",
+                                "policyDefinitionId": "[variables('policySetId')]",
+                                "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
+                                "parameters": {
+                                    "bringYourOwnUserAssignedManagedIdentity": {
+                                        "value": true
+                                    },
+                                    "userAssignedManagedIdentityResourceGroup": {
+                                        "value": "[variables('logOperationsRg')]"
+                                    },
+                                    "userAssignedManagedIdentityName": {
+                                        "value": "[variables('mangedIdentityName')]"
+                                    },
+                                    "dcrResourceId": {
+                                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dataCollectionRuleAvdName'))]"
                                     }
                                 }
                             }
