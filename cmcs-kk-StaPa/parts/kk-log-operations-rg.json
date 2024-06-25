@@ -64,7 +64,7 @@
                             "name": "[variables('dataCollectionRuleVmName')]",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
+                                "[resourceId(variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
                             ],
                             "properties": {
                                 "dataSources": {
