@@ -6,6 +6,10 @@
             "type": "string",
             "defaultValue": "[deployment().properties.templateLink.uri]"
         },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": ""
+        },
         "baseTime": {
             "type": "string",
             "defaultValue": "[utcNow()]"
@@ -1079,7 +1083,7 @@
                             "location": "[variables('updateLocation')]",
                             "tags": {},
                             "properties": {
-                                "maintenanceScope": "InGuestPatch",
+                                "maintenanceScope": "[variables('maintenanceScope')]",
                                 "installPatches": {
                                     "linuxParameters": {
                                         "classificationsToInclude": [
