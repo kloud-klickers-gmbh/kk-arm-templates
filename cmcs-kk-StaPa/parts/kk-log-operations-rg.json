@@ -4,8 +4,10 @@
     "parameters": {
         "prefix": {
             "type": "string"
+        },
+        "location": {
+            "type": "string"
         }
-
     },
     "variables": {
         

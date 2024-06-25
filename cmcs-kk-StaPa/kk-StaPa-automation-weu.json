@@ -280,6 +280,7 @@
             "name": "Log-Operations",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
