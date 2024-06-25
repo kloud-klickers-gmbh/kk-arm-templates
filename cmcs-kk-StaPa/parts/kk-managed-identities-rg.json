@@ -60,7 +60,8 @@
             ],
             "properties": {
                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                "delegatedManagedIdentityResourceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]"
+                "principalId": "[reference(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))).principalId]",
+                "principalType": "ServicePrincipal"
             }
         }
     ]
