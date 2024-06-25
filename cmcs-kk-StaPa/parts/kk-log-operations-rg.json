@@ -15,11 +15,12 @@
         "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
         "logAnalyticsWorkspaceName": "[concat(parameters('prefix'),'-log-analytics')]",
 
+        "managedIdentitiesRg": "[concat(parameters('prefix'),'-managed-identities-rg')]",
+        "managedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]",
         
 
         "policySetId": "/providers/Microsoft.Authorization/policySetDefinitions/924bfe3a-762f-40e7-86dd-5c8b95eb09e6",
 
-        "mangedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]",
         "dataCollectionRuleVmName": "[concat(parameters('prefix'),'-dcr-vm')]",
         "dataCollectionRuleAvdName": "[concat(parameters('prefix'),'-dcr-avd')]"
 
@@ -229,11 +230,8 @@
                                     "bringYourOwnUserAssignedManagedIdentity": {
                                         "value": true
                                     },
-                                    "userAssignedManagedIdentityResourceGroup": {
-                                        "value": "[variables('logOperationsRg')]"
-                                    },
-                                    "userAssignedManagedIdentityName": {
-                                        "value": "[variables('mangedIdentityName')]"
+                                    "userAssignedManagedIdentityResourceId": {
+                                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]"
                                     },
                                     "dcrResourceId": {
                                         "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dataCollectionRuleVmName'))]"
@@ -259,11 +257,8 @@
                                     "bringYourOwnUserAssignedManagedIdentity": {
                                         "value": true
                                     },
-                                    "userAssignedManagedIdentityResourceGroup": {
-                                        "value": "[variables('logOperationsRg')]"
-                                    },
-                                    "userAssignedManagedIdentityName": {
-                                        "value": "[variables('mangedIdentityName')]"
+                                    "userAssignedManagedIdentityResourceId": {
+                                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]"
                                     },
                                     "dcrResourceId": {
                                         "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dataCollectionRuleAvdName'))]"

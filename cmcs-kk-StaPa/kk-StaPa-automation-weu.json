@@ -71,6 +71,7 @@
     },
     "variables": {
 
+        "templateManagedIdentities": "[uri(parameters('_artifactsLocation'), 'parts/kk-managed-identities-rg.json')]",
         "templateLogOperations": "[uri(parameters('_artifactsLocation'), 'parts/kk-log-operations-rg.json')]",
 
         "backupRgName": "[concat(parameters('prefix'),'-backup-rg')]",
@@ -276,11 +277,39 @@
             "properties": {}
         },
 
+        
+
+
+        {
+            "name": "Managed-Identities",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateManagedIdentities')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+
         {
             "name": "Log-Operations",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "location": "[parameters('location')]",
+            "dependsOn": [
+                "Managed-Identities"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
