@@ -230,7 +230,7 @@
                                     "bringYourOwnUserAssignedManagedIdentity": {
                                         "value": true
                                     },
-                                    "userAssignedManagedIdentityResourceId": {
+                                    "userAssignedIdentityResourceId": {
                                         "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]"
                                     },
                                     "dcrResourceId": {
@@ -257,7 +257,7 @@
                                     "bringYourOwnUserAssignedManagedIdentity": {
                                         "value": true
                                     },
-                                    "userAssignedManagedIdentityResourceId": {
+                                    "userAssignedIdentityResourceId": {
                                         "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]"
                                     },
                                     "dcrResourceId": {
