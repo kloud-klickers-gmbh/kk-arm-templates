@@ -60,6 +60,7 @@
                         },
                         {
                             "type": "Microsoft.Insights/dataCollectionRules",
+                            "apiVersion": "2022-06-01",
                             "name": "[variables('dataCollectionRuleVmName')]",
                             "location": "[parameters('location')]",
                             "properties": {
