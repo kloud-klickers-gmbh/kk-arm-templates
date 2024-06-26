@@ -31,7 +31,7 @@
             "apiVersion": "2021-04-01",
             "name": "Managed-Identity-Deployment",
             "dependsOn": [
-                "[variables('managedIdentitiesRg')]"
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('managedIdentitiesRg'))]"
             ],
             "resourceGroup": "[variables('managedIdentitiesRg')]",
             "properties": {
