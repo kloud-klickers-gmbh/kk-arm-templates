@@ -69,7 +69,7 @@
                             "name": "[variables('dataCollectionRuleVmName')]",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
+                                "[variables('logAnalyticsWorkspaceName')]"
                             ],
                             "properties": {
                                 "dataSources": {
@@ -113,7 +113,7 @@
                             "name": "[variables('dataCollectionRuleAvdName')]",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
+                                "[variables('logAnalyticsWorkspaceName')]"
                             ],
                             "properties": {
                                 "dataSources": {
