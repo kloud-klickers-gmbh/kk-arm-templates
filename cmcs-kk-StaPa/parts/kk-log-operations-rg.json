@@ -69,7 +69,8 @@
                             "name": "[variables('dataCollectionRuleVmName')]",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[variables('logAnalyticsWorkspaceName')]"
+                                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]",
+                                "[resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
                             ],
                             "properties": {
                                 "dataSources": {
@@ -113,7 +114,8 @@
                             "name": "[variables('dataCollectionRuleAvdName')]",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[variables('logAnalyticsWorkspaceName')]"
+                                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]",
+                                "[resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
                             ],
                             "properties": {
                                 "dataSources": {
