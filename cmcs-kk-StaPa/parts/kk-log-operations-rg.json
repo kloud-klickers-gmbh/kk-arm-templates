@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "prefix": {
@@ -10,21 +10,21 @@
         }
     },
     "variables": {
-        
+
 
         "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
         "logAnalyticsWorkspaceName": "[concat(parameters('prefix'),'-log-analytics')]",
 
         "managedIdentitiesRg": "[concat(parameters('prefix'),'-managed-identities-rg')]",
         "managedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]",
-        
+
 
         "policySetId": "/providers/Microsoft.Authorization/policySetDefinitions/924bfe3a-762f-40e7-86dd-5c8b95eb09e6",
 
         "dataCollectionRuleVmName": "[concat(parameters('prefix'),'-dcr-vm')]",
         "dataCollectionRuleAvdName": "[concat(parameters('prefix'),'-dcr-avd')]"
 
-        
+
     },
     "resources": [
         {
@@ -197,7 +197,7 @@
                 }
             }
         },
-        
+
 
         {
             "type": "Microsoft.Resources/deployments",
@@ -215,13 +215,13 @@
                     "resources": [
                         {
                             "type": "Microsoft.Authorization/policyassignments",
-                            "apiVersion": "2023-04-01",
+                            "apiVersion": "2022-06-01",
                             "name": "[concat('AMA Policy VM ', subscription().subscriptionId)]",
                             "location": "[parameters('location')]",
                             "identity": {
                                 "type": "UserAssigned",
                                 "userAssignedIdentities": {
-                                  "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]": {}
+                                    "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]": {}
                                 }
                             },
                             "properties": {
@@ -245,13 +245,13 @@
 
                         {
                             "type": "Microsoft.Authorization/policyassignments",
-                            "apiVersion": "2023-04-01",
+                            "apiVersion": "2022-06-01",
                             "name": "[concat('AMA Policy AVD ', subscription().subscriptionId)]",
                             "location": "[parameters('location')]",
                             "identity": {
                                 "type": "UserAssigned",
                                 "userAssignedIdentities": {
-                                  "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]": {}
+                                    "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]": {}
                                 }
                             },
                             "properties": {
