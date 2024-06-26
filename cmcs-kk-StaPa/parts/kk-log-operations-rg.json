@@ -204,7 +204,8 @@
             "apiVersion": "2021-04-01",
             "name": "Create-AMA-Policy",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]"
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]",
+                "Log-Analytics-Workspace-Deployment"
             ],
             "location": "[parameters('location')]",
             "properties": {
