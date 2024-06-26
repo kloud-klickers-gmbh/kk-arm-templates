@@ -219,7 +219,10 @@
                             "name": "[concat('AMA Policy VM ', subscription().subscriptionId)]",
                             "location": "[parameters('location')]",
                             "identity": {
-                                "type": "SystemAssigned"
+                                "type": "UserAssigned",
+                                "userAssignedIdentities": {
+                                  "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]": {}
+                                }
                             },
                             "properties": {
                                 "displayName": "KK Enable Azure Monitor for VMs with Azure Monitoring Agent (AMA)",
@@ -246,7 +249,10 @@
                             "name": "[concat('AMA Policy AVD ', subscription().subscriptionId)]",
                             "location": "[parameters('location')]",
                             "identity": {
-                                "type": "SystemAssigned"
+                                "type": "UserAssigned",
+                                "userAssignedIdentities": {
+                                  "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]": {}
+                                }
                             },
                             "properties": {
                                 "displayName": "KK Enable Azure Monitor for AVDs with Azure Monitoring Agent (AMA)",
