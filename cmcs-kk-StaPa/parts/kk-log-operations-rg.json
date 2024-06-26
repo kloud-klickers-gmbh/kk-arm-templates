@@ -75,7 +75,6 @@
             "name": "Create-AMA-Policy",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]",
-                "[resourceId(subscription().subscriptionId, variables('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
             ],
             "location": "[parameters('location')]",
             "properties": {
