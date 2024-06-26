@@ -53,6 +53,9 @@
                             "type": "Microsoft.OperationalInsights/workspaces",
                             "apiVersion": "2020-10-01",
                             "name": "[variables('logAnalyticsWorkspaceName')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]"
+                            ],
                             "location": "[parameters('location')]",
                             "properties": {
                                 "sku": {
