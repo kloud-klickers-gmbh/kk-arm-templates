@@ -31,7 +31,6 @@
             "apiVersion": "2021-04-01",
             "name": "Managed-Identity-Deployment",
             "dependsOn": [
-                "BULLSHITdsadasd",
                 "[variables('managedIdentitiesRg')]"
             ],
             "resourceGroup": "[variables('managedIdentitiesRg')]",
