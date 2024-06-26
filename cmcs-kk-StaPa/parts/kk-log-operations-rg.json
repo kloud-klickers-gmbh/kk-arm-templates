@@ -66,7 +66,7 @@
                             "name": "[variables('dataCollectionRuleVmName')]",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[variables('logAnalyticsWorkspaceName'))]"
+                                "[variables('logAnalyticsWorkspaceName')]"
                             ],
                             "properties": {
                                 "dataSources": {
@@ -110,7 +110,7 @@
                             "name": "[variables('dataCollectionRuleAvdName')]",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[variables('logAnalyticsWorkspaceName'))]"
+                                "[variables('logAnalyticsWorkspaceName')]"
                             ],
                             "properties": {
                                 "dataSources": {
