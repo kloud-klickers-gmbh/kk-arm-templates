@@ -266,9 +266,6 @@
                     "dataCollectionRuleVmName": {
                         "value": "[variables('dataCollectionRuleVmName')]"
                     },
-                    "logAnalyticsWorkspaceName": {
-                        "value": "[variables('logAnalyticsWorkspaceName')]"
-                    },
                     "managedIdentitiesRg": {
                         "value": "[variables('managedIdentitiesRg')]"
                     },
