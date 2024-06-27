@@ -199,7 +199,8 @@
                         "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'))]",
                         "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnet'))]",
                         "nsgname": "[concat(parameters('vmName'),'-nsg')]",
-                        "managedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]"
+                        "managedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]",
+                        "dataCollectionRuleVmName": "[concat(parameters('prefix'),'-dcr-vm')]"
                     },
                     "resources": [
                         {
@@ -398,19 +399,29 @@
                             "name": "[format('{0}/AzureMonitorWindowsAgent', parameters('vmName'))]",
                             "location": "[parameters('location')]",
                             "properties": {
-                              "publisher": "Microsoft.Azure.Monitor",
-                              "type": "AzureMonitorWindowsAgent",
-                              "typeHandlerVersion": "1.0",
-                              "settings": {
-                                "authentication": {
-                                  "managedIdentity": {
-                                    "identifier-name": "[concat('mi_', parameters('vmName'))]",
-                                    "identifier-value": "[variables('managedIdentityName')]"
-                                  }
-                                }
-                              },
-                              "autoUpgradeMinorVersion": true,
-                              "enableAutomaticUpgrade": true
+                                "publisher": "Microsoft.Azure.Monitor",
+                                "type": "AzureMonitorWindowsAgent",
+                                "typeHandlerVersion": "1.0",
+                                "settings": {
+                                    "authentication": {
+                                        "managedIdentity": {
+                                            "identifier-name": "[concat('mi_', parameters('vmName'))]",
+                                            "identifier-value": "[variables('managedIdentityName')]"
+                                        }
+                                    }
+                                },
+                                "autoUpgradeMinorVersion": true,
+                                "enableAutomaticUpgrade": true
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Insights/dataCollectionRuleAssociations",
+                            "apiVersion": "2022-06-01",
+                            "name": "[format('{0}/DcrVM', parameters('vmName'))]",
+                            "scope": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
+                            "properties": {
+                                "dataCollectionRuleId": "[resourceId('Microsoft.Insights/dataCollectionRules', variables('dataCollectionRuleVmName'))]",
+                                "description": ""
                             }
                         },
                         {
