@@ -289,7 +289,7 @@
                             ],
                             "properties": {
                                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'AMA Policy VM ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
+                                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'AMA Policy VM ', subscription().subscriptionId), '2022-06-01', 'Full' ).identity.principalId)]",
                                 "principalType": "ServicePrincipal"
                             }
                         }
