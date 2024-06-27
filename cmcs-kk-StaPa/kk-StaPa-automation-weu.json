@@ -74,6 +74,9 @@
         "templateManagedIdentities": "[uri(parameters('_artifactsLocation'), 'parts/kk-managed-identities-rg.json')]",
         "templateLogOperations": "[uri(parameters('_artifactsLocation'), 'parts/kk-log-operations-rg.json')]",
 
+        "managedIdentitiesRg": "[concat(parameters('prefix'),'-managed-identities-rg')]",
+        "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
+
         "backupRgName": "[concat(parameters('prefix'),'-backup-rg')]",
         "vaultName": "[concat(parameters('prefix'),'-backup-lrs')]",
         "vaultName_grs": "[concat(parameters('prefix'),'-backup-grs')]",
@@ -276,7 +279,20 @@
             "location": "[parameters('Location')]",
             "properties": {}
         },
-
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('managedIdentitiesRg')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('logOperationsRg')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
         
 
 
