@@ -301,6 +301,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('managedIdentitiesRg'))]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
@@ -324,7 +327,8 @@
             "apiVersion": "2022-09-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "Managed-Identities"
+                "Managed-Identities",
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]"
             ],
             "properties": {
                 "mode": "Incremental",
