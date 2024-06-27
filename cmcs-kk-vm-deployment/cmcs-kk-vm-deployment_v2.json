@@ -200,6 +200,7 @@
                         "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnet'))]",
                         "nsgname": "[concat(parameters('vmName'),'-nsg')]",
                         "managedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]",
+                        "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
                         "dataCollectionRuleVmName": "[concat(parameters('prefix'),'-dcr-vm')]"
                     },
                     "resources": [
@@ -426,7 +427,7 @@
                             "name": "[format('{0}-DCR-VM', parameters('vmName'))]",
                             "scope": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
                             "properties": {
-                                "dataCollectionRuleId": "[resourceId('Microsoft.Insights/dataCollectionRules', variables('dataCollectionRuleVmName'))]",
+                                "dataCollectionRuleId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dataCollectionRuleVmName'))]",
                                 "description": ""
                             }
                         },
