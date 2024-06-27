@@ -292,46 +292,6 @@
                                 "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'AMA Policy VM ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
                                 "principalType": "ServicePrincipal"
                             }
-                        },
-
-                        {
-                            "type": "Microsoft.Authorization/policyassignments",
-                            "apiVersion": "2022-06-01",
-                            "name": "[concat('AMA Policy AVD ', subscription().subscriptionId)]",
-                            "location": "[parameters('location')]",
-                            "identity": {
-                                "type": "SystemAssigned"
-                            },
-                            "properties": {
-                                "displayName": "KK Enable Azure Monitor for AVDs with Azure Monitoring Agent (AMA)",
-                                "enforcementMode": "Default",
-                                "policyDefinitionId": "[variables('policySetId')]",
-                                "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
-                                "parameters": {
-                                    "bringYourOwnUserAssignedManagedIdentity": {
-                                        "value": true
-                                    },
-                                    "userAssignedIdentityResourceId": {
-                                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]"
-                                    },
-                                    "dcrResourceId": {
-                                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dataCollectionRuleAvdName'))]"
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            "type": "Microsoft.Authorization/roleAssignments",
-                            "apiVersion": "2021-04-01-preview",
-                            "name": "[guid(concat('AMA Policy AVD Role ', subscription().subscriptionId, parameters('baseTime')))]",
-                            "dependsOn": [
-                                "[concat('AMA Policy AVD ', subscription().subscriptionId)]"
-                            ],
-                            "properties": {
-                                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'AMA Policy AVD ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
-                                "principalType": "ServicePrincipal"
-                            }
                         }
                     ],
                     "outputs": {}
