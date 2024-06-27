@@ -420,7 +420,7 @@
                                 "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
                             ],
                             "apiVersion": "2022-06-01",
-                            "name": "[format('{0}/DcrVM', parameters('vmName'))]",
+                            "name": "[format('{0}-DCR-VM', parameters('vmName'))]",
                             "scope": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
                             "properties": {
                                 "dataCollectionRuleId": "[resourceId('Microsoft.Insights/dataCollectionRules', variables('dataCollectionRuleVmName'))]",
