@@ -24,9 +24,6 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "Managed-Identity-Deployment",
-            "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('managedIdentitiesRg'))]"
-            ],
             "resourceGroup": "[variables('managedIdentitiesRg')]",
             "properties": {
                 "mode": "Incremental",
@@ -57,7 +54,7 @@
                     ]
                 }
             }
-        },
+        }
 
         
     ]

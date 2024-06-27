@@ -28,14 +28,10 @@
     },
     "resources": [
         
-
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "Log-Analytics-Workspace-Deployment",
-            "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]"
-            ],
             "resourceGroup": "[variables('logOperationsRg')]",
             "properties": {
                 "mode": "Incremental",
@@ -198,7 +194,6 @@
             "apiVersion": "2021-04-01",
             "name": "Create-AMA-Policy",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]",
                 "Log-Analytics-Workspace-Deployment"
             ],
             "location": "[parameters('location')]",
