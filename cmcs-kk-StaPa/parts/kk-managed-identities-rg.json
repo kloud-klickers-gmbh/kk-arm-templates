@@ -18,36 +18,76 @@
         "managedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]"
     },
     "resources": [
-        
-
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('managedIdentitiesRg')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "Managed-Identity-Deployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('managedIdentitiesRg'))]"
+            ],
             "resourceGroup": "[variables('managedIdentitiesRg')]",
             "properties": {
                 "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "Inner"
+                },
+                "parameters": {
+                    "baseTime": {
+                        "value": "[parameters('baseTime')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "managedIdentitiesRg": {
+                        "value": "[variables('managedIdentitiesRg')]"
+                    },
+                    "managedIdentityName": {
+                        "value": "[variables('managedIdentityName')]"
+                    }
+                },
                 "template": {
                     "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
                     "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "baseTime": {
+                            "type": "string",
+                            "defaultValue": "[utcNow()]"
+                        },
+                        "location": {
+                            "type": "string"
+                        },
+                        "managedIdentitiesRg": {
+                            "type": "string"
+                        },
+                        "managedIdentityName": {
+                            "type": "string"
+                        }
+                    },
                     "resources": [
                         {
                             "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
                             "apiVersion": "2023-01-31",
-                            "name": "[variables('managedIdentityName')]",
+                            "name": "[parameters('managedIdentityName')]",
                             "location": "[parameters('location')]"
                         },
 
                         {
                             "type": "Microsoft.Authorization/roleAssignments",
                             "apiVersion": "2022-04-01",
-                            "name": "[guid(concat(variables('managedIdentityName'), subscription().subscriptionId, parameters('baseTime')))]",
+                            "name": "[guid(concat(parameters('managedIdentityName'), subscription().subscriptionId, parameters('baseTime')))]",
                             "dependsOn": [
-                                "[variables('managedIdentityName')]"
+                                "[parameters('managedIdentityName')]"
                             ],
                             "properties": {
                                 "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                                "principalId": "[reference(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName')), '2023-01-31').principalId]",
+                                "principalId": "[reference(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('managedIdentityName')), '2023-01-31').principalId]",
                                 "principalType": "ServicePrincipal"
                             }
                         }
@@ -55,7 +95,5 @@
                 }
             }
         }
-
-        
     ]
 }
