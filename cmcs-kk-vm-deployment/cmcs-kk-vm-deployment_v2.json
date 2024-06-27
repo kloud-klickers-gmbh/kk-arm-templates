@@ -395,6 +395,9 @@
                         },
                         {
                             "type": "Microsoft.Compute/virtualMachines/extensions",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
+                            ],
                             "apiVersion": "2021-11-01",
                             "name": "[format('{0}/AzureMonitorWindowsAgent', parameters('vmName'))]",
                             "location": "[parameters('location')]",
