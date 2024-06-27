@@ -416,6 +416,9 @@
                         },
                         {
                             "type": "Microsoft.Insights/dataCollectionRuleAssociations",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
+                            ],
                             "apiVersion": "2022-06-01",
                             "name": "[format('{0}/DcrVM', parameters('vmName'))]",
                             "scope": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
@@ -463,7 +466,7 @@
             "name": "[concat('Backup-Deployment-',parameters('vmname'))]",
             "resourceGroup": "[parameters('backuprg')]",
             "dependsOn": [
-                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/vmDeployment')]"
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/VM-Deployment')]"
             ],
             "properties": {
                 "expressionEvaluationOptions": {
