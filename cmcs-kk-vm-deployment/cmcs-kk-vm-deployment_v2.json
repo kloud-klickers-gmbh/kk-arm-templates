@@ -79,7 +79,7 @@
             "location": "[parameters('location')]"
         },
         {
-            "name": "vmDeployment",
+            "name": "VM-Deployment",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[variables('vmrgname')]",
             "apiVersion": "2021-04-01",
@@ -198,7 +198,8 @@
                         "subnet": "[concat(parameters('prefix'),'-lan-subnet')]",
                         "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'))]",
                         "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnet'))]",
-                        "nsgname": "[concat(parameters('vmName'),'-nsg')]"
+                        "nsgname": "[concat(parameters('vmName'),'-nsg')]",
+                        "managedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]"
                     },
                     "resources": [
                         {
@@ -392,6 +393,27 @@
                             }
                         },
                         {
+                            "type": "Microsoft.Compute/virtualMachines/extensions",
+                            "apiVersion": "2021-11-01",
+                            "name": "[format('{0}/AzureMonitorWindowsAgent', parameters('vmName'))]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                              "publisher": "Microsoft.Azure.Monitor",
+                              "type": "AzureMonitorWindowsAgent",
+                              "typeHandlerVersion": "1.0",
+                              "settings": {
+                                "authentication": {
+                                  "managedIdentity": {
+                                    "identifier-name": "[concat('mi_', parameters('vmName'))]",
+                                    "identifier-value": "[variables('managedIdentityName')]"
+                                  }
+                                }
+                              },
+                              "autoUpgradeMinorVersion": true,
+                              "enableAutomaticUpgrade": true
+                            }
+                        },
+                        {
                             "type": "Microsoft.Resources/tags",
                             "dependsOn": [
                                 "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
@@ -427,7 +449,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "[concat('BackupDeployment-',parameters('vmname'))]",
+            "name": "[concat('Backup-Deployment-',parameters('vmname'))]",
             "resourceGroup": "[parameters('backuprg')]",
             "dependsOn": [
                 "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/vmDeployment')]"

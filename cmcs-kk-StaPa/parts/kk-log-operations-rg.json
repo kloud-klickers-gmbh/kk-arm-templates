@@ -2,6 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "baseTime": {
+            "type": "string",
+            "defaultValue": "[utcNow()]"
+        },
         "prefix": {
             "type": "string"
         },
@@ -256,10 +260,7 @@
                             "name": "[concat('AMA Policy VM ', subscription().subscriptionId)]",
                             "location": "[parameters('location')]",
                             "identity": {
-                                "type": "UserAssigned",
-                                "userAssignedIdentities": {
-                                    "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]": {}
-                                }
+                                "type": "SystemAssigned"
                             },
                             "properties": {
                                 "displayName": "KK Enable Azure Monitor for VMs with Azure Monitoring Agent (AMA)",
@@ -279,6 +280,19 @@
                                 }
                             }
                         },
+                        {
+                            "type": "Microsoft.Authorization/roleAssignments",
+                            "apiVersion": "2021-04-01-preview",
+                            "name": "[guid(concat('AMA Policy VM Role ', subscription().subscriptionId, parameters('baseTime')))]",
+                            "dependsOn": [
+                                "[concat('AMA Policy VM ', subscription().subscriptionId)]"
+                            ],
+                            "properties": {
+                                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+                                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'AMA Policy VM ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
+                                "principalType": "ServicePrincipal"
+                            }
+                        },
 
                         {
                             "type": "Microsoft.Authorization/policyassignments",
@@ -286,10 +300,7 @@
                             "name": "[concat('AMA Policy AVD ', subscription().subscriptionId)]",
                             "location": "[parameters('location')]",
                             "identity": {
-                                "type": "UserAssigned",
-                                "userAssignedIdentities": {
-                                    "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityName'))]": {}
-                                }
+                                "type": "SystemAssigned"
                             },
                             "properties": {
                                 "displayName": "KK Enable Azure Monitor for AVDs with Azure Monitoring Agent (AMA)",
@@ -307,6 +318,19 @@
                                         "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dataCollectionRuleAvdName'))]"
                                     }
                                 }
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Authorization/roleAssignments",
+                            "apiVersion": "2021-04-01-preview",
+                            "name": "[guid(concat('AMA Policy AVD Role ', subscription().subscriptionId, parameters('baseTime')))]",
+                            "dependsOn": [
+                                "[concat('AMA Policy AVD ', subscription().subscriptionId)]"
+                            ],
+                            "properties": {
+                                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+                                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'AMA Policy AVD ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
+                                "principalType": "ServicePrincipal"
                             }
                         }
                     ],
