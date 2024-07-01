@@ -2,10 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "baseTime": {
-            "type": "string",
-            "defaultValue": "[utcNow()]"
-        },
         "prefix": {
             "type": "string"
         },
@@ -39,12 +35,50 @@
                     "scope": "Inner"
                 },
                 "parameters": {
-                    "baseTime": {
-                        "value": "[parameters('baseTime')]"
-                    },
                     "location": {
                         "value": "[parameters('location')]"
                     },
+                    "managedIdentityNamePolicies": {
+                        "value": "[variables('managedIdentityNamePolicies')]"
+                    }
+                },
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "location": {
+                            "type": "string"
+                        },
+                        "managedIdentityNamePolicies": {
+                            "type": "string"
+                        }
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+                            "apiVersion": "2023-01-31",
+                            "name": "[parameters('managedIdentityNamePolicies')]",
+                            "location": "[parameters('location')]"
+                        }
+                    ]
+                }
+            }
+        },
+
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "Managed-Identity-Roles-Deployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('managedIdentitiesRg'))]",
+                "Managed-Identity-Deployment"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "Inner"
+                },
+                "parameters": {
                     "managedIdentitiesRg": {
                         "value": "[variables('managedIdentitiesRg')]"
                     },
@@ -59,9 +93,6 @@
                         "baseTime": {
                             "type": "string",
                             "defaultValue": "[utcNow()]"
-                        },
-                        "location": {
-                            "type": "string"
                         },
                         "managedIdentitiesRg": {
                             "type": "string"
@@ -94,13 +125,6 @@
                     },
                     "resources": [
                         {
-                            "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
-                            "apiVersion": "2023-01-31",
-                            "name": "[parameters('managedIdentityNamePolicies')]",
-                            "location": "[parameters('location')]"
-                        },
-
-                        {
                             "copy": {
                                 "name": "roleAssignment",
                                 "count": "[length(variables('roleAssignmentsToCreate'))]"
@@ -108,9 +132,6 @@
                             "type": "Microsoft.Authorization/roleAssignments",
                             "apiVersion": "2022-04-01",
                             "name": "[variables('roleAssignmentsToCreate')[copyIndex()].name]",
-                            "dependsOn": [
-                                "[parameters('managedIdentityNamePolicies')]"
-                            ],
                             "properties": {
                                 "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('roleAssignmentsToCreate')[copyIndex()].roleDefinitionId)]",
                                 "principalId": "[reference(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('managedIdentityNamePolicies')), '2023-01-31').principalId]",
