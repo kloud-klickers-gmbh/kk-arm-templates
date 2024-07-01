@@ -57,6 +57,57 @@
                     "location": {
                         "value": "[parameters('location')]"
                     },
+                    "logAnalyticsWorkspaceName": {
+                        "value": "[variables('logAnalyticsWorkspaceName')]"
+                    }
+                },
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "location": {
+                            "type": "string"
+                        },
+                        "logAnalyticsWorkspaceName": {
+                            "type": "string"
+                        }
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.OperationalInsights/workspaces",
+                            "apiVersion": "2020-10-01",
+                            "name": "[parameters('logAnalyticsWorkspaceName')]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "sku": {
+                                    "name": "PerGB2018"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+
+
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "Log-Analytics-DCRs-Deployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]",
+                "Log-Analytics-Workspace-Deployment"
+            ],
+            "resourceGroup": "[variables('logOperationsRg')]",
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "Inner"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
                     "logOperationsRg": {
                         "value": "[variables('logOperationsRg')]"
                     },
@@ -91,25 +142,12 @@
                         }
                     },
                     "resources": [
-                        {
-                            "type": "Microsoft.OperationalInsights/workspaces",
-                            "apiVersion": "2020-10-01",
-                            "name": "[parameters('logAnalyticsWorkspaceName')]",
-                            "location": "[parameters('location')]",
-                            "properties": {
-                                "sku": {
-                                    "name": "PerGB2018"
-                                }
-                            }
-                        },
+
                         {
                             "type": "Microsoft.Insights/dataCollectionRules",
                             "apiVersion": "2022-06-01",
                             "name": "[parameters('dataCollectionRuleVmName')]",
                             "location": "[parameters('location')]",
-                            "dependsOn": [
-                                "[parameters('logAnalyticsWorkspaceName')]"
-                            ],
                             "properties": {
                                 "dataSources": {
                                     "performanceCounters": [
@@ -151,9 +189,6 @@
                             "apiVersion": "2022-06-01",
                             "name": "[parameters('dataCollectionRuleAvdName')]",
                             "location": "[parameters('location')]",
-                            "dependsOn": [
-                                "[parameters('logAnalyticsWorkspaceName')]"
-                            ],
                             "properties": {
                                 "dataSources": {
                                     "performanceCounters": [
@@ -235,18 +270,19 @@
                                 ]
                             }
                         }
+
                     ]
                 }
             }
         },
-
 
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "Create-AMA-Policy",
             "dependsOn": [
-                "Log-Analytics-Workspace-Deployment"
+                "Log-Analytics-Workspace-Deployment",
+                "Log-Analytics-DCRs-Deployment"
             ],
             "location": "[parameters('location')]",
             "properties": {
