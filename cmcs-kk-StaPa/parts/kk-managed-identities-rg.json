@@ -73,6 +73,7 @@
                 "[resourceId('Microsoft.Resources/resourceGroups', variables('managedIdentitiesRg'))]",
                 "Managed-Identity-Deployment"
             ],
+            "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
                 "expressionEvaluationOptions": {
