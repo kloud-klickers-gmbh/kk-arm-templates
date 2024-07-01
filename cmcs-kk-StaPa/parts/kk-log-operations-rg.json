@@ -73,6 +73,22 @@
                                     "name": "PerGB2018"
                                 }
                             }
+                        },
+                        {
+                            "type": "Microsoft.Resources/deploymentScripts",
+                            "apiVersion": "2020-10-01",
+                            "kind": "AzurePowerShell",
+                            "name": "WaitSection",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[parameters('logAnalyticsWorkspaceName')]"
+                            ],
+                            "properties": {
+                                "azPowerShellVersion": "3.0",
+                                "scriptContent": "start-sleep -Seconds 300",
+                                "cleanupPreference": "Always",
+                                "retentionInterval": "PT1H"
+                            }
                         }
                     ]
                 }
