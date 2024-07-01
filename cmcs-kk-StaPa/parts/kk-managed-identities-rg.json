@@ -15,7 +15,7 @@
     },
     "variables": {
         "managedIdentitiesRg": "[concat(parameters('prefix'),'-managed-identities-rg')]",
-        "managedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]"
+        "managedIdentityNamePolicies": "[concat(parameters('prefix'),'-managed-identity-policies')]"
     },
     "resources": [
         {
@@ -48,8 +48,8 @@
                     "managedIdentitiesRg": {
                         "value": "[variables('managedIdentitiesRg')]"
                     },
-                    "managedIdentityName": {
-                        "value": "[variables('managedIdentityName')]"
+                    "managedIdentityNamePolicies": {
+                        "value": "[variables('managedIdentityNamePolicies')]"
                     }
                 },
                 "template": {
@@ -66,28 +66,54 @@
                         "managedIdentitiesRg": {
                             "type": "string"
                         },
-                        "managedIdentityName": {
+                        "managedIdentityNamePolicies": {
                             "type": "string"
+                        },
+                        "roleDefinitionIds": {
+                            "type": "array",
+                            "defaultValue": [
+                                "b24988ac-6180-42a0-ab88-20f7382dd24c",
+                                "18d7d88d-d35e-4fb5-a5c3-7773c20a72d9",
+                                "9980e02c-c2be-4d73-94e8-173b1dc7cf3c",
+                                "92aaf0da-9dab-42b6-94a3-d43ce8d16293",
+                                "749f88d5-cbae-40b8-bcfc-e573ddc772fa"
+                            ]
                         }
+                    },
+                    "variables": {
+                        "copy": [
+                            {
+                                "name": "roleAssignmentsToCreate",
+                                "count": "[length(parameters('roleDefinitionIds'))]",
+                                "input": {
+                                    "name": "[guid(parameters('managedIdentityNamePolicies'), subscription().subscriptionId, parameters('baseTime'), parameters('roleDefinitionIds')[copyIndex('roleAssignmentsToCreate')])]",
+                                    "roleDefinitionId": "[parameters('roleDefinitionIds')[copyIndex('roleAssignmentsToCreate')]]"
+                                }
+                            }
+                        ]
                     },
                     "resources": [
                         {
                             "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
                             "apiVersion": "2023-01-31",
-                            "name": "[parameters('managedIdentityName')]",
+                            "name": "[parameters('managedIdentityNamePolicies')]",
                             "location": "[parameters('location')]"
                         },
 
                         {
+                            "copy": {
+                                "name": "roleAssignment",
+                                "count": "[length(variables('roleAssignmentsToCreate'))]"
+                            },
                             "type": "Microsoft.Authorization/roleAssignments",
                             "apiVersion": "2022-04-01",
-                            "name": "[guid(concat(parameters('managedIdentityName'), subscription().subscriptionId, parameters('baseTime')))]",
+                            "name": "[variables('roleAssignmentsToCreate')[copyIndex()].name]",
                             "dependsOn": [
-                                "[parameters('managedIdentityName')]"
+                                "[parameters('managedIdentityNamePolicies')]"
                             ],
                             "properties": {
-                                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                                "principalId": "[reference(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('managedIdentityName')), '2023-01-31').principalId]",
+                                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('roleAssignmentsToCreate')[copyIndex()].roleDefinitionId)]",
+                                "principalId": "[reference(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('managedIdentityNamePolicies')), '2023-01-31').principalId]",
                                 "principalType": "ServicePrincipal"
                             }
                         }
