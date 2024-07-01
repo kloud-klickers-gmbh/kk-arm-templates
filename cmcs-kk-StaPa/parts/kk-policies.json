@@ -103,7 +103,7 @@
                 }
             },
             "properties": {
-                "displayName": "KK Periodic Update Schedule Policy",
+                "displayName": "KK Schedule recurring updates using Azure Update Manager",
                 "enforcementMode": "Default",
                 "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/ba0df93e-e4ac-479a-aac2-134bbae39a1a",
                 "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
@@ -136,7 +136,7 @@
                 "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
                 "parameters": {
                     "bringYourOwnUserAssignedManagedIdentity": {
-                        "value": false
+                        "value": true
                     },
                     "restrictBringYourOwnUserAssignedIdentityToSubscription": {
                         "value": true
