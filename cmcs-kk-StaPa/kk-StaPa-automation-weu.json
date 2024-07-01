@@ -155,7 +155,17 @@
         ]
     },
     "resources": [
-        
+        {
+            "type": "Microsoft.Authorization/policyassignments",
+            "apiVersion": "2020-09-01",
+            "name": "[concat('Microsoft Cloud Security ', subscription().subscriptionId)]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "displayName": "KK Security Center",
+                "enforcementMode": "Default",
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8"
+            }
+        },
         {
             "name": "VirtualMachines",
             "dependsOn": [
