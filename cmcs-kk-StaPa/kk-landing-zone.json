@@ -6,6 +6,10 @@
             "type": "string",
             "defaultValue": "[deployment().properties.templateLink.uri]"
         },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": ""
+        },
         "baseTime": {
             "type": "string",
             "defaultValue": "[utcNow()]"
@@ -67,7 +71,11 @@
     },
     "variables": {
 
+        "templateManagedIdentities": "[uri(parameters('_artifactsLocation'), 'parts/kk-managed-identities-rg.json')]",
         "templateLogOperations": "[uri(parameters('_artifactsLocation'), 'parts/kk-log-operations-rg.json')]",
+
+        "managedIdentitiesRg": "[concat(parameters('prefix'),'-managed-identities-rg')]",
+        "managedIdentityNamePolicies": "[concat(parameters('prefix'),'-managed-identity-policies')]",
 
         "backupRgName": "[concat(parameters('prefix'),'-backup-rg')]",
         "vaultName": "[concat(parameters('prefix'),'-backup-lrs')]",
@@ -184,14 +192,14 @@
                 "pricingTier": "Standard",
                 "extensions": [
                     {
-                    "name": "OnUploadMalwareScanning",
-                    "isEnabled": false,
-                    "additionalExtensionProperties": null
+                        "name": "OnUploadMalwareScanning",
+                        "isEnabled": "False",
+                        "additionalExtensionProperties": null
                     },
                     {
-                    "name": "SensitiveDataDiscovery",
-                    "isEnabled": false,
-                    "additionalExtensionProperties": null
+                        "name": "SensitiveDataDiscovery",
+                        "isEnabled": "False",
+                        "additionalExtensionProperties": null
                     }
                 ]
             }
@@ -272,10 +280,39 @@
             "properties": {}
         },
 
+
+
+
+        {
+            "name": "Managed-Identities",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateManagedIdentities')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+
         {
             "name": "Log-Operations",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "Managed-Identities"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
@@ -955,10 +992,13 @@
             "name": "[concat('Update Policy Windows ', subscription().subscriptionId)]",
             "location": "[variables('updateLocation')]",
             "identity": {
-                "type": "SystemAssigned"
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[resourceId(subscription().subscriptionId, variables('managedIdentitiesRg'), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityNamePolicies'))]": {}
+                }
             },
             "properties": {
-                "displayName": "KK Periodic Update Policy (Windows)",
+                "displayName": "KK Configure periodic checking for missing system updates on azure virtual machines (Windows)",
                 "enforcementMode": "Default",
                 "policyDefinitionId": "/providers/microsoft.authorization/policydefinitions/59efceea-0c96-497e-a4a1-4eb2290dac15",
                 "nonComplianceMessages": [
@@ -983,10 +1023,13 @@
             "name": "[concat('Update Policy Linux ', subscription().subscriptionId)]",
             "location": "[variables('updateLocation')]",
             "identity": {
-                "type": "SystemAssigned"
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[resourceId(subscription().subscriptionId, variables('managedIdentitiesRg'), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityNamePolicies'))]": {}
+                }
             },
             "properties": {
-                "displayName": "KK Periodic Update Policy (Linux)",
+                "displayName": "KK Configure periodic checking for missing system updates on azure virtual machines (Linux)",
                 "enforcementMode": "Default",
                 "policyDefinitionId": "/providers/microsoft.authorization/policydefinitions/59efceea-0c96-497e-a4a1-4eb2290dac15",
                 "nonComplianceMessages": [
@@ -1079,7 +1122,7 @@
                             "location": "[variables('updateLocation')]",
                             "tags": {},
                             "properties": {
-                                "maintenanceScope": "InGuestPatch",
+                                "maintenanceScope": "[variables('maintenanceScope')]",
                                 "installPatches": {
                                     "linuxParameters": {
                                         "classificationsToInclude": [
@@ -1160,7 +1203,10 @@
             "name": "[concat('Update Schedule Policy ', subscription().subscriptionId)]",
             "location": "[variables('updateLocation')]",
             "identity": {
-                "type": "SystemAssigned"
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[resourceId(subscription().subscriptionId, variables('managedIdentitiesRg'), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityNamePolicies'))]": {}
+                }
             },
             "properties": {
                 "displayName": "KK Periodic Update Schedule Policy",

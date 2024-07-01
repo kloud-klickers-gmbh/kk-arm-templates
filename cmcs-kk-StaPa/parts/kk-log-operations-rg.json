@@ -20,7 +20,8 @@
         "logAnalyticsWorkspaceName": "[concat(parameters('prefix'),'-log-analytics')]",
 
         "managedIdentitiesRg": "[concat(parameters('prefix'),'-managed-identities-rg')]",
-        "managedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]",
+        "managedIdentityNameVm": "[concat(parameters('prefix'),'-managed-identity-vm')]",
+        "managedIdentityNamePolicies": "[concat(parameters('prefix'),'-managed-identity-policies')]",
 
 
         "policySetId": "/providers/Microsoft.Authorization/policySetDefinitions/924bfe3a-762f-40e7-86dd-5c8b95eb09e6",
@@ -254,9 +255,6 @@
                     "scope": "Inner"
                 },
                 "parameters": {
-                    "baseTime": {
-                        "value": "[parameters('baseTime')]"
-                    },
                     "location": {
                         "value": "[parameters('location')]"
                     },
@@ -269,8 +267,11 @@
                     "managedIdentitiesRg": {
                         "value": "[variables('managedIdentitiesRg')]"
                     },
-                    "managedIdentityName": {
-                        "value": "[variables('managedIdentityName')]"
+                    "managedIdentityNamePolicies": {
+                        "value": "[variables('managedIdentityNamePolicies')]"
+                    },
+                    "managedIdentityNameVm": {
+                        "value": "[variables('managedIdentityNameVm')]"
                     },
                     "policySetId": {
                         "value": "[variables('policySetId')]"
@@ -280,9 +281,6 @@
                     "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
                     "contentVersion": "1.0.0.0",
                     "parameters": {
-                        "baseTime": {
-                            "type": "string"
-                        },
                         "location": {
                             "type": "string"
                         },
@@ -295,7 +293,10 @@
                         "managedIdentitiesRg": {
                             "type": "string"
                         },
-                        "managedIdentityName": {
+                        "managedIdentityNamePolicies": {
+                            "type": "string"
+                        },
+                        "managedIdentityNameVm": {
                             "type": "string"
                         },
                         "policySetId": {
@@ -309,7 +310,10 @@
                             "name": "[concat('AMA Policy VM ', subscription().subscriptionId)]",
                             "location": "[parameters('location')]",
                             "identity": {
-                                "type": "SystemAssigned"
+                                "type": "UserAssigned",
+                                "userAssignedIdentities": {
+                                    "[resourceId(subscription().subscriptionId, parameters('managedIdentitiesRg'), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityNamePolicies'))]": {}
+                                }
                             },
                             "properties": {
                                 "displayName": "KK Enable Azure Monitor for VMs with Azure Monitoring Agent (AMA)",
@@ -318,28 +322,21 @@
                                 "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
                                 "parameters": {
                                     "bringYourOwnUserAssignedManagedIdentity": {
+                                        "value": false
+                                    },
+                                    "restrictBringYourOwnUserAssignedIdentityToSubscription": {
                                         "value": true
                                     },
-                                    "userAssignedIdentityResourceId": {
-                                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('managedIdentityName'))]"
+                                    "userAssignedManagedIdentityResourceGroup": {
+                                        "value": "[parameters('managedIdentitiesRg')]"
+                                    },
+                                    "userAssignedManagedIdentityName": {
+                                        "value": "[parameters('managedIdentityNameVm')]"
                                     },
                                     "dcrResourceId": {
                                         "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', parameters('dataCollectionRuleVmName'))]"
                                     }
                                 }
-                            }
-                        },
-                        {
-                            "type": "Microsoft.Authorization/roleAssignments",
-                            "apiVersion": "2021-04-01-preview",
-                            "name": "[guid(concat('AMA Policy VM Role ', subscription().subscriptionId, parameters('baseTime')))]",
-                            "dependsOn": [
-                                "[concat('AMA Policy VM ', subscription().subscriptionId)]"
-                            ],
-                            "properties": {
-                                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'AMA Policy VM ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
-                                "principalType": "ServicePrincipal"
                             }
                         }
                     ],

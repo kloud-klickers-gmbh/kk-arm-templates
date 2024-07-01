@@ -20,7 +20,10 @@
     "variables": {
         "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
         "logAnalyticsWorkspaceName": "[concat(parameters('prefix'),'-log-analytics')]",
-        "managedIdentityRg": "[concat(parameters('prefix'),'-managed-identity-rg')]",
+
+        "managedIdentitiesRg": "[concat(parameters('prefix'),'-managed-identities-rg')]",
+        "managedIdentityNamePolicies": "[concat(parameters('prefix'),'-managed-identity-policies')]",
+
         "updateRgName": "[concat(parameters('prefix'),'-update-rg')]",
         "updateLocation": "[parameters('location')]",
         "maintenanceName": "[concat(parameters('prefix'),'-update-schedule')]",
@@ -87,7 +90,7 @@
         {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
-            "name": "[variables('managedIdentityRg')]",
+            "name": "[variables('managedIdentitiesRg')]",
             "location": "[parameters('location')]",
             "properties": {}
         },
@@ -227,10 +230,13 @@
             "name": "[concat('Update Policy Windows ', subscription().subscriptionId)]",
             "location": "[variables('updateLocation')]",
             "identity": {
-                "type": "SystemAssigned"
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[resourceId(subscription().subscriptionId, variables('managedIdentitiesRg'), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityNamePolicies'))]": {}
+                }
             },
             "properties": {
-                "displayName": "KK Periodic Update Policy (Windows)",
+                "displayName": "KK Configure periodic checking for missing system updates on azure virtual machines (Windows)",
                 "enforcementMode": "Default",
                 "policyDefinitionId": "/providers/microsoft.authorization/policydefinitions/59efceea-0c96-497e-a4a1-4eb2290dac15",
                 "nonComplianceMessages": [
@@ -255,10 +261,13 @@
             "name": "[concat('Update Policy Linux ', subscription().subscriptionId)]",
             "location": "[variables('updateLocation')]",
             "identity": {
-                "type": "SystemAssigned"
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[resourceId(subscription().subscriptionId, variables('managedIdentitiesRg'), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityNamePolicies'))]": {}
+                }
             },
             "properties": {
-                "displayName": "KK Periodic Update Policy (Linux)",
+                "displayName": "KK Configure periodic checking for missing system updates on azure virtual machines (Linux)",
                 "enforcementMode": "Default",
                 "policyDefinitionId": "/providers/microsoft.authorization/policydefinitions/59efceea-0c96-497e-a4a1-4eb2290dac15",
                 "nonComplianceMessages": [
@@ -432,7 +441,10 @@
             "name": "[concat('Update Schedule Policy ', subscription().subscriptionId)]",
             "location": "[variables('updateLocation')]",
             "identity": {
-                "type": "SystemAssigned"
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[resourceId(subscription().subscriptionId, variables('managedIdentitiesRg'), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityNamePolicies'))]": {}
+                }
             },
             "properties": {
                 "displayName": "KK Periodic Update Schedule Policy",
