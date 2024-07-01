@@ -92,37 +92,6 @@
             }
         },
         {
-            "type": "Microsoft.Authorization/roleAssignments",
-            "apiVersion": "2021-04-01-preview",
-            "name": "[guid(concat('Update Policy Windows Role ', subscription().subscriptionId, parameters('baseTime')))]",
-            "dependsOn": [
-                "[concat('Update Policy Windows ', subscription().subscriptionId)]"
-            ],
-            "properties": {
-                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'Update Policy Windows ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
-                "principalType": "ServicePrincipal"
-            }
-        },
-        {
-            "type": "Microsoft.Authorization/roleAssignments",
-            "apiVersion": "2021-04-01-preview",
-            "name": "[guid(concat('Update Policy Linux Role ', subscription().subscriptionId, parameters('baseTime')))]",
-            "dependsOn": [
-                "[concat('Update Policy Linux ', subscription().subscriptionId)]"
-            ],
-            "properties": {
-                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'Update Policy Linux ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
-                "principalType": "ServicePrincipal"
-            }
-        },
-
-
-
-
-
-        {
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
             "name": "[concat('Update Schedule Policy ', subscription().subscriptionId)]",
@@ -149,22 +118,6 @@
                 }
             }
         },
-        {
-            "type": "Microsoft.Authorization/roleAssignments",
-            "apiVersion": "2021-04-01-preview",
-            "name": "[guid(concat('Update Schedule Policy Role ', subscription().subscriptionId, parameters('baseTime')))]",
-            "dependsOn": [
-                "[concat('Update Schedule Policy ', subscription().subscriptionId)]"
-            ],
-            "properties": {
-                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
-                "principalId": "[toLower(reference(concat('/providers/Microsoft.Authorization/policyAssignments/', 'Update Schedule Policy ', subscription().subscriptionId), '2023-04-01', 'Full' ).identity.principalId)]",
-                "principalType": "ServicePrincipal"
-            }
-        },
-
-
-
         {
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
