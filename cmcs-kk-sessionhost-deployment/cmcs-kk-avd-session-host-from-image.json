@@ -191,30 +191,6 @@
             }
         },
         {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
-            ],
-            "apiVersion": "2021-11-01",
-            "name": "[format('{0}/AzureMonitorWindowsAgent', parameters('vmName'))]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "publisher": "Microsoft.Azure.Monitor",
-                "type": "AzureMonitorWindowsAgent",
-                "typeHandlerVersion": "1.0",
-                "settings": {
-                    "authentication": {
-                        "managedIdentity": {
-                            "identifier-name": "[concat('mi_', parameters('vmName'))]",
-                            "identifier-value": "[variables('managedIdentityName')]"
-                        }
-                    }
-                },
-                "autoUpgradeMinorVersion": true,
-                "enableAutomaticUpgrade": true
-            }
-        },
-        {
             "type": "Microsoft.Insights/dataCollectionRuleAssociations",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
