@@ -85,7 +85,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "[concat('Managed-Identity-Roles-Deployment-', guid(parameters('baseTime')))]",
+            "name": "[concat('MI-Roles-Deployment-', guid(parameters('baseTime')))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/resourceGroups', variables('managedIdentitiesRg'))]",
                 "Managed-Identity-Deployment"
