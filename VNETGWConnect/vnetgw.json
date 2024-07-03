@@ -47,7 +47,7 @@
     "name": "[variables('GwPublicIpName')]",
     "location": "[parameters('location')]",
     "sku": {
-      "name": "Basic",
+      "name": "Standard",
       "tier": "Regional"
     },
     "properties": {
