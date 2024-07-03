@@ -282,7 +282,7 @@
 
 
         {
-            "name": "Managed-Identities",
+            "name": "[concat('Managed-Identities ', guid(parameters('baseTime')))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "location": "[parameters('location')]",
@@ -304,12 +304,12 @@
         },
 
         {
-            "name": "Log-Operations",
+            "name": "[concat('Log-Operations ', guid(parameters('baseTime')))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "Managed-Identities"
+                "[concat('Managed-Identities ', guid(parameters('baseTime')))]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -329,13 +329,13 @@
         },
 
         {
-            "name": "Policies",
+            "name": "[concat('Policies ', guid(parameters('baseTime')))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "Managed-Identities",
-                "Log-Operations"
+                "[concat('Managed-Identities ', guid(parameters('baseTime')))]",
+                "[concat('Log-Operations ', guid(parameters('baseTime')))]"
             ],
             "properties": {
                 "mode": "Incremental",
