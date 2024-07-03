@@ -282,7 +282,7 @@
 
 
         {
-            "name": "[concat('Managed-Identities ', guid(parameters('baseTime')))]",
+            "name": "[concat('Managed-Identities-', guid(parameters('baseTime')))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "location": "[parameters('location')]",
@@ -304,12 +304,12 @@
         },
 
         {
-            "name": "[concat('Log-Operations ', guid(parameters('baseTime')))]",
+            "name": "[concat('Log-Operations-', guid(parameters('baseTime')))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Managed-Identities ', guid(parameters('baseTime')))]"
+                "[concat('Managed-Identities-', guid(parameters('baseTime')))]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -329,13 +329,13 @@
         },
 
         {
-            "name": "[concat('Policies ', guid(parameters('baseTime')))]",
+            "name": "[concat('Policies-', guid(parameters('baseTime')))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Managed-Identities ', guid(parameters('baseTime')))]",
-                "[concat('Log-Operations ', guid(parameters('baseTime')))]"
+                "[concat('Managed-Identities-', guid(parameters('baseTime')))]",
+                "[concat('Log-Operations-', guid(parameters('baseTime')))]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1311,7 +1311,7 @@
                                         "provisionVMAgent": true,
                                         "enableAutomaticUpdates": true,
                                         "patchSettings": {
-                                            "patchMode": "AutomaticByOS"
+                                            "patchMode": "AutomaticByPlatform"
                                         }
                                     }
                                 },
