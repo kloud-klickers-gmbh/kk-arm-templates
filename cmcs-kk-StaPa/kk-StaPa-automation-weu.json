@@ -46,7 +46,7 @@
             "type": "SecureString"
         },
         "JumpHostImageSku": {
-            "defaultValue": "win11-23h2-pro",
+            "defaultValue": "2022-datacenter-azure-edition-hotpatch-smalldisk",
             "type": "String"
         },
         "JumpHostPublicIpDnsName": {
@@ -1218,8 +1218,8 @@
                     "variables": {
                         "JumpHostPublicIpAllocationMethod": "Static",
                         "JumpHostStorageAccountType": "StandardSSD_LRS",
-                        "imagePublisher": "MicrosoftWindowsDesktop",
-                        "imageOffer": "Windows-11",
+                        "imagePublisher": "MicrosoftWindowsServer",
+                        "imageOffer": "WindowsServer",
                         "jumphost_pip_name": "[concat(parameters('jumphostName'),'-pip')]",
                         "jumphost_nsg_name": "[concat(parameters('jumphostName'),'-nsg')]",
                         "jumphost_nic_name": "[concat(parameters('jumphostName'),'-nic')]",
