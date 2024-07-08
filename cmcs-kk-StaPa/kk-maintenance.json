@@ -31,6 +31,7 @@
         "templateManagedIdentities": "[uri(parameters('_artifactsLocation'), 'parts/kk-managed-identities-rg.json')]",
         "templateLogOperations": "[uri(parameters('_artifactsLocation'), 'parts/kk-log-operations-rg.json')]",
         "templatePolicies": "[uri(parameters('_artifactsLocation'), 'parts/kk-policies.json')]",
+        "templatePoliciesRemediations": "[uri(parameters('_artifactsLocation'), 'parts/kk-policies-remediations.json')]",
         
         "SecurityPricing": [
             {
@@ -257,6 +258,24 @@
                 },
                 "templateLink": {
                     "uri": "[variables('templatePolicies')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[concat('Policy-Remediations-', guid(parameters('baseTime')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Policies-', guid(parameters('baseTime')))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                },
+                "templateLink": {
+                    "uri": "[variables('templatePoliciesRemediations')]",
                     "contentVersion": "1.0.0.0"
                 }
             }
