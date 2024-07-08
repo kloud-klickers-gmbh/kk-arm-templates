@@ -13,7 +13,7 @@
         {
             "type": "Microsoft.PolicyInsights/remediations",
             "apiVersion": "2021-10-01",
-            "name": "[concat('Update Policy Windows Remediation ', subscription().subscriptionId)]",
+            "name": "[concat('Update Policy Windows Remediation ', guid(parameters('baseTime')))]",
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Policy Windows ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance"
@@ -22,7 +22,7 @@
         {
             "type": "Microsoft.PolicyInsights/remediations",
             "apiVersion": "2021-10-01",
-            "name": "[concat('Update Policy Linux Remediation ', subscription().subscriptionId)]",
+            "name": "[concat('Update Policy Linux Remediation ', guid(parameters('baseTime')))]",
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Policy Linux ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance"
@@ -31,7 +31,7 @@
         {
             "type": "Microsoft.PolicyInsights/remediations",
             "apiVersion": "2021-10-01",
-            "name": "[concat('KK Periodic Update Schedule Remediation ', subscription().subscriptionId)]",
+            "name": "[concat('KK Periodic Update Schedule Remediation ', guid(parameters('baseTime')))]",
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Schedule Policy ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance"
@@ -40,7 +40,7 @@
         {
             "type": "Microsoft.PolicyInsights/remediations",
             "apiVersion": "2021-10-01",
-            "name": "[concat('AMA Policy VM Remediation ', subscription().subscriptionId)]",
+            "name": "[concat('AMA Policy VM Remediation ', guid(parameters('baseTime')))]",
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('AMA Policy VM ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance"
