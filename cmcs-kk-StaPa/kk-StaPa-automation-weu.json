@@ -46,7 +46,7 @@
             "type": "SecureString"
         },
         "JumpHostImageSku": {
-            "defaultValue": "2022-datacenter-azure-edition-hotpatch-smalldisk",
+            "defaultValue": "2022-datacenter-azure-edition-smalldisk",
             "type": "String"
         },
         "JumpHostPublicIpDnsName": {
