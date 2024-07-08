@@ -71,6 +71,7 @@
     },
     "variables": {
 
+        "templateUpdates": "[uri(parameters('_artifactsLocation'), 'parts/kk-update-rg.json')]",
         "templateManagedIdentities": "[uri(parameters('_artifactsLocation'), 'parts/kk-managed-identities-rg.json')]",
         "templateLogOperations": "[uri(parameters('_artifactsLocation'), 'parts/kk-log-operations-rg.json')]",
         "templatePolicies": "[uri(parameters('_artifactsLocation'), 'parts/kk-policies.json')]",
@@ -99,17 +100,6 @@
         "SubnetLANName": "[concat(parameters('prefix'),'-lan-subnet')]",
         "SubnetWANName": "[concat(parameters('prefix'),'-wan-subnet')]",
         "NSGName": "[concat(parameters('prefix'),'-nsg')]",
-        "updateRgName": "[concat(parameters('prefix'),'-update-rg')]",
-        "updateLocation": "[parameters('location')]",
-        "maintenanceName": "[concat(parameters('prefix'),'-update-schedule')]",
-        "maintenanceSchedule": {
-            "startDateTime": "[dateTimeAdd(parameters('baseTime'), 'P1D', 'yyyy-MM-dd 22:00')]",
-            "duration": "02:00",
-            "timeZone": "W. Europe Standard Time",
-            "expirationDateTime": null,
-            "recurEvery": "1Week Thursday"
-        },
-        "maintenanceScope": "InGuestPatch",
         "ScheduleTimeZone": "W. Europe Standard Time",
         "SecurityPricing": [
             {
@@ -266,20 +256,33 @@
         {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
-            "name": "[variables('updateRgName')]",
-            "location": "[variables('updateLocation')]",
-            "properties": {}
-        },
-        {
-            "type": "Microsoft.Resources/resourceGroups",
-            "apiVersion": "2020-06-01",
             "name": "[variables('vnetRgName')]",
             "location": "[parameters('Location')]",
             "properties": {}
         },
 
 
-
+        {
+            "name": "[concat('Updates-', guid(parameters('baseTime')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateUpdates')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
 
         {
             "name": "[concat('Managed-Identities-', guid(parameters('baseTime')))]",
@@ -353,7 +356,6 @@
                 }
             }
         },
-
 
         {
             "type": "Microsoft.Resources/deployments",
@@ -1012,103 +1014,7 @@
             "resourceGroup": "[variables('backupRgName')]"
         },
        
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2021-04-01",
-            "name": "Update-Automation-Deployment",
-            "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('updateRgName'))]"
-            ],
-            "resourceGroup": "[variables('updateRgName')]",
-            "properties": {
-                "mode": "Incremental",
-                "parameters": {},
-                "template": {
-                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                    "contentVersion": "1.0.0.0",
-                    "resources": [
-                        {
-                            "apiVersion": "2023-04-01",
-                            "type": "Microsoft.Maintenance/maintenanceConfigurations",
-                            "name": "[variables('maintenanceName')]",
-                            "location": "[variables('updateLocation')]",
-                            "tags": {},
-                            "properties": {
-                                "maintenanceScope": "[variables('maintenanceScope')]",
-                                "installPatches": {
-                                    "linuxParameters": {
-                                        "classificationsToInclude": [
-                                            "Critical",
-                                            "Security"
-                                        ],
-                                        "packageNameMasksToExclude": null,
-                                        "packageNameMasksToInclude": null
-                                    },
-                                    "windowsParameters": {
-                                        "classificationsToInclude": [
-                                            "Critical",
-                                            "Security",
-                                            "Definition"
-                                        ],
-                                        "kbNumbersToExclude": null,
-                                        "kbNumbersToInclude": null
-                                    },
-                                    "rebootSetting": "RebootIfRequired"
-                                },
-                                "extensionProperties": {
-                                    "InGuestPatchMode": "User"
-                                },
-                                "maintenanceWindow": {
-                                    "startDateTime": "[variables('maintenanceSchedule').startDateTime]",
-                                    "duration": "[variables('maintenanceSchedule').duration]",
-                                    "timeZone": "[variables('maintenanceSchedule').timeZone]",
-                                    "expirationDateTime": "[variables('maintenanceSchedule').expirationDateTime]",
-                                    "recurEvery": "[variables('maintenanceSchedule').recurEvery]"
-                                }
-                            }
-                        },
-                        {
-                            "type": "Microsoft.Resources/deployments",
-                            "apiVersion": "2021-04-01",
-                            "name": "Update-Automation-Assignments-Deployment",
-                            "dependsOn": [
-                                "[concat('Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]"
-                            ],
-                            "properties": {
-                                "mode": "Incremental",
-                                "parameters": {},
-                                "template": {
-                                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                                    "contentVersion": "1.0.0.0",
-                                    "resources": [
-                                        {
-                                            "apiVersion": "2023-04-01",
-                                            "type": "Microsoft.Maintenance/configurationAssignments",
-                                            "name": "[concat(variables('maintenanceName'), '-assignments')]",
-                                            "location": "[variables('updateLocation')]",
-                                            "properties": {
-                                                "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('updateRgName'), '/providers/Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]",
-                                                "filter": {
-                                                    "resourceTypes": [
-                                                        "microsoft.compute/virtualmachines"
-                                                    ],
-                                                    "resourceGroups": [],
-                                                    "osTypes": [
-                                                        "Linux",
-                                                        "Windows"
-                                                    ],
-                                                    "locations": []
-                                                }
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    ]
-                }
-            }
-        },
+        
         
         {
             "type": "Microsoft.Resources/deployments",
