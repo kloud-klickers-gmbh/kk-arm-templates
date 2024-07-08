@@ -1,0 +1,165 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "baseTime": {
+            "type": "string",
+            "defaultValue": "[utcNow()]"
+        },
+        "prefix": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "updateRgName": "[concat(parameters('prefix'),'-update-rg')]",
+        "maintenanceName": "[concat(parameters('prefix'),'-update-schedule')]",
+        "maintenanceSchedule": {
+            "startDateTime": "[dateTimeAdd(parameters('baseTime'), 'P1D', 'yyyy-MM-dd 22:00')]",
+            "duration": "02:00",
+            "timeZone": "W. Europe Standard Time",
+            "expirationDateTime": null,
+            "recurEvery": "1Week Thursday"
+        },
+        "maintenanceScope": "InGuestPatch"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('updateRgName')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
+
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "Update-Automation-Deployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('updateRgName'))]"
+            ],
+            "resourceGroup": "[variables('updateRgName')]",
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "Inner"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "maintenanceName": {
+                        "value": "[variables('maintenanceName')]"
+                    },
+                    "maintenanceSchedule": {
+                        "value": "[variables('maintenanceSchedule')]"
+                    },
+                    "maintenanceScope": {
+                        "value": "[variables('maintenanceScope')]"
+                    }
+                },
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "location": {
+                            "type": "string"
+                        },
+                        "maintenanceName": {
+                            "type": "string"
+                        },
+                        "maintenanceSchedule": {
+                            "type": "object"
+                        },
+                        "maintenanceScope": {
+                            "type": "string"
+                        }
+                    },
+                    "resources": [
+                        {
+                            "apiVersion": "2023-04-01",
+                            "type": "Microsoft.Maintenance/maintenanceConfigurations",
+                            "name": "[parameters('maintenanceName')]",
+                            "location": "[parameters('location')]",
+                            "tags": {},
+                            "properties": {
+                                "maintenanceScope": "[parameters('maintenanceScope')]",
+                                "installPatches": {
+                                    "linuxParameters": {
+                                        "classificationsToInclude": [
+                                            "Critical",
+                                            "Security"
+                                        ],
+                                        "packageNameMasksToExclude": null,
+                                        "packageNameMasksToInclude": null
+                                    },
+                                    "windowsParameters": {
+                                        "classificationsToInclude": [
+                                            "Critical",
+                                            "Security",
+                                            "Definition"
+                                        ],
+                                        "kbNumbersToExclude": null,
+                                        "kbNumbersToInclude": null
+                                    },
+                                    "rebootSetting": "RebootIfRequired"
+                                },
+                                "extensionProperties": {
+                                    "InGuestPatchMode": "User"
+                                },
+                                "maintenanceWindow": {
+                                    "startDateTime": "[parameters('maintenanceSchedule').startDateTime]",
+                                    "duration": "[parameters('maintenanceSchedule').duration]",
+                                    "timeZone": "[parameters('maintenanceSchedule').timeZone]",
+                                    "expirationDateTime": "[parameters('maintenanceSchedule').expirationDateTime]",
+                                    "recurEvery": "[parameters('maintenanceSchedule').recurEvery]"
+                                }
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Resources/deployments",
+                            "apiVersion": "2021-04-01",
+                            "name": "Update-Automation-Assignments-Deployment",
+                            "dependsOn": [
+                                "[concat('Microsoft.Maintenance/maintenanceConfigurations/', parameters('maintenanceName'))]"
+                            ],
+                            "properties": {
+                                "mode": "Incremental",
+                                "parameters": {},
+                                "template": {
+                                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                    "contentVersion": "1.0.0.0",
+                                    "resources": [
+                                        {
+                                            "apiVersion": "2023-04-01",
+                                            "type": "Microsoft.Maintenance/configurationAssignments",
+                                            "name": "[concat(parameters('maintenanceName'), '-assignments')]",
+                                            "location": "[parameters('location')]",
+                                            "properties": {
+                                                "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('updateRgName'), '/providers/Microsoft.Maintenance/maintenanceConfigurations/', variables('maintenanceName'))]",
+                                                "filter": {
+                                                    "resourceTypes": [
+                                                        "microsoft.compute/virtualmachines"
+                                                    ],
+                                                    "resourceGroups": [],
+                                                    "osTypes": [
+                                                        "Linux",
+                                                        "Windows"
+                                                    ],
+                                                    "locations": []
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
