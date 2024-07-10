@@ -77,6 +77,7 @@
             "settings": {
             }
         },
+        "managedIdentitiesRg": "[concat(parameters('prefix'),'-managed-identities-rg')]",
         "managedIdentityNameVm": "[concat(parameters('prefix'),'-managed-identity-vm')]",
         "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
         "dataCollectionRuleAvdName": "[concat(parameters('prefix'),'-dcr-avd')]"
@@ -206,7 +207,7 @@
                     "authentication": {
                         "managedIdentity": {
                             "identifier-name": "[concat('mi_', parameters('vmName'))]",
-                            "identifier-value": "[variables('managedIdentityNameVm')]"
+                            "identifier-value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityNameVm'))]"
                         }
                     }
                 },
