@@ -77,7 +77,7 @@
             "settings": {
             }
         },
-        "managedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]",
+        "managedIdentityNameVm": "[concat(parameters('prefix'),'-managed-identity-vm')]",
         "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
         "dataCollectionRuleAvdName": "[concat(parameters('prefix'),'-dcr-avd')]"
     },
@@ -206,7 +206,7 @@
                     "authentication": {
                         "managedIdentity": {
                             "identifier-name": "[concat('mi_', parameters('vmName'))]",
-                            "identifier-value": "[variables('managedIdentityName')]"
+                            "identifier-value": "[variables('managedIdentityNameVm')]"
                         }
                     }
                 },
