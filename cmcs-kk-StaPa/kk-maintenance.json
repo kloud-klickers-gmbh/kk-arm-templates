@@ -1,0 +1,284 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "_artifactsLocation": {
+            "type": "string",
+            "defaultValue": "[deployment().properties.templateLink.uri]"
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": ""
+        },
+        "baseTime": {
+            "type": "string",
+            "defaultValue": "[utcNow()]"
+        },
+        "prefix": {
+            "type": "string"
+        },
+        "location": {
+            "allowedValues": [
+                "westeurope",
+                "germanywestcentral"
+            ],
+            "type": "string"
+        }
+    },
+    "variables": {
+
+        "templateUpdates": "[uri(parameters('_artifactsLocation'), 'parts/kk-update-rg.json')]",
+        "templateManagedIdentities": "[uri(parameters('_artifactsLocation'), 'parts/kk-managed-identities-rg.json')]",
+        "templateLogOperations": "[uri(parameters('_artifactsLocation'), 'parts/kk-log-operations-rg.json')]",
+        "templatePolicies": "[uri(parameters('_artifactsLocation'), 'parts/kk-policies.json')]",
+        "templatePoliciesRemediations": "[uri(parameters('_artifactsLocation'), 'parts/kk-policies-remediations.json')]",
+        
+        "SecurityPricing": [
+            {
+                "Name": "SqlServers",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "AppServices",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "SqlServerVirtualMachines",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "KubernetesService",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "ContainerRegistry",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "KeyVaults",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "Dns",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "Arm",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "OpenSourceRelationalDatabases",
+                "PricingTier": "Free"
+            },
+            {
+                "Name": "Containers",
+                "PricingTier": "Free"
+            }
+        ]
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/policyassignments",
+            "apiVersion": "2020-09-01",
+            "name": "[concat('Microsoft Cloud Security ', subscription().subscriptionId)]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "displayName": "KK Security Center",
+                "enforcementMode": "Default",
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8"
+            }
+        },
+        {
+            "name": "VirtualMachines",
+            "dependsOn": [
+                "[concat('Microsoft Cloud Security ', subscription().subscriptionId)]"
+            ],
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2022-03-01",
+            "properties": {
+                "subPlan": "P1",
+                "pricingTier": "Standard"
+            }
+        },
+        {
+            "name": "StorageAccounts",
+            "dependsOn": [
+                "[concat('Microsoft Cloud Security ', subscription().subscriptionId)]"
+            ],
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2024-01-01",
+            "properties": {
+                "subPlan": "DefenderForStorageV2",
+                "pricingTier": "Standard",
+                "extensions": [
+                    {
+                        "name": "OnUploadMalwareScanning",
+                        "isEnabled": "False",
+                        "additionalExtensionProperties": null
+                    },
+                    {
+                        "name": "SensitiveDataDiscovery",
+                        "isEnabled": "False",
+                        "additionalExtensionProperties": null
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Security/pricings",
+            "copy": {
+                "count": "[length(variables('SecurityPricing'))]",
+                "name": "SecurityPricingLoop"
+            },
+            "apiVersion": "2018-06-01",
+            "name": "[variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].Name]",
+            "properties": {
+                "pricingTier": "[variables('SecurityPricing')[copyIndex('SecurityPricingLoop')].PricingTier]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/autoProvisioningSettings",
+            "apiVersion": "2017-08-01-preview",
+            "name": "default",
+            "properties": {
+                "autoProvision": "Off"
+            }
+        },
+        {
+            "type": "Microsoft.Security/serverVulnerabilityAssessmentsSettings",
+            "apiVersion": "2023-05-01",
+            "name": "azureServersSetting",
+            "kind": "AzureServersSetting",
+            "properties": {
+                "selectedProvider": "MdeTvm"
+            }
+        },
+        {
+            "type": "Microsoft.Security/settings",
+            "apiVersion": "2022-05-01",
+            "name": "WDATP",
+            "kind": "DataExportSettings",
+            "properties": {
+                "enabled": true
+            }
+        },
+        {
+            "type": "Microsoft.Security/settings",
+            "apiVersion": "2022-05-01",
+            "name": "WDATP_UNIFIED_SOLUTION",
+            "kind": "DataExportSettings",
+            "properties": {
+                "enabled": true
+            }
+        },
+        {
+            "name": "[concat('Updates-', guid(parameters('baseTime')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateUpdates')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[concat('Managed-Identities-', guid(parameters('baseTime')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateManagedIdentities')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[concat('Log-Operations-', guid(parameters('baseTime')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Managed-Identities-', guid(parameters('baseTime')))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateLogOperations')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[concat('Policies-', guid(parameters('baseTime')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Managed-Identities-', guid(parameters('baseTime')))]",
+                "[concat('Log-Operations-', guid(parameters('baseTime')))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templatePolicies')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[concat('Policy-Remediations-', guid(parameters('baseTime')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Policies-', guid(parameters('baseTime')))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                },
+                "templateLink": {
+                    "uri": "[variables('templatePoliciesRemediations')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        }
+    ]
+}

@@ -169,8 +169,7 @@
         "sqlAutopatchingDayOfWeek": "Sunday",
         "sqlAutopatchingStartHour": "2",
         "sqlAutopatchingWindowDuration": "60",
-        "policyName": "[concat(parameters('prefix'),'-daily-backup-VM')]",
-        "workspaceid": "[concat(subscription().id,'/resourcegroups/',parameters('prefix'),'-security-rg/providers/microsoft.operationalinsights/workspaces/',parameters('prefix'),'-loganalytics')]"
+        "policyName": "[concat(parameters('prefix'),'-daily-backup-VM')]"
     },
     "resources": [
         {
@@ -325,27 +324,6 @@
                             }
                         }
                     }
-                },
-                {
-                    "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "apiVersion": "2021-03-01",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
-                    ],
-                    "name": "[concat(parameters('vmname'),'/MicrosoftMonitoringAgent')]",
-                    "location": "[parameters('location')]",
-                    "properties": {
-                        "autoUpgradeMinorVersion": true,
-                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                        "type": "MicrosoftMonitoringAgent",
-                        "settings": {
-                            "workspaceId": "[reference(variables('workspaceId'), '2015-03-20').customerid]"
-                        },
-                        "protectedSettings": {
-                            "workspaceKey": "[listKeys(variables('workspaceId'), '2015-03-20').primarySharedKey]"
-                        },
-                        "typeHandlerVersion": "1.0"
-                    }
                 }
             ]
         },
@@ -357,8 +335,7 @@
             "tags": "[parameters('vmTags')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
-                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/Microsoft.Azure.Security')]",
-                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/MicrosoftMonitoringAgent')]"
+                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/Microsoft.Azure.Security')]"
             ],
             "properties": {
                 "virtualMachineResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",

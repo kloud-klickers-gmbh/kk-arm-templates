@@ -64,16 +64,11 @@
                 "amd",
                 "none"
             ]
-        },
-        "datetimestring": {
-            "type": "string",
-            "defaultValue": "[utcNow()]"
         }
     },
     "variables": {
         "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , parameters('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vnet'))]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnet'))]",
-        "workspaceid": "[concat(subscription().id,'/resourcegroups/',parameters('prefix'),'-security-rg/providers/microsoft.operationalinsights/workspaces/',parameters('prefix'),'-loganalytics')]",
         "gpuextensioproperties": {
             "publisher": "Microsoft.HpcCompute",
             "type": "[if(equals(parameters('gpuVendor'), 'nvidia'), 'NvidiaGpuDriverWindows', 'AmdGpuDriverWindows')]",
@@ -81,7 +76,10 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
             }
-        }
+        },
+        "managedIdentityName": "[concat(parameters('prefix'),'-managed-identity')]",
+        "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
+        "dataCollectionRuleAvdName": "[concat(parameters('prefix'),'-dcr-avd')]"
     },
     "resources": [
         {
@@ -193,6 +191,19 @@
             }
         },
         {
+            "type": "Microsoft.Insights/dataCollectionRuleAssociations",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
+            ],
+            "apiVersion": "2022-06-01",
+            "name": "[format('{0}-DCR-AVD', parameters('vmName'))]",
+            "scope": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
+            "properties": {
+                "dataCollectionRuleId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.Insights/dataCollectionRules/', variables('dataCollectionRuleAvdName'))]",
+                "description": ""
+            }
+        },
+        {
             "apiVersion": "2018-10-01",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('vmName'), '/GPUDriver')]",
@@ -202,27 +213,6 @@
             ],
             "condition": "[not(equals(parameters('gpuVendor'), 'none'))]",
             "properties": "[variables('gpuextensioproperties')]"
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2021-03-01",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
-            ],
-            "name": "[concat(parameters('vmName'),'/MicrosoftMonitoringAgent')]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "autoUpgradeMinorVersion": true,
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "MicrosoftMonitoringAgent",
-                "settings": {
-                    "workspaceId": "[reference(variables('workspaceId'), '2015-03-20').customerid]"
-                },
-                "protectedSettings": {
-                    "workspaceKey": "[listKeys(variables('workspaceId'), '2015-03-20').primarySharedKey]"
-                },
-                "typeHandlerVersion": "1.0"
-            }
         }
     ]
 }

@@ -79,7 +79,7 @@
             "location": "[parameters('location')]"
         },
         {
-            "name": "vmDeployment",
+            "name": "VM-Deployment",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[variables('vmrgname')]",
             "apiVersion": "2021-04-01",
@@ -198,8 +198,7 @@
                         "subnet": "[concat(parameters('prefix'),'-lan-subnet')]",
                         "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'))]",
                         "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnet'))]",
-                        "nsgname": "[concat(parameters('vmName'),'-nsg')]",
-                        "workspaceid": "[concat(subscription().id,'/resourcegroups/',parameters('prefix'),'-security-rg/providers/microsoft.operationalinsights/workspaces/',parameters('prefix'),'-loganalytics')]"
+                        "nsgname": "[concat(parameters('vmName'),'-nsg')]"
                     },
                     "resources": [
                         {
@@ -393,27 +392,6 @@
                             }
                         },
                         {
-                            "type": "Microsoft.Compute/virtualMachines/extensions",
-                            "apiVersion": "2021-03-01",
-                            "dependsOn": [
-                                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
-                            ],
-                            "name": "[concat(parameters('vmname'),'/MicrosoftMonitoringAgent')]",
-                            "location": "[parameters('location')]",
-                            "properties": {
-                                "autoUpgradeMinorVersion": true,
-                                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                                "type": "MicrosoftMonitoringAgent",
-                                "settings": {
-                                    "workspaceId": "[reference(variables('workspaceId'), '2015-03-20').customerid]"
-                                },
-                                "protectedSettings": {
-                                    "workspaceKey": "[listKeys(variables('workspaceId'), '2015-03-20').primarySharedKey]"
-                                },
-                                "typeHandlerVersion": "1.0"
-                            }
-                        },
-                        {
                             "type": "Microsoft.Resources/tags",
                             "dependsOn": [
                                 "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmname'))]"
@@ -446,14 +424,13 @@
                 }
             }
         },
-
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "[concat('BackupDeployment-',parameters('vmname'))]",
+            "name": "[concat('Backup-Deployment-',parameters('vmname'))]",
             "resourceGroup": "[parameters('backuprg')]",
             "dependsOn": [
-                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/vmDeployment')]"
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/VM-Deployment')]"
             ],
             "properties": {
                 "expressionEvaluationOptions": {

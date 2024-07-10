@@ -1,0 +1,285 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "baseTime": {
+            "type": "string",
+            "defaultValue": "[utcNow()]"
+        },
+        "prefix": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "variables": {
+
+        "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
+        "logAnalyticsWorkspaceName": "[concat(parameters('prefix'),'-log-analytics')]",
+
+        "dataCollectionRuleVmName": "[concat(parameters('prefix'),'-dcr-vm')]",
+        "dataCollectionRuleAvdName": "[concat(parameters('prefix'),'-dcr-avd')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('logOperationsRg')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
+
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "Log-Analytics-Workspace-Deployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]"
+            ],
+            "resourceGroup": "[variables('logOperationsRg')]",
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "Inner"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "logAnalyticsWorkspaceName": {
+                        "value": "[variables('logAnalyticsWorkspaceName')]"
+                    }
+                },
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "location": {
+                            "type": "string"
+                        },
+                        "logAnalyticsWorkspaceName": {
+                            "type": "string"
+                        }
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.OperationalInsights/workspaces",
+                            "apiVersion": "2020-10-01",
+                            "name": "[parameters('logAnalyticsWorkspaceName')]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "sku": {
+                                    "name": "PerGB2018"
+                                }
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Resources/deploymentScripts",
+                            "apiVersion": "2020-10-01",
+                            "kind": "AzurePowerShell",
+                            "name": "WaitSection",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[parameters('logAnalyticsWorkspaceName')]"
+                            ],
+                            "properties": {
+                                "azPowerShellVersion": "3.0",
+                                "scriptContent": "start-sleep -Seconds 300",
+                                "cleanupPreference": "Always",
+                                "retentionInterval": "PT1H"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+
+
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "Log-Analytics-DCRs-Deployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('logOperationsRg'))]",
+                "Log-Analytics-Workspace-Deployment"
+            ],
+            "resourceGroup": "[variables('logOperationsRg')]",
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "Inner"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "logOperationsRg": {
+                        "value": "[variables('logOperationsRg')]"
+                    },
+                    "logAnalyticsWorkspaceName": {
+                        "value": "[variables('logAnalyticsWorkspaceName')]"
+                    },
+                    "dataCollectionRuleVmName": {
+                        "value": "[variables('dataCollectionRuleVmName')]"
+                    },
+                    "dataCollectionRuleAvdName": {
+                        "value": "[variables('dataCollectionRuleAvdName')]"
+                    }
+                },
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "location": {
+                            "type": "string"
+                        },
+                        "logOperationsRg": {
+                            "type": "string"
+                        },
+                        "logAnalyticsWorkspaceName": {
+                            "type": "string"
+                        },
+                        "dataCollectionRuleVmName": {
+                            "type": "string"
+                        },
+                        "dataCollectionRuleAvdName": {
+                            "type": "string"
+                        }
+                    },
+                    "resources": [
+
+                        {
+                            "type": "Microsoft.Insights/dataCollectionRules",
+                            "apiVersion": "2022-06-01",
+                            "name": "[parameters('dataCollectionRuleVmName')]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "dataSources": {
+                                    "performanceCounters": [
+                                        {
+                                            "streams": [
+                                                "Microsoft-InsightsMetrics"
+                                            ],
+                                            "samplingFrequencyInSeconds": 60,
+                                            "counterSpecifiers": [
+                                                "\\VmInsights\\DetailedMetrics"
+                                            ],
+                                            "name": "VMInsightsPerfCounters"
+                                        }
+                                    ]
+                                },
+                                "destinations": {
+                                    "logAnalytics": [
+                                        {
+                                            "workspaceResourceId": "[resourceId(subscription().subscriptionId, parameters('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
+                                            "workspaceId": "[reference(resourceId(subscription().subscriptionId, parameters('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName')), '2020-10-01', 'Full').properties.customerId]",
+                                            "name": "[concat(parameters('dataCollectionRuleVmName'), '-Dest')]"
+                                        }
+                                    ]
+                                },
+                                "dataFlows": [
+                                    {
+                                        "streams": [
+                                            "Microsoft-InsightsMetrics"
+                                        ],
+                                        "destinations": [
+                                            "[concat(parameters('dataCollectionRuleVmName'), '-Dest')]"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Insights/dataCollectionRules",
+                            "apiVersion": "2022-06-01",
+                            "name": "[parameters('dataCollectionRuleAvdName')]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "dataSources": {
+                                    "performanceCounters": [
+                                        {
+                                            "streams": [
+                                                "Microsoft-Perf"
+                                            ],
+                                            "samplingFrequencyInSeconds": 30,
+                                            "counterSpecifiers": [
+                                                "\\LogicalDisk(C:)\\Avg. Disk Queue Length",
+                                                "\\LogicalDisk(C:)\\Current Disk Queue Length",
+                                                "\\Memory\\Available Mbytes",
+                                                "\\Memory\\Page Faults/sec",
+                                                "\\Memory\\Pages/sec",
+                                                "\\Memory\\% Committed Bytes In Use",
+                                                "\\PhysicalDisk(*)\\Avg. Disk Queue Length",
+                                                "\\PhysicalDisk(*)\\Avg. Disk sec/Read",
+                                                "\\PhysicalDisk(*)\\Avg. Disk sec/Transfer",
+                                                "\\PhysicalDisk(*)\\Avg. Disk sec/Write",
+                                                "\\Processor Information(_Total)\\% Processor Time",
+                                                "\\User Input Delay per Process(*)\\Max Input Delay",
+                                                "\\User Input Delay per Session(*)\\Max Input Delay",
+                                                "\\RemoteFX Network(*)\\Current TCP RTT",
+                                                "\\RemoteFX Network(*)\\Current UDP Bandwidth"
+                                            ],
+                                            "name": "perfCounterDataSource10"
+                                        },
+                                        {
+                                            "streams": [
+                                                "Microsoft-Perf"
+                                            ],
+                                            "samplingFrequencyInSeconds": 60,
+                                            "counterSpecifiers": [
+                                                "\\LogicalDisk(C:)\\% Free Space",
+                                                "\\LogicalDisk(C:)\\Avg. Disk sec/Transfer",
+                                                "\\Terminal Services(*)\\Active Sessions",
+                                                "\\Terminal Services(*)\\Inactive Sessions",
+                                                "\\Terminal Services(*)\\Total Sessions"
+                                            ],
+                                            "name": "perfCounterDataSource30"
+                                        }
+                                    ],
+                                    "windowsEventLogs": [
+                                        {
+                                            "streams": [
+                                                "Microsoft-Event"
+                                            ],
+                                            "xPathQueries": [
+                                                "Microsoft-Windows-TerminalServices-RemoteConnectionManager/Admin!*[System[(Level=2 or Level=3 or Level=4 or Level=0)]]",
+                                                "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational!*[System[(Level=2 or Level=3 or Level=4 or Level=0)]]",
+                                                "System!*",
+                                                "Microsoft-FSLogix-Apps/Operational!*[System[(Level=2 or Level=3 or Level=4 or Level=0)]]",
+                                                "Application!*[System[(Level=2 or Level=3)]]",
+                                                "Microsoft-FSLogix-Apps/Admin!*[System[(Level=2 or Level=3 or Level=4 or Level=0)]]"
+                                            ],
+                                            "name": "eventLogsDataSource"
+                                        }
+                                    ]
+                                },
+                                "destinations": {
+                                    "logAnalytics": [
+                                        {
+                                            "workspaceResourceId": "[resourceId(subscription().subscriptionId, parameters('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
+                                            "workspaceId": "[reference(resourceId(subscription().subscriptionId, parameters('logOperationsRg'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName')), '2020-10-01', 'Full').properties.customerId]",
+                                            "name": "[concat(parameters('dataCollectionRuleAvdName'), '-Dest')]"
+                                        }
+                                    ]
+                                },
+                                "dataFlows": [
+                                    {
+                                        "streams": [
+                                            "Microsoft-Perf",
+                                            "Microsoft-Event"
+                                        ],
+                                        "destinations": [
+                                            "[concat(parameters('dataCollectionRuleAvdName'), '-Dest')]"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+
+                    ]
+                }
+            }
+        }
+    ]
+}
