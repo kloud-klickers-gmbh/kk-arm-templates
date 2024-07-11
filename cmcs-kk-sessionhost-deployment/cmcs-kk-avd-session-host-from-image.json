@@ -80,7 +80,7 @@
         "managedIdentitiesRg": "[concat(parameters('prefix'),'-managed-identities-rg')]",
         "managedIdentityNameVm": "[concat(parameters('prefix'),'-managed-identity-vm')]",
         "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
-        "dataCollectionRuleAvdName": "[concat(parameters('prefix'),'-dcr-avd')]"
+        "dataCollectionRuleAvdName": "[concat('microsoft-avdi-', parameters('location'))]"
     },
     "resources": [
         {

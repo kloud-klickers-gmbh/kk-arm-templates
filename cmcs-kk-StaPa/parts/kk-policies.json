@@ -25,7 +25,7 @@
         "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
         "logAnalyticsWorkspaceName": "[concat(parameters('prefix'),'-log-analytics')]",
         "dataCollectionRuleVmName": "[concat(parameters('prefix'),'-dcr-vm')]",
-        "dataCollectionRuleAvdName": "[concat(parameters('prefix'),'-dcr-avd')]"
+        "dataCollectionRuleAvdName": "[concat('microsoft-avdi-', parameters('location'))]"
 
     },
     "resources": [
