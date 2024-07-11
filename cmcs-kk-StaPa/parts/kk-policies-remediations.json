@@ -44,7 +44,7 @@
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('AMA Policy VM ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance",
-                "policyDefinitionReferenceId":"AddUserAssignedManagedIdentity_VM"
+                "policyDefinitionReferenceId": "AddUserAssignedManagedIdentity_VM"
             }
         },
         {
@@ -54,7 +54,7 @@
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('AMA Policy VM ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance",
-                "policyDefinitionReferenceId":"DeployAzureMonitoringAgentLinuxVMWithUAI"
+                "policyDefinitionReferenceId": "DeployAzureMonitoringAgentLinuxVMWithUAI"
             }
         },
         {
@@ -64,7 +64,7 @@
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('AMA Policy VM ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance",
-                "policyDefinitionReferenceId":"deployAzureMonitoringAgentWindowsVMWithUAI"
+                "policyDefinitionReferenceId": "deployAzureMonitoringAgentWindowsVMWithUAI"
             }
         },
         {
@@ -74,7 +74,7 @@
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('AMA Policy VM ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance",
-                "policyDefinitionReferenceId":"DependencyAgentExtension_Windows_VM_AMA_Deploy"
+                "policyDefinitionReferenceId": "DependencyAgentExtension_Windows_VM_AMA_Deploy"
             }
         },
         {
@@ -84,7 +84,7 @@
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('AMA Policy VM ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance",
-                "policyDefinitionReferenceId":"DependencyAgentExtension_Linux_VM_AMA_Deploy"
+                "policyDefinitionReferenceId": "DependencyAgentExtension_Linux_VM_AMA_Deploy"
             }
         },
         {
@@ -94,7 +94,7 @@
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('AMA Policy VM ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance",
-                "policyDefinitionReferenceId":"DataCollectionRuleAssociation_Linux"
+                "policyDefinitionReferenceId": "DataCollectionRuleAssociation_Linux"
             }
         },
         {
@@ -104,7 +104,25 @@
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('AMA Policy VM ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance",
-                "policyDefinitionReferenceId":"DataCollectionRuleAssociation_Windows"
+                "policyDefinitionReferenceId": "DataCollectionRuleAssociation_Windows"
+            }
+        },
+        {
+            "type": "Microsoft.PolicyInsights/remediations",
+            "apiVersion": "2021-10-01",
+            "name": "[concat('Enable Logging AVD Hostpools Remediation ', guid(parameters('baseTime')))]",
+            "properties": {
+                "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Enable Logging AVD Hostpools ', subscription().subscriptionId))]",
+                "resourceDiscoveryMode": "ReEvaluateCompliance"
+            }
+        },
+        {
+            "type": "Microsoft.PolicyInsights/remediations",
+            "apiVersion": "2021-10-01",
+            "name": "[concat('Enable Logging AVD Workspaces Remediation ', guid(parameters('baseTime')))]",
+            "properties": {
+                "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Enable Logging AVD Workspaces ', subscription().subscriptionId))]",
+                "resourceDiscoveryMode": "ReEvaluateCompliance"
             }
         }
     ]
