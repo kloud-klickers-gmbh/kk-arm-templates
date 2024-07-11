@@ -112,7 +112,7 @@
             "apiVersion": "2021-10-01",
             "name": "[concat('Enable Logging AVD Hostpools Remediation ', guid(parameters('baseTime')))]",
             "properties": {
-                "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Enable Logging AVD Hostpools ', subscription().subscriptionId))]",
+                "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Logging AVD Hostpools ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance"
             }
         },
@@ -121,7 +121,7 @@
             "apiVersion": "2021-10-01",
             "name": "[concat('Enable Logging AVD Workspaces Remediation ', guid(parameters('baseTime')))]",
             "properties": {
-                "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Enable Logging AVD Workspaces ', subscription().subscriptionId))]",
+                "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Logging AVD Workspaces ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance"
             }
         }

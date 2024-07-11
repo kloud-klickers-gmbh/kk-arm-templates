@@ -157,7 +157,7 @@
         {
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
-            "name": "[concat('Enable Logging AVD Hostpools ', subscription().subscriptionId)]",
+            "name": "[concat('Logging AVD Hostpools ', subscription().subscriptionId)]",
             "location": "[parameters('location')]",
             "identity": {
                 "type": "UserAssigned",
@@ -180,7 +180,7 @@
         {
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
-            "name": "[concat('Enable Logging AVD Workspaces ', subscription().subscriptionId)]",
+            "name": "[concat('Logging AVD Workspaces ', subscription().subscriptionId)]",
             "location": "[parameters('location')]",
             "identity": {
                 "type": "UserAssigned",
