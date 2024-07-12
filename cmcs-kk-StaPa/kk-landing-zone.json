@@ -1217,7 +1217,10 @@
                                         "provisionVMAgent": true,
                                         "enableAutomaticUpdates": true,
                                         "patchSettings": {
-                                            "patchMode": "AutomaticByPlatform"
+                                            "patchMode": "AutomaticByPlatform",
+                                            "automaticByPlatformSettings": {
+                                                "bypassPlatformSafetyChecksOnUserSchedule": true
+                                            }
                                         }
                                     }
                                 },
