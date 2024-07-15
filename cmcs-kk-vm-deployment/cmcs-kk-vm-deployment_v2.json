@@ -291,13 +291,7 @@
                                     "adminPassword": "[parameters('vmPassword')]",
                                     "windowsConfiguration": {
                                         "enableAutomaticUpdates": true,
-                                        "provisionVMAgent": true,
-                                        "patchSettings": {
-                                            "patchMode": "AutomaticByPlatform",
-                                            "automaticByPlatformSettings": {
-                                                "bypassPlatformSafetyChecksOnUserSchedule": true
-                                            }
-                                        }
+                                        "provisionVmAgent": true
                                     }
                                 }
                             },
