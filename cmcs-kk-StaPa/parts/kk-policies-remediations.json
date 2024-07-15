@@ -51,6 +51,7 @@
             "type": "Microsoft.PolicyInsights/remediations",
             "apiVersion": "2021-10-01",
             "name": "[concat('AMA Policy VM Remediation B ', guid(parameters('baseTime')))]",
+            "condition": false,
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('AMA Policy VM ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance",
