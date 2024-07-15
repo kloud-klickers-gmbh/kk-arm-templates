@@ -42,6 +42,26 @@
     }
   },
   {
+    "condition": "[equals(parameters('GwSku'), 'Basic')]",
+    "type": "Microsoft.Network/publicIPAddresses",
+    "apiVersion": "2020-11-01",
+    "name": "[variables('GwPublicIpName')]",
+    "location": "[parameters('location')]",
+    "sku": {
+      "name": "Basic",
+      "tier": "Regional"
+    },
+    "properties": {
+      "publicIPAddressVersion": "IPv4",
+      "publicIPAllocationMethod": "Dynamic",
+      "idleTimeoutInMinutes": 4,
+      "dnsSettings": {
+        "domainNameLabel": "[toLower(parameters('DNSLabel'))]"
+      }
+    }
+  },
+  {
+    "condition": "[not(equals(parameters('GwSku'), 'Basic'))]",
     "type": "Microsoft.Network/publicIPAddresses",
     "apiVersion": "2020-11-01",
     "name": "[variables('GwPublicIpName')]",
