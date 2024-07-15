@@ -140,6 +140,9 @@
             "type": "Microsoft.Security/autoProvisioningSettings",
             "apiVersion": "2017-08-01-preview",
             "name": "default",
+            "dependsOn": [
+                "VirtualMachines"
+            ],
             "properties": {
                 "autoProvision": "Off"
             }
@@ -148,6 +151,9 @@
             "type": "Microsoft.Security/serverVulnerabilityAssessmentsSettings",
             "apiVersion": "2023-05-01",
             "name": "azureServersSetting",
+            "dependsOn": [
+                "VirtualMachines"
+            ],
             "kind": "AzureServersSetting",
             "properties": {
                 "selectedProvider": "MdeTvm"
@@ -157,6 +163,9 @@
             "type": "Microsoft.Security/settings",
             "apiVersion": "2022-05-01",
             "name": "WDATP",
+            "dependsOn": [
+                "VirtualMachines"
+            ],
             "kind": "DataExportSettings",
             "properties": {
                 "enabled": true
@@ -166,6 +175,9 @@
             "type": "Microsoft.Security/settings",
             "apiVersion": "2022-05-01",
             "name": "WDATP_UNIFIED_SOLUTION",
+            "dependsOn": [
+                "VirtualMachines"
+            ],
             "kind": "DataExportSettings",
             "properties": {
                 "enabled": true
