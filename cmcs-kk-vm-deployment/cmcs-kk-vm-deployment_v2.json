@@ -294,7 +294,6 @@
                                         "provisionVMAgent": true,
                                         "patchSettings": {
                                             "patchMode": "AutomaticByPlatform",
-                                            "enableHotpatching": true,
                                             "automaticByPlatformSettings": {
                                                 "bypassPlatformSafetyChecksOnUserSchedule": true
                                             }
