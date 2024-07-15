@@ -290,10 +290,9 @@
                                     "adminUsername": "[parameters('vmUsername')]",
                                     "adminPassword": "[parameters('vmPassword')]",
                                     "windowsConfiguration": {
-                                        "provisionVMAgent": true,
                                         "enableAutomaticUpdates": true,
+                                        "provisionVMAgent": true,
                                         "patchSettings": {
-                                            "assessmentMode": "AutomaticByPlatform",
                                             "patchMode": "AutomaticByPlatform",
                                             "enableHotpatching": true,
                                             "automaticByPlatformSettings": {

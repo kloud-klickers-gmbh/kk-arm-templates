@@ -1217,7 +1217,6 @@
                                         "provisionVMAgent": true,
                                         "enableAutomaticUpdates": true,
                                         "patchSettings": {
-                                            "assessmentMode": "AutomaticByPlatform",
                                             "patchMode": "AutomaticByPlatform",
                                             "enableHotpatching": true,
                                             "automaticByPlatformSettings": {
