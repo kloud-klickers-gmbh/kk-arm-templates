@@ -440,6 +440,7 @@
                         },
 
                         {
+                            "condition": "[equals(parameters('imagePublisher'), 'MicrosoftWindowsServer')]",
                             "type": "Microsoft.Compute/virtualMachines/extensions",
                             "apiVersion": "2021-03-01",
                             "dependsOn": [
