@@ -36,6 +36,10 @@
             "type": "array",
             "defaultValue": []
         },
+        "imagePublisher": {
+            "type": "string",
+            "defaultValue": "MicrosoftWindowsServer"
+        },
         "imageoffer": {
             "type": "string",
             "defaultvalue": null
@@ -122,6 +126,9 @@
                     "datadisks": {
                         "value": "[parameters('datadisks')]"
                     },
+                    "imagePublisher": {
+                        "value": "[parameters('imagePublisher')]"
+                    },
                     "imageoffer": {
                         "value": "[parameters('imageoffer')]"
                     },
@@ -175,6 +182,9 @@
                         "datadisks": {
                             "type": "array",
                             "defaultValue": null
+                        },
+                        "imagePublisher": {
+                            "type": "string"
                         },
                         "imagesku": {
                             "type": "string"
@@ -336,7 +346,7 @@
                                         }
                                     ],
                                     "imageReference": {
-                                        "publisher": "MicrosoftWindowsServer",
+                                        "publisher": "[parameters('imagePublisher')]",
                                         "offer": "[parameters('imageoffer')]",
                                         "sku": "[parameters('imagesku')]",
                                         "version": "latest"
