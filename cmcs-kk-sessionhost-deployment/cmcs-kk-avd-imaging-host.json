@@ -82,22 +82,6 @@
                 "none"
             ]
         },
-        "backuprg": {
-            "type": "string",
-            "defaultValue": null
-        },
-        "backuppolicyname": {
-            "type": "string",
-            "defaultValue": null
-        },
-        "backupvaultname": {
-            "type": "string",
-            "defaultValue": null
-        },
-        "datetimestring": {
-            "type": "string",
-            "defaultValue": "[utcNow()]"
-        },
         "DSCModulesUrl": {
             "type": "string"
         },
