@@ -70,15 +70,15 @@
         "backuprg": {
             "type": "string"
         },
-        "vnetrg": {
+        "vnetRg": {
             "type": "string",
             "defaultValue": "[concat(parameters('prefix'),'-vnet-rg')]"
         },
-        "vnet": {
+        "vnetName": {
             "type": "string",
             "defaultValue": "[concat(parameters('prefix'),'-vnet')]"
         },
-        "subnet": {
+        "lanName": {
             "type": "string",
             "defaultValue": "[concat(parameters('prefix'),'-lan-subnet')]"
         }
@@ -156,14 +156,14 @@
                     "licenseType": {
                         "value": "[parameters('licenseType')]"
                     },
-                    "vnetrg": {
-                        "value": "[parameters('vnetrg')]"
+                    "vnetRg": {
+                        "value": "[parameters('vnetRg')]"
                     },
-                    "vnet": {
-                        "value": "[parameters('vnet')]"
+                    "vnetName": {
+                        "value": "[parameters('vnetName')]"
                     },
-                    "subnet": {
-                        "value": "[parameters('subnet')]"
+                    "lanName": {
+                        "value": "[parameters('lanName')]"
                     } 
                 },
                 "template": {
@@ -222,19 +222,19 @@
                         "licenseType": {
                             "type": "string"
                         },
-                        "vnetrg": {
+                        "vnetRg": {
                             "type": "string"
                         },
-                        "vnet": {
+                        "vnetName": {
                             "type": "string"
                         },
-                        "subnet": {
+                        "lanName": {
                             "type": "string"
                         }
                     },
                     "variables": {
-                        "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , parameters('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vnet'))]",
-                        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnet'))]",
+                        "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , parameters('vnetRg'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
+                        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('lanName'))]",
                         "nsgname": "[concat(parameters('vmName'),'-nsg')]"
                     },
                     "resources": [
