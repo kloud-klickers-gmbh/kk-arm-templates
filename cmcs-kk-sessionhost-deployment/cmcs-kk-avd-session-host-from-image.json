@@ -202,11 +202,11 @@
             "properties": {
                 "publisher": "Microsoft.Azure.Monitor",
                 "type": "AzureMonitorWindowsAgent",
-                "typeHandlerVersion": "1.0",
+                "typeHandlerVersion": "1.2",
                 "settings": {
                     "authentication": {
                         "managedIdentity": {
-                            "identifier-name": "[concat('mi_', parameters('vmName'))]",
+                            "identifier-name": "mi_res_id",
                             "identifier-value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('managedIdentitiesRg'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', variables('managedIdentityNameVm'))]"
                         }
                     }
