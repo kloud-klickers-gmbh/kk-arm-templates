@@ -122,6 +122,24 @@
         {
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
+            "name": "[concat('Update Prerequisites ', subscription().subscriptionId)]",
+            "location": "[parameters('location')]",
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[resourceId(subscription().subscriptionId, variables('managedIdentitiesRg'), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityNamePolicies'))]": {}
+                }
+            },
+            "properties": {
+                "displayName": "KK Set prerequisite for Scheduling recurring updates on Azure virtual machines",
+                "enforcementMode": "Default",
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/9905ca54-1471-49c6-8291-7582c04cd4d4",
+                "scope": "[concat('/subscriptions/', subscription().subscriptionId)]"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/policyassignments",
+            "apiVersion": "2023-04-01",
             "name": "[concat('AMA Policy VM ', subscription().subscriptionId)]",
             "location": "[parameters('location')]",
             "identity": {

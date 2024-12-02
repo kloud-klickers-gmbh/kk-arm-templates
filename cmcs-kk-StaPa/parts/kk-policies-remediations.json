@@ -31,9 +31,18 @@
         {
             "type": "Microsoft.PolicyInsights/remediations",
             "apiVersion": "2021-10-01",
-            "name": "[concat('KK Periodic Update Schedule Remediation ', guid(parameters('baseTime')))]",
+            "name": "[concat('Update Schedule Remediation ', guid(parameters('baseTime')))]",
             "properties": {
                 "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Schedule Policy ', subscription().subscriptionId))]",
+                "resourceDiscoveryMode": "ReEvaluateCompliance"
+            }
+        },
+        {
+            "type": "Microsoft.PolicyInsights/remediations",
+            "apiVersion": "2021-10-01",
+            "name": "[concat('Update Prerequisite Remediation ', guid(parameters('baseTime')))]",
+            "properties": {
+                "policyAssignmentId": "[resourceId('Microsoft.Authorization/policyassignments', concat('Update Prerequisites ', subscription().subscriptionId))]",
                 "resourceDiscoveryMode": "ReEvaluateCompliance"
             }
         },
