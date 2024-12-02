@@ -328,7 +328,12 @@
                                     "adminPassword": "[parameters('vmPassword')]",
                                     "windowsConfiguration": {
                                         "enableAutomaticUpdates": true,
-                                        "provisionVmAgent": true
+                                        "provisionVmAgent": true,
+                                        "patchSettings": {
+                                            "assessmentMode": "AutomaticByPlatform",
+                                            "patchMode": "AutomaticByPlatform",
+                                            "enableHotpatching": false
+                                        }
                                     }
                                 }
                             },
@@ -393,7 +398,12 @@
                                     "adminPassword": "[parameters('vmPassword')]",
                                     "windowsConfiguration": {
                                         "enableAutomaticUpdates": true,
-                                        "provisionVmAgent": true
+                                        "provisionVmAgent": true,
+                                        "patchSettings": {
+                                            "assessmentMode": "AutomaticByPlatform",
+                                            "patchMode": "AutomaticByPlatform",
+                                            "enableHotpatching": false
+                                        }
                                     }
                                 }
                             },
