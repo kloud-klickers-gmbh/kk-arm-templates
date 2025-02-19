@@ -1,0 +1,302 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "prefix": {
+            "type": "string"
+        },
+        "vmname": {
+            "type": "string"
+        },
+        "vmUsername": {
+            "type": "string"
+        },
+        "vmPassword": {
+            "type": "secureString"
+        },
+        "disktype": {
+            "type": "string",
+            "defaultValue": "Premium_LRS"
+        },
+        "imagepublisher": {
+            "type": "string",
+            "defaultvalue": "stormshield"
+        },
+        "imageoffer": {
+            "type": "string",
+            "defaultvalue": "stormshield-elastic-virtual-appliance"
+        },
+        "imagesku": {
+            "type": "string",
+            "defaultValue": "byol-single-instance"
+        },
+        "vmsize": {
+            "type": "string"
+        },
+        "vaultName": {
+            "type": "string"
+        },
+        "backuprg": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "policyName": "[concat(parameters('prefix'),'-daily-backup-VM')]",
+        "vmrgname": "[concat(parameters('vmname'),'-rg')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('vmrgname')]",
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2021-04-01",
+            "location": "[parameters('location')]"
+        },
+        {
+            "name": "StormshieldDeployment",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('vmrgname')]",
+            "apiVersion": "2021-04-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', concat(parameters('vmname'),'-rg'))]"
+            ],
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "vmname": {
+                        "value": "[parameters('vmname')]"
+                    },
+                    "vmUsername": {
+                        "value": "[parameters('vmUsername')]"
+                    },
+                    "vmPassword": {
+                        "value": "[parameters('vmPassword')]"
+                    },
+                    "disktype": {
+                        "value": "[parameters('disktype')]"
+                    },
+                    "imagepublisher": {
+                        "value": "[parameters('imagepublisher')]"
+                    },
+                    "imageoffer": {
+                        "value": "[parameters('imageoffer')]"
+                    },
+                    "imagesku": {
+                        "value": "[parameters('imagesku')]"
+                    },
+                    "vmsize": {
+                        "value": "[parameters('vmsize')]"
+                    }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "location": {
+                            "type": "string"
+                        },
+                        "prefix": {
+                            "type": "string"
+                        },
+                        "vmname": {
+                            "type": "string"
+                        },
+                        "vmUsername": {
+                            "type": "string"
+                        },
+                        "vmPassword": {
+                            "type": "secureString"
+                        },
+                        "disktype": {
+                            "type": "string",
+                            "defaultValue": "Premium_LRS"
+                        },
+                        "imagesku": {
+                            "type": "string"
+                        },
+                        "imagepublisher": {
+                            "type": "string"
+                        },
+                        "imageoffer": {
+                            "type": "string"
+                        },
+                        "vmsize": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "vnetrg": "[concat(parameters('prefix'),'-vnet-rg')]",
+                        "vnet": "[concat(parameters('prefix'),'-vnet')]",
+                        "subnet": "[concat(parameters('prefix'),'-lan-subnet')]",
+                        "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'))]",
+                        "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnet'))]",
+                        "nsgname": "[concat(parameters('vmName'),'-nsg')]"
+                    },
+                    "resources": [
+                        {
+                            "name": "[variables('nsgname')]",
+                            "type": "Microsoft.Network/networkSecurityGroups",
+                            "apiVersion": "2020-11-01",
+                            "location": "[parameters('location')]",
+                            "properties": {}
+                        },
+                        {
+                            "name": "[parameters('vmname')]",
+                            "type": "Microsoft.Network/networkInterfaces",
+                            "apiVersion": "2018-10-01",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgname'))]"
+                            ],
+                            "properties": {
+                                "networkSecurityGroup": {
+                                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgname'))]"
+                                },
+                                "ipConfigurations": [
+                                    {
+                                        "name": "ipconfig1",
+                                        "properties": {
+                                            "subnet": {
+                                                "id": "[variables('subnetRef')]"
+                                            },
+                                            "privateIPAllocationMethod": "Dynamic"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "[parameters('vmname')]",
+                            "type": "Microsoft.Compute/virtualMachines",
+                            "apiVersion": "2022-03-01",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.Network/networkInterfaces/', parameters('vmName'))]"
+                            ],
+                            "properties": {
+                                "hardwareProfile": {
+                                    "vmSize": "[parameters('vmsize')]"
+                                },
+                                "storageProfile": {
+                                    "osDisk": {
+                                        "createOption": "fromImage",
+                                        "name": "[concat(parameters('vmname'),'-OsDisk')]",
+                                        "managedDisk": {
+                                            "storageAccountType": "[parameters('DiskType')]"
+                                        }
+                                    },
+                                    "imageReference": {
+                                        "publisher": "[parameters('imagepublisher')]",
+                                        "offer": "[parameters('imageoffer')]",
+                                        "sku": "[parameters('imagesku')]",
+                                        "version": "latest"
+                                    }
+                                },
+                                "networkProfile": {
+                                    "networkInterfaces": [
+                                        {
+                                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('vmName'))]"
+                                        }
+                                    ]
+                                },
+                                "osProfile": {
+                                    "computerName": "[parameters('vmName')]",
+                                    "adminUsername": "[parameters('vmUsername')]",
+                                    "adminPassword": "[parameters('vmPassword')]",
+                                    "linuxConfiguration": {
+                                        "patchSettings": {
+                                            "patchMode": "ImageDefault"
+                                        }
+                                    }
+                                }
+                            },
+                            "plan": {
+                                "name": "[parameters('imagesku')]",
+                                "publisher": "[parameters('imagepublisher')]",
+                                "product": "[parameters('imageoffer')]"
+                            },
+                            "resources": []
+                        }
+                    ],
+                    "outputs": {}
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat('BackupDeployment-',parameters('vmname'))]",
+            "resourceGroup": "[parameters('backuprg')]",
+            "dependsOn": [
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/StormshieldDeployment')]"
+            ],
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                    "vmname": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "vmrg": {
+                        "value": "[variables('vmrgname')]"
+                    },
+                    "vaultName": {
+                        "value": "[parameters('vaultName')]"
+                    },
+                    "policyName": {
+                        "value": "[variables('policyName')]"
+                    }
+                },
+
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "vaultName": {
+                            "type": "String"
+                        },
+                        "policyName": {
+                            "type": "String"
+                        },
+                        "vmname": {
+                            "type": "string"
+                        },
+                        "vmrg": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "ProtectedItem": "[concat('vm;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "ProtectionContainer": "[concat('IaasVMContainer;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
+                        "sourceResourceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('vmrg'),'/providers/Microsoft.Compute/virtualMachines/',parameters('vmname'))]"
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+                            "apiVersion": "2016-06-01",
+                            "name": "[concat(parameters('vaultName'), '/Azure/',variables('protectionContainer'), '/', variables('ProtectedItem'))]",
+                            "properties": {
+                                "protectedItemType": "Microsoft.ClassicCompute/virtualMachines",
+                                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('vaultName'), parameters('policyName'))]",
+                                "sourceResourceId": "[variables('sourceResourceId')]"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
