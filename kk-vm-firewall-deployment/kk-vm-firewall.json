@@ -22,16 +22,13 @@
             "defaultValue": "Premium_LRS"
         },
         "imagepublisher": {
-            "type": "string",
-            "defaultvalue": "stormshield"
+            "type": "string"
         },
         "imageoffer": {
-            "type": "string",
-            "defaultvalue": "stormshield-elastic-virtual-appliance"
+            "type": "string"
         },
         "imagesku": {
-            "type": "string",
-            "defaultValue": "byol-single-instance"
+            "type": "string"
         },
         "vmsize": {
             "type": "string"
@@ -55,7 +52,7 @@
             "location": "[parameters('location')]"
         },
         {
-            "name": "StormshieldDeployment",
+            "name": "VmFirewallDeployment",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[variables('vmrgname')]",
             "apiVersion": "2021-04-01",
@@ -239,7 +236,7 @@
             "name": "[concat('BackupDeployment-',parameters('vmname'))]",
             "resourceGroup": "[parameters('backuprg')]",
             "dependsOn": [
-                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/StormshieldDeployment')]"
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/VmFirewallDeployment')]"
             ],
             "properties": {
                 "expressionEvaluationOptions": {
