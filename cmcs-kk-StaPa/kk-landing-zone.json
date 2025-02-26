@@ -520,7 +520,7 @@
                             "location": "[parameters('location')]",
                             "tags": "[parameters('tags')]",
                             "sku": {
-                                "name": "Basic",
+                                "name": "Standard",
                                 "tier": "Regional"
                             },
                             "properties": {
