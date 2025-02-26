@@ -224,11 +224,8 @@
                             "apiVersion": "2019-08-01",
                             "name": "[variables('pipName')]",
                             "location": "[parameters('location')]",
-                            "dependsOn": [
-                                "[resourceId('Microsoft.Resources/resourceGroups', parameters('vmRgName'))]"
-                            ],
                             "sku": {
-                                "name": "Basic",
+                                "name": "Standard",
                                 "tier": "Regional"
                             },
                             "properties": {
