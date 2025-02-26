@@ -8,41 +8,81 @@
         "prefix": {
             "type": "string"
         },
-        "vmname": {
+
+        "vmName": {
             "type": "string"
         },
-        "vmUsername": {
+        "adminUsername": {
             "type": "string"
         },
-        "vmPassword": {
+        "adminPassword": {
             "type": "secureString"
         },
+        "vmSize": {
+            "type": "string"
+        },
+
+        "imagePublisher": {
+            "type": "string"
+        },
+        "imageOffer": {
+            "type": "string"
+        },
+        "imageSku": {
+            "type": "string"
+        },
+
+
+        "backupRg": {
+            "type": "string"
+        },
+        "backupVault": {
+            "type": "string"
+        },
+        
+
+        "vnetRg": {
+            "type": "string"
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "vnetPrefix": {
+            "type": "string"
+        },
+        "wanName": {
+            "type": "string"
+        },
+        "wanPrefix": {
+            "type": "string"
+        },
+        "lanName": {
+            "type": "string"
+        },
+        "lanPrefix": {
+            "type": "string"
+        },
+
+        "pipDnsName": {
+            "type": "string"
+        },
+
+
+
+
+
+
         "disktype": {
             "type": "string",
             "defaultValue": "Premium_LRS"
-        },
-        "imagepublisher": {
-            "type": "string"
-        },
-        "imageoffer": {
-            "type": "string"
-        },
-        "imagesku": {
-            "type": "string"
-        },
-        "vmsize": {
-            "type": "string"
-        },
-        "vaultName": {
-            "type": "string"
-        },
-        "backuprg": {
-            "type": "string"
         }
+        
+        
+        
     },
     "variables": {
         "policyName": "[concat(parameters('prefix'),'-daily-backup-VM')]",
-        "vmrgname": "[concat(parameters('vmname'),'-rg')]"
+        "vmrgname": "[concat(parameters('vmName'),'-rg')]"
     },
     "resources": [
         {
@@ -57,7 +97,7 @@
             "resourceGroup": "[variables('vmrgname')]",
             "apiVersion": "2021-04-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', concat(parameters('vmname'),'-rg'))]"
+                "[resourceId('Microsoft.Resources/resourceGroups', concat(parameters('vmName'),'-rg'))]"
             ],
             "properties": {
                 "expressionEvaluationOptions": {
@@ -71,29 +111,29 @@
                     "prefix": {
                         "value": "[parameters('prefix')]"
                     },
-                    "vmname": {
-                        "value": "[parameters('vmname')]"
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
                     },
-                    "vmUsername": {
-                        "value": "[parameters('vmUsername')]"
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
                     },
-                    "vmPassword": {
-                        "value": "[parameters('vmPassword')]"
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
                     },
                     "disktype": {
                         "value": "[parameters('disktype')]"
                     },
-                    "imagepublisher": {
-                        "value": "[parameters('imagepublisher')]"
+                    "imagePublisher": {
+                        "value": "[parameters('imagePublisher')]"
                     },
-                    "imageoffer": {
-                        "value": "[parameters('imageoffer')]"
+                    "imageOffer": {
+                        "value": "[parameters('imageOffer')]"
                     },
-                    "imagesku": {
-                        "value": "[parameters('imagesku')]"
+                    "imageSku": {
+                        "value": "[parameters('imageSku')]"
                     },
-                    "vmsize": {
-                        "value": "[parameters('vmsize')]"
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
                     }
                 },
                 "template": {
@@ -106,29 +146,29 @@
                         "prefix": {
                             "type": "string"
                         },
-                        "vmname": {
+                        "vmName": {
                             "type": "string"
                         },
-                        "vmUsername": {
+                        "adminUsername": {
                             "type": "string"
                         },
-                        "vmPassword": {
+                        "adminPassword": {
                             "type": "secureString"
                         },
                         "disktype": {
                             "type": "string",
                             "defaultValue": "Premium_LRS"
                         },
-                        "imagesku": {
+                        "imageSku": {
                             "type": "string"
                         },
-                        "imagepublisher": {
+                        "imagePublisher": {
                             "type": "string"
                         },
-                        "imageoffer": {
+                        "imageOffer": {
                             "type": "string"
                         },
-                        "vmsize": {
+                        "vmSize": {
                             "type": "string"
                         }
                     },
@@ -149,7 +189,7 @@
                             "properties": {}
                         },
                         {
-                            "name": "[parameters('vmname')]",
+                            "name": "[parameters('vmName')]",
                             "type": "Microsoft.Network/networkInterfaces",
                             "apiVersion": "2018-10-01",
                             "location": "[parameters('location')]",
@@ -174,7 +214,7 @@
                             }
                         },
                         {
-                            "name": "[parameters('vmname')]",
+                            "name": "[parameters('vmName')]",
                             "type": "Microsoft.Compute/virtualMachines",
                             "apiVersion": "2022-03-01",
                             "location": "[parameters('location')]",
@@ -183,20 +223,20 @@
                             ],
                             "properties": {
                                 "hardwareProfile": {
-                                    "vmSize": "[parameters('vmsize')]"
+                                    "vmSize": "[parameters('vmSize')]"
                                 },
                                 "storageProfile": {
                                     "osDisk": {
                                         "createOption": "fromImage",
-                                        "name": "[concat(parameters('vmname'),'-OsDisk')]",
+                                        "name": "[concat(parameters('vmName'),'-OsDisk')]",
                                         "managedDisk": {
                                             "storageAccountType": "[parameters('DiskType')]"
                                         }
                                     },
                                     "imageReference": {
-                                        "publisher": "[parameters('imagepublisher')]",
-                                        "offer": "[parameters('imageoffer')]",
-                                        "sku": "[parameters('imagesku')]",
+                                        "publisher": "[parameters('imagePublisher')]",
+                                        "offer": "[parameters('imageOffer')]",
+                                        "sku": "[parameters('imageSku')]",
                                         "version": "latest"
                                     }
                                 },
@@ -209,8 +249,8 @@
                                 },
                                 "osProfile": {
                                     "computerName": "[parameters('vmName')]",
-                                    "adminUsername": "[parameters('vmUsername')]",
-                                    "adminPassword": "[parameters('vmPassword')]",
+                                    "adminUsername": "[parameters('adminUsername')]",
+                                    "adminPassword": "[parameters('adminPassword')]",
                                     "linuxConfiguration": {
                                         "patchSettings": {
                                             "patchMode": "ImageDefault"
@@ -219,9 +259,9 @@
                                 }
                             },
                             "plan": {
-                                "name": "[parameters('imagesku')]",
-                                "publisher": "[parameters('imagepublisher')]",
-                                "product": "[parameters('imageoffer')]"
+                                "name": "[parameters('imageSku')]",
+                                "publisher": "[parameters('imagePublisher')]",
+                                "product": "[parameters('imageOffer')]"
                             },
                             "resources": []
                         }
@@ -233,8 +273,8 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "[concat('BackupDeployment-',parameters('vmname'))]",
-            "resourceGroup": "[parameters('backuprg')]",
+            "name": "[concat('BackupDeployment-',parameters('vmName'))]",
+            "resourceGroup": "[parameters('backupRg')]",
             "dependsOn": [
                 "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/VmFirewallDeployment')]"
             ],
@@ -244,14 +284,14 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
-                    "vmname": {
+                    "vmName": {
                         "value": "[parameters('vmName')]"
                     },
                     "vmrg": {
                         "value": "[variables('vmrgname')]"
                     },
-                    "vaultName": {
-                        "value": "[parameters('vaultName')]"
+                    "backupVault": {
+                        "value": "[parameters('backupVault')]"
                     },
                     "policyName": {
                         "value": "[variables('policyName')]"
@@ -262,13 +302,13 @@
                     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
                     "contentVersion": "1.0.0.0",
                     "parameters": {
-                        "vaultName": {
+                        "backupVault": {
                             "type": "String"
                         },
                         "policyName": {
                             "type": "String"
                         },
-                        "vmname": {
+                        "vmName": {
                             "type": "string"
                         },
                         "vmrg": {
@@ -276,18 +316,18 @@
                         }
                     },
                     "variables": {
-                        "ProtectedItem": "[concat('vm;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
-                        "ProtectionContainer": "[concat('IaasVMContainer;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmname'))]",
-                        "sourceResourceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('vmrg'),'/providers/Microsoft.Compute/virtualMachines/',parameters('vmname'))]"
+                        "ProtectedItem": "[concat('vm;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmName'))]",
+                        "ProtectionContainer": "[concat('IaasVMContainer;iaasvmcontainerv2;',parameters('vmrg'),';',parameters('vmName'))]",
+                        "sourceResourceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('vmrg'),'/providers/Microsoft.Compute/virtualMachines/',parameters('vmName'))]"
                     },
                     "resources": [
                         {
                             "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
                             "apiVersion": "2016-06-01",
-                            "name": "[concat(parameters('vaultName'), '/Azure/',variables('protectionContainer'), '/', variables('ProtectedItem'))]",
+                            "name": "[concat(parameters('backupVault'), '/Azure/',variables('protectionContainer'), '/', variables('ProtectedItem'))]",
                             "properties": {
                                 "protectedItemType": "Microsoft.ClassicCompute/virtualMachines",
-                                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('vaultName'), parameters('policyName'))]",
+                                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('backupVault'), parameters('policyName'))]",
                                 "sourceResourceId": "[variables('sourceResourceId')]"
                             }
                         }
