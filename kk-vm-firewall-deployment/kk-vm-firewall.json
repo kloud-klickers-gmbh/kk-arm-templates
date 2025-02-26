@@ -297,7 +297,9 @@
                             "apiVersion": "2022-03-01",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[concat('Microsoft.Network/networkInterfaces/', parameters('vmName'))]"
+                                "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]",
+                                "[resourceId('Microsoft.Network/networkInterfaces', variables('nicWan'))]",
+                                "[resourceId('Microsoft.Network/networkInterfaces', variables('nicLan'))]"
                             ],
                             "properties": {
                                 "hardwareProfile": {
