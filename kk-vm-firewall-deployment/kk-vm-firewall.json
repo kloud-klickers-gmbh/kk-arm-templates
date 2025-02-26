@@ -247,13 +247,13 @@
                                 "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]"
                             ],
                             "properties": {
+                                "networkSecurityGroup": {
+                                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vnetNsg'))]"
+                                },
                                 "ipConfigurations": [
                                     {
                                         "name": "ipconfigWan",
                                         "properties": {
-                                            "networkSecurityGroup": {
-                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vnetNsg'))]"
-                                            },
                                             "privateIPAllocationMethod": "Dynamic",
                                             "publicIPAddress": {
                                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]"
