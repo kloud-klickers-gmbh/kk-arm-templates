@@ -215,8 +215,8 @@
                         "nicWan": "[concat(parameters('vmName'),'-nic-wan')]",
                         "nicLan": "[concat(parameters('vmName'),'-nic-lan')]",
 
-                        "subnetRefWan": "[resourceId(parameters('vnetRg'),'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('wanName'))]",
-                        "subnetRefLan": "[resourceId(parameters('vnetRg'),'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('lanName'))]"
+                        "subnetRefWan": "[resourceId(parameters('vnetRg'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('wanName'))]",
+                        "subnetRefLan": "[resourceId(parameters('vnetRg'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('lanName'))]"
                     },
                     "resources": [
                         {
@@ -248,7 +248,7 @@
                             ],
                             "properties": {
                                 "networkSecurityGroup": {
-                                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vnetNsg'))]"
+                                    "id": "[resourceId(parameters('vnetRg'), 'Microsoft.Network/networkSecurityGroups', parameters('vnetNsg'))]"
                                 },
                                 "ipConfigurations": [
                                     {
@@ -273,9 +273,6 @@
                             "apiVersion": "2020-11-01",
                             "name": "[variables('nicLan')]",
                             "location": "[parameters('location')]",
-                            "dependsOn": [
-                                "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]"
-                            ],
                             "properties": {
                                 "ipConfigurations": [
                                     {
