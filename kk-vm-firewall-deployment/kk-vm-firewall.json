@@ -39,7 +39,7 @@
         "backupVault": {
             "type": "string"
         },
-        
+
 
         "vnetRg": {
             "type": "string"
@@ -47,57 +47,43 @@
         "vnetName": {
             "type": "string"
         },
-        "vnetPrefix": {
+        "vnetNsg": {
             "type": "string"
         },
         "wanName": {
             "type": "string"
         },
-        "wanPrefix": {
-            "type": "string"
-        },
         "lanName": {
             "type": "string"
         },
-        "lanPrefix": {
-            "type": "string"
-        },
-
         "pipDnsName": {
             "type": "string"
         },
-
-
-
-
-
 
         "disktype": {
             "type": "string",
             "defaultValue": "Premium_LRS"
         }
-        
-        
-        
     },
     "variables": {
-        "policyName": "[concat(parameters('prefix'),'-daily-backup-VM')]",
-        "vmrgname": "[concat(parameters('vmName'),'-rg')]"
+        "backupPolicyName": "[concat(parameters('prefix'),'-daily-backup-VM')]",
+        "vmRgName": "[concat(parameters('vmName'),'-rg')]"
     },
     "resources": [
         {
-            "name": "[variables('vmrgname')]",
+            "name": "[variables('vmRgName')]",
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2021-04-01",
             "location": "[parameters('location')]"
         },
+
         {
             "name": "VmFirewallDeployment",
             "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[variables('vmrgname')]",
+            "resourceGroup": "[variables('vmRgName')]",
             "apiVersion": "2021-04-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', concat(parameters('vmName'),'-rg'))]"
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('vmRgName'))]"
             ],
             "properties": {
                 "expressionEvaluationOptions": {
@@ -111,8 +97,14 @@
                     "prefix": {
                         "value": "[parameters('prefix')]"
                     },
+                    "vmRgName": {
+                        "value": "[variables('vmRgName')]"
+                    },
                     "vmName": {
                         "value": "[parameters('vmName')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
                     },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
@@ -120,9 +112,7 @@
                     "adminPassword": {
                         "value": "[parameters('adminPassword')]"
                     },
-                    "disktype": {
-                        "value": "[parameters('disktype')]"
-                    },
+
                     "imagePublisher": {
                         "value": "[parameters('imagePublisher')]"
                     },
@@ -132,8 +122,30 @@
                     "imageSku": {
                         "value": "[parameters('imageSku')]"
                     },
-                    "vmSize": {
-                        "value": "[parameters('vmSize')]"
+
+
+                    "vnetRg": {
+                        "value": "[parameters('vnetRg')]"
+                    },
+                    "vnetName": {
+                        "value": "[parameters('vnetName')]"
+                    },
+                    "vnetNsg": {
+                        "value": "[parameters('vnetNsg')]"
+                    },
+                    "wanName": {
+                        "value": "[parameters('wanName')]"
+                    },
+                    "lanName": {
+                        "value": "[parameters('lanName')]"
+                    },
+                    "pipDnsName": {
+                        "value": "[parameters('pipDnsName')]"
+                    },
+
+
+                    "disktype": {
+                        "value": "[parameters('disktype')]"
                     }
                 },
                 "template": {
@@ -146,73 +158,142 @@
                         "prefix": {
                             "type": "string"
                         },
+                        "vmRgName": {
+                            "type": "string"
+                        },
                         "vmName": {
                             "type": "string"
                         },
+                        "vmSize": {
+                            "type": "string"
+                        },
+
                         "adminUsername": {
                             "type": "string"
                         },
                         "adminPassword": {
                             "type": "secureString"
                         },
-                        "disktype": {
-                            "type": "string",
-                            "defaultValue": "Premium_LRS"
-                        },
-                        "imageSku": {
-                            "type": "string"
-                        },
+
                         "imagePublisher": {
                             "type": "string"
                         },
                         "imageOffer": {
                             "type": "string"
                         },
-                        "vmSize": {
+                        "imageSku": {
                             "type": "string"
+                        },
+
+
+                        "vnetRg": {
+                            "type": "string"
+                        },
+                        "vnetName": {
+                            "type": "string"
+                        },
+                        "vnetNsg": {
+                            "type": "string"
+                        },
+                        "wanName": {
+                            "type": "string"
+                        },
+                        "lanName": {
+                            "type": "string"
+                        },
+                        "pipDnsName": {
+                            "type": "string"
+                        },
+
+                        "disktype": {
+                            "type": "string",
+                            "defaultValue": "Premium_LRS"
                         }
                     },
                     "variables": {
-                        "vnetrg": "[concat(parameters('prefix'),'-vnet-rg')]",
-                        "vnet": "[concat(parameters('prefix'),'-vnet')]",
-                        "subnet": "[concat(parameters('prefix'),'-lan-subnet')]",
-                        "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'))]",
-                        "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnet'))]",
-                        "nsgname": "[concat(parameters('vmName'),'-nsg')]"
+                        "pipName": "[concat(parameters('vmName'),'-pip')]",
+                        "nicWan": "[concat(parameters('vmName'),'-nic-wan')]",
+                        "nicLan": "[concat(parameters('vmName'),'-nic-lan')]",
+
+                        "subnetRefWan": "[resourceId(parameters('vnetRg'),'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('wanName'))]",
+                        "subnetRefLan": "[resourceId(parameters('vnetRg'),'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('lanName'))]"
                     },
                     "resources": [
                         {
-                            "name": "[variables('nsgname')]",
-                            "type": "Microsoft.Network/networkSecurityGroups",
-                            "apiVersion": "2020-11-01",
-                            "location": "[parameters('location')]",
-                            "properties": {}
-                        },
-                        {
-                            "name": "[parameters('vmName')]",
-                            "type": "Microsoft.Network/networkInterfaces",
-                            "apiVersion": "2018-10-01",
+                            "type": "Microsoft.Network/publicIPAddresses",
+                            "apiVersion": "2019-08-01",
+                            "name": "[variables('pipName')]",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgname'))]"
+                                "[resourceId('Microsoft.Resources/resourceGroups', parameters('vmRgName'))]"
+                            ],
+                            "sku": {
+                                "name": "Basic",
+                                "tier": "Regional"
+                            },
+                            "properties": {
+                                "publicIPAddressVersion": "IPv4",
+                                "publicIPAllocationMethod": "Static",
+                                "dnsSettings": {
+                                    "domainNameLabel": "[parameters('pipDnsName')]"
+                                }
+                            }
+                        },
+
+
+                        {
+                            "type": "Microsoft.Network/networkInterfaces",
+                            "apiVersion": "2020-11-01",
+                            "name": "[variables('nicWan')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]"
                             ],
                             "properties": {
-                                "networkSecurityGroup": {
-                                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgname'))]"
-                                },
                                 "ipConfigurations": [
                                     {
-                                        "name": "ipconfig1",
+                                        "name": "ipconfigWan",
                                         "properties": {
-                                            "subnet": {
-                                                "id": "[variables('subnetRef')]"
+                                            "networkSecurityGroup": {
+                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vnetNsg'))]"
                                             },
-                                            "privateIPAllocationMethod": "Dynamic"
+                                            "privateIPAllocationMethod": "Dynamic",
+                                            "publicIPAddress": {
+                                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]"
+                                            },
+                                            "subnet": {
+                                                "id": "[variables('subnetRefWan')]"
+                                            }
+                                        }
+
+
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/networkInterfaces",
+                            "apiVersion": "2020-11-01",
+                            "name": "[variables('nicLan')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]"
+                            ],
+                            "properties": {
+                                "ipConfigurations": [
+                                    {
+                                        "name": "ipconfigLan",
+                                        "properties": {
+                                            "privateIPAllocationMethod": "Dynamic",
+                                            "subnet": {
+                                                "id": "[variables('subnetRefLan')]"
+                                            }
                                         }
                                     }
                                 ]
                             }
                         },
+
                         {
                             "name": "[parameters('vmName')]",
                             "type": "Microsoft.Compute/virtualMachines",
@@ -243,7 +324,16 @@
                                 "networkProfile": {
                                     "networkInterfaces": [
                                         {
-                                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('vmName'))]"
+                                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicWan'))]",
+                                            "properties": {
+                                                "primary": true
+                                            }
+                                        },
+                                        {
+                                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicLan'))]",
+                                            "properties": {
+                                                "primary": false
+                                            }
                                         }
                                     ]
                                 },
@@ -276,7 +366,7 @@
             "name": "[concat('BackupDeployment-',parameters('vmName'))]",
             "resourceGroup": "[parameters('backupRg')]",
             "dependsOn": [
-                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/VmFirewallDeployment')]"
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmRgName'),'/providers/Microsoft.Resources/deployments/VmFirewallDeployment')]"
             ],
             "properties": {
                 "expressionEvaluationOptions": {
@@ -288,13 +378,13 @@
                         "value": "[parameters('vmName')]"
                     },
                     "vmrg": {
-                        "value": "[variables('vmrgname')]"
+                        "value": "[variables('vmRgName')]"
                     },
                     "backupVault": {
                         "value": "[parameters('backupVault')]"
                     },
-                    "policyName": {
-                        "value": "[variables('policyName')]"
+                    "backupPolicyName": {
+                        "value": "[variables('backupPolicyName')]"
                     }
                 },
 
@@ -305,7 +395,7 @@
                         "backupVault": {
                             "type": "String"
                         },
-                        "policyName": {
+                        "backupPolicyName": {
                             "type": "String"
                         },
                         "vmName": {
@@ -327,7 +417,7 @@
                             "name": "[concat(parameters('backupVault'), '/Azure/',variables('protectionContainer'), '/', variables('ProtectedItem'))]",
                             "properties": {
                                 "protectedItemType": "Microsoft.ClassicCompute/virtualMachines",
-                                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('backupVault'), parameters('policyName'))]",
+                                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('backupVault'), parameters('backupPolicyName'))]",
                                 "sourceResourceId": "[variables('sourceResourceId')]"
                             }
                         }
