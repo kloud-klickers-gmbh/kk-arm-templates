@@ -482,36 +482,10 @@
                         "imagePublisher": "MicrosoftWindowsServer",
                         "imageOffer": "WindowsServer",
                         "jumphost_pip_name": "[concat(parameters('jumphostName'),'-pip')]",
-                        "jumphost_nsg_name": "[concat(parameters('jumphostName'),'-nsg')]",
                         "jumphost_nic_name": "[concat(parameters('jumphostName'),'-nic')]",
                         "subnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , parameters('vnetrgname'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vnetname'), '/subnets/', parameters('subnetLANName'))]"
                     },
                     "resources": [
-                        {
-                            "name": "[variables('jumphost_nsg_name')]",
-                            "type": "Microsoft.Network/networkSecurityGroups",
-                            "apiVersion": "2020-11-01",
-                            "tags": "[parameters('tags')]",
-                            "location": "[parameters('location')]",
-                            "properties": {
-                                "securityRules": [
-                                    {
-                                        "name": "allow_rdp_inbound",
-                                        "properties": {
-                                            "description": "Allow RDP from Office and Azure",
-                                            "protocol": "Tcp",
-                                            "sourcePortRange": "*",
-                                            "destinationPortRange": "3389",
-                                            "sourceAddressPrefix": "[parameters('JumpHostRDPRemoteIP')]",
-                                            "destinationAddressPrefix": "*",
-                                            "access": "Allow",
-                                            "priority": 100,
-                                            "direction": "Inbound"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
                         {
                             "type": "Microsoft.Network/publicIPAddresses",
                             "apiVersion": "2020-11-01",
@@ -643,8 +617,7 @@
                             "location": "[parameters('location')]",
                             "tags": "[parameters('tags')]",
                             "dependsOn": [
-                                "[resourceId('Microsoft.Network/publicIPAddresses', variables('jumphost_pip_name'))]",
-                                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('jumphost_nsg_name'))]"
+                                "[resourceId('Microsoft.Network/publicIPAddresses', variables('jumphost_pip_name'))]"
                             ],
                             "properties": {
                                 "ipConfigurations": [
@@ -660,10 +633,7 @@
                                             }
                                         }
                                     }
-                                ],
-                                "networkSecurityGroup": {
-                                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('jumphost_nsg_name'))]"
-                                }
+                                ]
                             }
                         }
                     ],
@@ -788,9 +758,9 @@
                             "properties": {
                                 "securityRules": [
                                     {
-                                        "name": "allow_rdp_inbound",
+                                        "name": "AllowRdpInbound",
                                         "properties": {
-                                            "description": "Allow RDP from Office and Azure",
+                                            "description": "Allow RDP from the office. This enables the Jumphost to be accessed via its public IP address.",
                                             "protocol": "Tcp",
                                             "sourcePortRange": "*",
                                             "destinationPortRange": "3389",
