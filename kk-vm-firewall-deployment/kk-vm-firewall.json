@@ -215,6 +215,8 @@
                         "nicWan": "[concat(parameters('vmName'),'-nic-wan')]",
                         "nicLan": "[concat(parameters('vmName'),'-nic-lan')]",
 
+                        "nicWanNsgName": "[concat(variables('nicWan'),'-nsg')]",
+
                         "subnetRefWan": "[resourceId(parameters('vnetRg'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('wanName'))]",
                         "subnetRefLan": "[resourceId(parameters('vnetRg'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('lanName'))]"
                     },
@@ -236,19 +238,25 @@
                                 }
                             }
                         },
-
-
+                        {
+                            "name": "[variables('nicWanNsgName')]",
+                            "type": "Microsoft.Network/networkSecurityGroups",
+                            "apiVersion": "2020-11-01",
+                            "location": "[parameters('location')]",
+                            "properties": {}
+                        },
                         {
                             "type": "Microsoft.Network/networkInterfaces",
                             "apiVersion": "2020-11-01",
                             "name": "[variables('nicWan')]",
                             "location": "[parameters('location')]",
                             "dependsOn": [
-                                "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]"
+                                "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]",
+                                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nicWanNsgName'))]"
                             ],
                             "properties": {
                                 "networkSecurityGroup": {
-                                    "id": "[resourceId(parameters('vnetRg'), 'Microsoft.Network/networkSecurityGroups', parameters('vnetNsg'))]"
+                                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nicWanNsgName'))]"
                                 },
                                 "ipConfigurations": [
                                     {
@@ -262,10 +270,9 @@
                                                 "id": "[variables('subnetRefWan')]"
                                             }
                                         }
-
-
                                     }
-                                ]
+                                ],
+                                "enableIPForwarding": true
                             }
                         },
                         {
@@ -284,7 +291,8 @@
                                             }
                                         }
                                     }
-                                ]
+                                ],
+                                "enableIPForwarding": true
                             }
                         },
 
