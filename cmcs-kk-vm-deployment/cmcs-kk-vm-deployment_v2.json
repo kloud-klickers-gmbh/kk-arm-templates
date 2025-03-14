@@ -341,7 +341,7 @@
                         },
 
                         {
-                            "condition": "[equals(parameters('imagePublisher'), 'MicrosoftWindowsServer')]",
+                            "condition": "[and(equals(parameters('imagePublisher'), 'MicrosoftWindowsServer'), equals(parameters('ImageId'),'None'))]",
                             "name": "[parameters('vmname')]",
                             "type": "Microsoft.Compute/virtualMachines",
                             "apiVersion": "2022-11-01",
@@ -412,7 +412,7 @@
 
 
                         {
-                            "condition": "[not(equals(parameters('imagePublisher'), 'MicrosoftWindowsServer'))]",
+                            "condition": "[and(not(equals(parameters('imagePublisher'), 'MicrosoftWindowsServer')), equals(parameters('ImageId'),'None'))]",
                             "name": "[parameters('vmname')]",
                             "type": "Microsoft.Compute/virtualMachines",
                             "apiVersion": "2022-11-01",
