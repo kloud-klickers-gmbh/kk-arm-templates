@@ -312,7 +312,6 @@
                                     ],
                                     "imageReference": {
                                         "communityGalleryImageId": "[concat(parameters('ImageId'),'/Versions/latest')]"
-
                                     }
                                 },
                                 "networkProfile": {
@@ -325,16 +324,7 @@
                                 "osProfile": {
                                     "computerName": "[parameters('vmName')]",
                                     "adminUsername": "[parameters('vmUsername')]",
-                                    "adminPassword": "[parameters('vmPassword')]",
-                                    "windowsConfiguration": {
-                                        "enableAutomaticUpdates": true,
-                                        "provisionVmAgent": true,
-                                        "patchSettings": {
-                                            "assessmentMode": "AutomaticByPlatform",
-                                            "patchMode": "AutomaticByPlatform",
-                                            "enableHotpatching": false
-                                        }
-                                    }
+                                    "adminPassword": "[parameters('vmPassword')]"
                                 }
                             },
                             "tags": "[parameters('vmtags')]"
