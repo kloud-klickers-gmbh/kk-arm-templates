@@ -561,7 +561,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
-            "name": "BackupDeployment",
+            "name": "[concat('Backup-Deployment-',parameters('vmname'))]",
             "resourceGroup": "[parameters('backuprg')]",
             "dependsOn": [
                 "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/SQL-VM-Deployment')]"
@@ -576,7 +576,7 @@
                         "value": "[parameters('vmName')]"
                     },
                     "vmrg": {
-                        "value": "[resourceGroup().name]"
+                        "value": "[variables('vmrgname')]"
                     },
                     "vaultName": {
                         "value": "[parameters('vaultName')]"
