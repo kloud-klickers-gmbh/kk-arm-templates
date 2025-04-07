@@ -564,7 +564,7 @@
             "name": "BackupDeployment",
             "resourceGroup": "[parameters('backuprg')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+                "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',variables('vmrgname'),'/providers/Microsoft.Resources/deployments/SQL-VM-Deployment')]"
             ],
             "properties": {
                 "expressionEvaluationOptions": {
