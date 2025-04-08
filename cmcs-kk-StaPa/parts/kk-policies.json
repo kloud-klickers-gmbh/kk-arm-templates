@@ -236,10 +236,8 @@
                 "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/080fedce-9d4a-4d07-abf0-9f036afbc9c8",
                 "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
                 "parameters": {
-                    "inclusionTagValues": {
-                        "value": [
-                            "Disable-Azure-Defender"
-                        ]
+                    "inclusionTagName": {
+                        "value": "Disable-Azure-Defender"
                     }
                 }
             }
