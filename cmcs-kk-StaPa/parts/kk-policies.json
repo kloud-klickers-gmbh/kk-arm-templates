@@ -26,10 +26,8 @@
         "logAnalyticsWorkspaceName": "[concat(parameters('prefix'),'-log-analytics')]",
         "dataCollectionRuleVmName": "[concat(parameters('prefix'),'-dcr-vm')]",
         "dataCollectionRuleAvdName": "[concat('microsoft-avdi-', parameters('location'))]"
-
     },
     "resources": [
-
         {
             "type": "Microsoft.Authorization/policyassignments",
             "apiVersion": "2023-04-01",
@@ -217,6 +215,31 @@
                 "parameters": {
                     "logAnalytics": {
                         "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('logOperationsRg'), '/providers/Microsoft.OperationalInsights/workspaces/', variables('logAnalyticsWorkspaceName'))]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/policyassignments",
+            "apiVersion": "2023-04-01",
+            "name": "[concat('Azure Defender Disable Tag ', subscription().subscriptionId)]",
+            "location": "[parameters('location')]",
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[resourceId(subscription().subscriptionId, variables('managedIdentitiesRg'), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityNamePolicies'))]": {}
+                }
+            },
+            "properties": {
+                "displayName": "KK Configure Azure Defender for Servers to be disabled for resources (resource level) with the selected tag",
+                "enforcementMode": "Default",
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/080fedce-9d4a-4d07-abf0-9f036afbc9c8",
+                "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
+                "parameters": {
+                    "inclusionTagValues": {
+                        "value": [
+                            "Disable-Azure-Defender"
+                        ]
                     }
                 }
             }
