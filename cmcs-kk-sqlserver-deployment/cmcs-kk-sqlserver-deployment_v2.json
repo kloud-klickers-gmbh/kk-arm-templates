@@ -476,8 +476,7 @@
                                             "fileUris": [
                                                 "https://raw.githubusercontent.com/kloud-klickers-gmbh/kk-arm-templates/refs/heads/main/kk-custom-scripts/mount-temp-disk.ps1"
                                             ],
-                                            "script": "mount-temp-disk.ps1",
-                                            "arguments": "3"
+                                            "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File mount-temp-disk.ps1 3"
                                         }
                                     }
                                 },
