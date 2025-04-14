@@ -25,6 +25,7 @@ if ($dvdDrive) {
 
 
 # PowerShell script to initialize and mount the temporary disk
+Get-Disk | Out-File -FilePath "C:\temp\diskinfo.txt" -Append
 $disk = Get-Disk -Number $tempDiskLunNumber | Where-Object PartitionStyle -eq 'RAW'
 if($disk) {
     Initialize-Disk -Number $disk.Number -PartitionStyle MBR -PassThru | New-Partition DriveLetter D -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel "Temp"
