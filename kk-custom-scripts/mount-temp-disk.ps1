@@ -20,9 +20,9 @@ if ($dvdDrive) {
 
 # PowerShell script to initialize and mount the temporary disk
 Get-Disk | Out-File -FilePath "C:\temp\mount-temp-disk.log" -Append
-$disk = Get-Disk -FriendlyName "Microsoft NVMe Direct Disk v2" | Where-Object PartitionStyle -eq 'RAW'
+$disk = Get-Disk | Where-Object { $_.FriendlyName.contains("NVMe Direct Disk") -and $_.PartitionStyle -eq 'RAW' }
 $disk | Out-File -FilePath "C:\temp\mount-temp-disk.log" -Append
 
 if($disk) {
-    Initialize-Disk -Number $disk.Number -PartitionStyle MBR -PassThru | New-Partition -DriveLetter D -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel "Temp"| Out-File -FilePath "C:\temp\mount-temp-disk.log" -Append
+    Initialize-Disk -Number $disk.Number -PartitionStyle MBR -PassThru | New-Partition -DriveLetter D -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel "Temporary Storage"| Out-File -FilePath "C:\temp\mount-temp-disk.log" -Append
 }
