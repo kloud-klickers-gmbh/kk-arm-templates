@@ -331,7 +331,8 @@
                         "sqlStorageDisksConfigurationType": "NEW",
                         "sqlAutopatchingDayOfWeek": "Sunday",
                         "sqlAutopatchingStartHour": "2",
-                        "sqlAutopatchingWindowDuration": "60"
+                        "sqlAutopatchingWindowDuration": "60",
+                        "vmSizeVersion": "[int(substring(parameters('vmSize'), sub(length(parameters('vmSize')), 1), 1))]"
                     },
                     "resources": [
                         {
@@ -458,6 +459,28 @@
                             },
                             "resources": [
                                 {
+                                    "condition": "[greaterOrEquals(variables('vmSizeVersion'), 6)]",
+                                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                                    "apiVersion": "2021-04-01",
+                                    "name": "[concat(parameters('vmName'), '/mountTempDisk')]",
+                                    "location": "[resourceGroup().location]",
+                                    "dependsOn": [
+                                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+                                    ],
+                                    "properties": {
+                                        "publisher": "Microsoft.Compute",
+                                        "type": "CustomScriptExtension",
+                                        "typeHandlerVersion": "1.10",
+                                        "autoUpgradeMinorVersion": true,
+                                        "settings": {
+                                            "fileUris": [
+                                                "https://raw.githubusercontent.com/kloud-klickers-gmbh/kk-arm-templates/refs/heads/main/kk-custom-scripts/mount-temp-disk.ps1"
+                                            ],
+                                            "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File mount-temp-disk.ps1"
+                                        }
+                                    }
+                                },
+                                {
                                     "type": "Microsoft.Compute/virtualMachines/extensions",
                                     "apiVersion": "2021-03-01",
                                     "dependsOn": [
@@ -497,7 +520,8 @@
                             "tags": "[parameters('vmTags')]",
                             "dependsOn": [
                                 "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
-                                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/Microsoft.Azure.Security')]"
+                                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/Microsoft.Azure.Security')]",
+                                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('vmname')),'/extensions/mountTempDisk')]"
                             ],
                             "properties": {
                                 "virtualMachineResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
