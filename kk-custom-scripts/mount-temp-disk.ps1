@@ -24,5 +24,5 @@ $disk = Get-Disk -FriendlyName "Microsoft NVMe Direct Disk v2" | Where-Object Pa
 $disk | Out-File -FilePath "C:\temp\mount-temp-disk.log" -Append
 
 if($disk) {
-    Initialize-Disk -Number $disk.Number -PartitionStyle MBR -PassThru | New-Partition DriveLetter D -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel "Temp"| Out-File -FilePath "C:\temp\mount-temp-disk.log" -Append
+    Initialize-Disk -Number $disk.Number -PartitionStyle MBR -PassThru | New-Partition -DriveLetter D -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel "Temp"| Out-File -FilePath "C:\temp\mount-temp-disk.log" -Append
 }
