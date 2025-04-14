@@ -1,6 +1,6 @@
 
 param (
-    [int]$tempDiskLunNumber
+    [int]$tempDiskLunNumber
 )
 
 # Move DVD Drive letter from D: to Z:
