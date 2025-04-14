@@ -3,6 +3,8 @@ param (
     [int]$tempDiskLunNumber
 )
 
+Start-Sleep -Seconds 300
+
 # Move DVD Drive letter from D: to Z:
 # Define old and new DVD drive letters
 $oldLetter = "D:"
