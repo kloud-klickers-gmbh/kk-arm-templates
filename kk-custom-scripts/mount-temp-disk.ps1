@@ -1,10 +1,3 @@
-
-param (
-    [int]$tempDiskLunNumber
-)
-
-Start-Sleep -Seconds 300
-
 # Move DVD Drive letter from D: to Z:
 # Define old and new DVD drive letters
 $oldLetter = "D:"
@@ -26,7 +19,7 @@ if ($dvdDrive) {
 
 # PowerShell script to initialize and mount the temporary disk
 Get-Disk | Out-File -FilePath "C:\temp\diskinfo.txt" -Append
-$disk = Get-Disk -Number $tempDiskLunNumber | Where-Object PartitionStyle -eq 'RAW'
+$disk = Get-Disk -FriendlyName "Microsoft NVMe Direct Disk v2" | Where-Object PartitionStyle -eq 'RAW'
 if($disk) {
     Initialize-Disk -Number $disk.Number -PartitionStyle MBR -PassThru | New-Partition DriveLetter D -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel "Temp"
 }
