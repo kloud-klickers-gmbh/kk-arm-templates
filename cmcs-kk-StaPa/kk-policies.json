@@ -20,7 +20,9 @@
         "location": {
             "allowedValues": [
                 "westeurope",
-                "germanywestcentral"
+                "germanywestcentral",
+                "westus",
+                "southeastasia"
             ],
             "type": "string"
         }
