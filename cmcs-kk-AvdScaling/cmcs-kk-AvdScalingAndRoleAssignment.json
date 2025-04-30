@@ -54,7 +54,7 @@
         },
         "scalingPlanRampUpMinimumHostsPct": {
         	"type": "int",
-        	"defaultValue": 50,
+        	"defaultValue": 25,
             "minValue": 0,
             "maxValue": 100
         },
