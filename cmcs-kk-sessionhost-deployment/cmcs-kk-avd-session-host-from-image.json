@@ -135,11 +135,11 @@
                     "osDisk": {
                         "createOption": "FromImage",
                         "diskSizeGB": "[parameters('vmOSDiskSize')]",
-                        "diskControllerType": "[if(greaterOrEquals(variables('vmSizeVersion'), 6), 'NVMe', 'SCSI')]",
                         "managedDisk": {
                             "storageAccountType": "[parameters('storageAccountType')]"
                         }
-                    }
+                    },
+                    "diskControllerType": "[if(greaterOrEquals(variables('vmSizeVersion'), 6), 'NVMe', 'SCSI')]"
                 },
                 "networkProfile": {
                     "networkInterfaces": [
