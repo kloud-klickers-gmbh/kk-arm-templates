@@ -80,7 +80,8 @@
         "managedIdentitiesRg": "[concat(parameters('prefix'),'-managed-identities-rg')]",
         "managedIdentityNameVm": "[concat(parameters('prefix'),'-managed-identity-vm')]",
         "logOperationsRg": "[concat(parameters('prefix'),'-log-operations-rg')]",
-        "dataCollectionRuleAvdName": "[concat('microsoft-avdi-', parameters('location'))]"
+        "dataCollectionRuleAvdName": "[concat('microsoft-avdi-', parameters('location'))]",
+        "vmSizeVersion": "[int(substring(parameters('virtualMachineSize'), sub(length(parameters('virtualMachineSize')), 1), 1))]"
     },
     "resources": [
         {
@@ -134,6 +135,7 @@
                     "osDisk": {
                         "createOption": "FromImage",
                         "diskSizeGB": "[parameters('vmOSDiskSize')]",
+                        "diskControllerType": "[if(greaterOrEquals(variables('vmSizeVersion'), 6), 'NVMe', 'SCSI')]",
                         "managedDisk": {
                             "storageAccountType": "[parameters('storageAccountType')]"
                         }
