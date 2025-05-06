@@ -139,7 +139,7 @@
                             "storageAccountType": "[parameters('storageAccountType')]"
                         }
                     },
-                    "diskControllerType": "[if(greaterOrEquals(variables('vmSizeVersion'), 6), 'NVMe', 'SCSI')]"
+                    "diskControllerType": "SCSI"
                 },
                 "networkProfile": {
                     "networkInterfaces": [
