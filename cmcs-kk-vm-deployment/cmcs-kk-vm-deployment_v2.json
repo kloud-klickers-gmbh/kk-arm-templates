@@ -456,13 +456,7 @@
                                 "osProfile": {
                                     "computerName": "[parameters('vmName')]",
                                     "adminUsername": "[parameters('vmUsername')]",
-                                    "adminPassword": "[parameters('vmPassword')]",
-                                    "linuxConfiguration": {
-                                        "patchSettings": {
-                                            "assessmentMode": "ImageDefault",
-                                            "patchMode": "ImageDefault"
-                                        }
-                                    }
+                                    "adminPassword": "[parameters('vmPassword')]"
                                 }
                             },
                             "tags": "[parameters('vmtags')]"
