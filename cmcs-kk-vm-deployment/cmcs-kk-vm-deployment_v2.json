@@ -235,7 +235,8 @@
                     "variables": {
                         "vnetId": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , parameters('vnetRg'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
                         "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('lanName'))]",
-                        "nsgname": "[concat(parameters('vmName'),'-nsg')]"
+                        "nsgname": "[concat(parameters('vmName'),'-nsg')]",
+                        "enableGuestPatchingLinux": "[not(equals(parameters('imagePublisher'), 'Debian'))]"
                     },
                     "resources": [
                         {
@@ -458,7 +459,7 @@
                                     "adminUsername": "[parameters('vmUsername')]",
                                     "adminPassword": "[parameters('vmPassword')]",
                                     "linuxConfiguration": {
-                                        "enableVMAgentPlatformUpdates": true,
+                                        "enableVMAgentPlatformUpdates": "[variables('enableGuestPatchingLinux')]",
                                         "provisionVMAgent": true
                                     }
                                 }
