@@ -460,7 +460,11 @@
                                     "adminPassword": "[parameters('vmPassword')]",
                                     "linuxConfiguration": {
                                         "enableVMAgentPlatformUpdates": "[variables('enableGuestPatchingLinux')]",
-                                        "provisionVMAgent": true
+                                        "provisionVMAgent": true,
+                                        "patchSettings": {
+                                            "patchMode": "ImageDefault",
+                                            "assessmentMode": "ImageDefault"
+                                        }
                                     }
                                 }
                             },
