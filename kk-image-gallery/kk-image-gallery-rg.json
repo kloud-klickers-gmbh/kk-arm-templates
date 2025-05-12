@@ -39,10 +39,10 @@
                 },
                 "parameters": {
                     "prefix": {
-                        "type": "string"
+                        "value": "[parameters('prefix')]"
                     },
                     "location": {
-                        "type": "string"
+                        "value": "[parameters('location')]"
                     }
                 },
                 "template": {
