@@ -1,0 +1,78 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "baseTime": {
+            "type": "string",
+            "defaultValue": "[utcNow()]"
+        },
+        "prefix": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "imageGalleryRg": "[concat(parameters('prefix'),'-image-gallery-rg')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('imageGalleryRg')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "Image-Gallery-Deployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('imageGalleryRg'))]"
+            ],
+            "resourceGroup": "[variables('imageGalleryRg')]",
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "Inner"
+                },
+                "parameters": {
+                    "prefix": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    }
+                },
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "prefix": {
+                            "type": "string"
+                        },
+                        "location": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "imageGalleryRg": "[concat(parameters('prefix'),'-image-gallery-rg')]",
+                        "imageGalleryName": "[concat(parameters('prefix'),'imagegallery')]"
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.Compute/galleries",
+                            "name": "[variables('imageGalleryName')]",
+                            "resourceGroup": "[variables('imageGalleryRg')]",
+                            "apiVersion": "2021-10-01",
+                            "location": "[parameters('location')]",
+                            "properties": {},
+                            "tags": {}
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
