@@ -57,14 +57,12 @@
                         }
                     },
                     "variables": {
-                        "imageGalleryRg": "[concat(parameters('prefix'),'-image-gallery-rg')]",
                         "imageGalleryName": "[concat(parameters('prefix'),'imagegallery')]"
                     },
                     "resources": [
                         {
                             "type": "Microsoft.Compute/galleries",
                             "name": "[variables('imageGalleryName')]",
-                            "resourceGroup": "[variables('imageGalleryRg')]",
                             "apiVersion": "2021-10-01",
                             "location": "[parameters('location')]",
                             "properties": {},
