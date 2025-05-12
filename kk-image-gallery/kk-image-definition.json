@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "prefix": {
@@ -49,7 +49,6 @@
         }
     },
     "variables": {
-        "imageGalleryRg": "[concat(parameters('prefix'),'-image-gallery-rg')]",
         "imageGalleryName": "[concat(parameters('prefix'),'imagegallery')]",
         "imageDefinitionName": "[parameters('imageDefinitionName')]",
         "publisher": "[parameters('imageDefinitionName')]",
@@ -60,7 +59,6 @@
         {
             "type": "Microsoft.Compute/galleries/images",
             "name": "[concat(variables('imageGalleryName'), '/', variables('imageDefinitionName'))]",
-            "resourceGroup": "[variables('imageGalleryRg')]",
             "apiVersion": "2021-10-01",
             "location": "[parameters('location')]",
             "properties": {
