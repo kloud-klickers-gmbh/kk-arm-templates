@@ -78,6 +78,7 @@
         "templateLogOperations": "[uri(parameters('_artifactsLocation'), 'parts/kk-log-operations-rg.json')]",
         "templatePolicies": "[uri(parameters('_artifactsLocation'), 'parts/kk-policies.json')]",
         "templateBackup": "[uri(parameters('_artifactsLocation'), 'parts/kk-backup-rg.json')]",
+        "templateImageGallery": "[uri(parameters('_artifactsLocation'), '../kk-image-gallery/kk-image-gallery-rg.json')]",
 
 
         "JumpHostRgName": "[concat(parameters('prefix'),'-jumphost-rg')]",
@@ -367,6 +368,28 @@
                 },
                 "templateLink": {
                     "uri": "[variables('templateBackup')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+
+        {
+            "name": "[concat('ImageGallery-', guid(parameters('baseTime')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateImageGallery')]",
                     "contentVersion": "1.0.0.0"
                 }
             }
