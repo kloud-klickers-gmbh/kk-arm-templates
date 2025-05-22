@@ -1,0 +1,168 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.5",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "prefix": {
+            "type": "string"
+        },
+        "addressPrefixDmz": {
+            "type": "String"
+        },
+        "addressPrefixLan": {
+            "type": "String"
+        },
+        "addressPrefixWan": {
+            "type": "String"
+        },
+        "addressPrefixVpn": {
+            "type": "String"
+        },
+        "outboundIp": {
+            "type": "String"
+        },
+        "disableBgpRoutePropagation": {
+            "type": "bool",
+            "defaultValue": true
+        }
+    },
+    "variables": {
+        "vnetRgName": "[concat(parameters('prefix'),'-vnet-rg')]",
+        "vnetName": "[concat(parameters('prefix'),'-vnet')]",
+
+        "subnetNameDmz": "[concat(parameters('prefix'),'-dmz-subnet')]",
+        "subnetNameLan": "[concat(parameters('prefix'),'-lan-subnet')]",
+        "subnetNameWan": "[concat(parameters('prefix'),'-wan-subnet')]",
+
+        "routeTableNameDmz": "[concat(parameters('prefix'), '-dmz-rt')]",
+        "routeTableNameLan": "[concat(parameters('prefix'), '-lan-rt')]",
+        "routeTableNameWan": "[concat(parameters('prefix'), '-wan-rt')]",
+
+        "subnetIdDmz": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetRgName'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnetName'), '/subnets/', variables('subnetNameDmz'))]",
+        "subnetIdLan": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetRgName'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnetName'), '/subnets/', variables('subnetNameLan'))]",
+        "subnetIdWan": "[concat('/subscriptions/', subscription().subscriptionId , '/resourceGroups/' , variables('vnetRgName'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnetName'), '/subnets/', variables('subnetNameWan'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2019-02-01",
+            "type": "Microsoft.Network/routeTables",
+            "name": "[variables('routeTableNameDmz')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "disableBgpRoutePropagation": "[parameters('disableBgpRoutePropagation')]",
+                "routes": [
+                    {
+                        "name": "udr-blackhole-wan",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('addressPrefixWan')]",
+                            "nextHopType": "None",
+                            "nextHopIpAddress": "",
+                            "hasBgpOverride": false
+                        }
+                    },
+                    {
+                        "name": "udr-default",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('outboundIp')]",
+                            "hasBgpOverride": false
+                        }
+                    }
+                ],
+                "subnets": [
+                    {
+                        "id": "[variables('subnetIdDmz')]"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2019-02-01",
+            "type": "Microsoft.Network/routeTables",
+            "name": "[variables('routeTableNameLan')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "disableBgpRoutePropagation": "[parameters('disableBgpRoutePropagation')]",
+                "routes": [
+                    {
+                        "name": "udr-blackhole-wan",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('addressPrefixWan')]",
+                            "nextHopType": "None",
+                            "nextHopIpAddress": "",
+                            "hasBgpOverride": false
+                        }
+                    },
+                    {
+                        "name": "udr-default",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('outboundIp')]",
+                            "hasBgpOverride": false
+                        }
+                    }
+                ],
+                "subnets": [
+                    {
+                        "id": "[variables('subnetIdLan')]"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2019-02-01",
+            "type": "Microsoft.Network/routeTables",
+            "name": "[variables('routeTableNameWan')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "disableBgpRoutePropagation": "[parameters('disableBgpRoutePropagation')]",
+                "routes": [
+                    {
+                        "name": "udr-blackhole-dmz",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('addressPrefixDmz')]",
+                            "nextHopType": "None",
+                            "nextHopIpAddress": "",
+                            "hasBgpOverride": false
+                        }
+                    },
+                    {
+                        "name": "udr-blackhole-lan",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('addressPrefixLan')]",
+                            "nextHopType": "None",
+                            "nextHopIpAddress": "",
+                            "hasBgpOverride": false
+                        }
+                    },
+                    {
+                        "name": "udr-blackhole-vpn",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('addressPrefixVpn')]",
+                            "nextHopType": "None",
+                            "nextHopIpAddress": "",
+                            "hasBgpOverride": false
+                        }
+                    }
+                ],
+                "subnets": [
+                    {
+                        "id": "[variables('subnetIdWan')]"
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
