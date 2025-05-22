@@ -1,0 +1,170 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "baseTime": {
+            "type": "string",
+            "defaultValue": "[utcNow()]"
+        },
+        "prefix": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "natGatewayRg": "[concat(parameters('prefix'),'-nat-gateway-rg')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('natGatewayRg')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "NAT-Gateway-Deployment",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('natGatewayRg'))]"
+            ],
+            "resourceGroup": "[variables('natGatewayRg')]",
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "Inner"
+                },
+                "parameters": {
+                    "baseTime": {
+                        "value": "[parameters('baseTime')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                },
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "baseTime": {
+                            "type": "string"
+                        },
+                        "prefix": {
+                            "type": "string"
+                        },
+                        "location": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "natGatewayName": "[concat(parameters('prefix'),'-nat-gateway')]",
+                        "vnetrg": "[concat(parameters('prefix'),'-vnet-rg')]",
+                        "vnet": "[concat(parameters('prefix'),'-vnet')]"
+                    },
+                    "resources": [
+                        {
+                            "apiVersion": "2022-05-01",
+                            "type": "Microsoft.Network/publicIpAddresses",
+                            "name": "kk-nat-gateway-pip",
+                            "location": "westeurope",
+                            "sku": {
+                                "name": "Standard"
+                            },
+                            "properties": {
+                                "publicIPAllocationMethod": "Static"
+                            }
+                        },
+                        {
+                            "apiVersion": "2019-09-01",
+                            "type": "Microsoft.Network/natGateways",
+                            "name": "[variables('natGatewayName')]",
+                            "location": "[parameters('location')]",
+                            "tags": {},
+                            "sku": {
+                                "name": "Standard"
+                            },
+                            "zones": [],
+                            "properties": {
+                                "publicIPAddresses": [
+                                    {
+                                        "id": "[resourceId('Microsoft.Network/publicIpAddresses/', 'kk-nat-gateway-pip')]"
+                                    }
+                                ],
+                                "publicIPPrefixes": [],
+                                "idleTimeoutInMinutes": 4
+                            },
+                            "dependsOn": [
+                                "[concat('Microsoft.Network/publicIpAddresses/', 'kk-nat-gateway-pip')]"
+                            ]
+                        },
+                        {
+                            "apiVersion": "2017-05-10",
+                            "type": "Microsoft.Resources/deployments",
+                            "name": "[concat('VirtualNetworkAssociation-', guid(parameters('baseTime')))]",
+                            "resourceGroup": "KK-vnet-rg",
+                            "dependsOn": [
+                                "[concat('Microsoft.Network/natGateways/', variables('natGatewayName'))]"
+                            ],
+
+                            "properties": {
+                                "mode": "Incremental",
+                                "expressionEvaluationOptions": {
+                                    "scope": "Inner"
+                                },
+                                "parameters": {
+                                    "subnetIds": {
+                                        "value": [
+                                            "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'), '/subnets/KK-lan-subnet')]",
+                                            "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('vnetrg'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnet'), '/subnets/KK-dmz-subnet')]"
+                                        ]
+                                    },
+                                    "natGatewayName": {
+                                        "value": "[variables('natGatewayName')]"
+                                    }
+                                },
+                                "template": {
+                                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                    "contentVersion": "1.0.0.0",
+                                    "parameters": {
+                                        "subnetIds": {
+                                            "type": "array"
+                                        },
+                                        "natGatewayName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "variables": {
+
+                                    },
+                                    "resources": [
+                                        {
+                                            "type": "Microsoft.Network/virtualNetworks/subnets",
+                                            "apiVersion": "2023-05-01",
+                                            "name": "[split(parameters('subnetIds')[copyIndex()], '/')[10]]",
+                                            "resourceGroup": "[split(parameters('subnetIds')[copyIndex()], '/')[4]]",
+                                            "properties": {
+                                                "natGateway": {
+                                                    "id": "[resourceId('Microsoft.Network/natGateways', parameters('natGatewayName'))]"
+                                                }
+                                            },
+                                            "copy": {
+                                                "name": "subnetNatAttach",
+                                                "count": "[length(parameters('subnetIds'))]"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
