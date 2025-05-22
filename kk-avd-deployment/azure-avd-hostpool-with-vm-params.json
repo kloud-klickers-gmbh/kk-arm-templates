@@ -1,0 +1,253 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "hciArtifactsLocation": {
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/HCIScripts_1.0.02929.635/HciCustomScript.ps1"
+        },
+        "customLocationId": {
+            "value": ""
+        },
+        "virtualProcessorCount": {
+            "value": null
+        },
+        "memoryMB": {
+            "value": 0
+        },
+        "maximumMemoryMB": {
+            "value": 0
+        },
+        "minimumMemoryMB": {
+            "value": 0
+        },
+        "dynamicMemoryConfig": {
+            "value": false
+        },
+        "vmInfrastructureType": {
+            "value": "Cloud"
+        },
+        "hciTPM": {
+            "value": false
+        },
+        "hciSecureBoot": {
+            "value": false
+        },
+        "hciSecurityType": {
+            "value": "Standard"
+        },
+        "hciClusterId": {
+            "value": ""
+        },
+        "attestationServiceEndpoint": {
+            "value": null
+        },
+        "relyingPartyServiceEndpoint": {
+            "value": null
+        },
+        "hciClusterAadTenantId": {
+            "value": ""
+        },
+        "hciTrustLaunchBootIntegrity": {
+            "value": false
+        },
+        "artifactsLocation": {
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_1.0.02929.635.zip"
+        },
+        "intune": {
+            "value": false
+        },
+        "hostpoolName": {
+            "value": "Test"
+        },
+        "hostpoolDescription": {
+            "value": "Created through the Azure Virtual Desktop extension"
+        },
+        "location": {
+            "value": "westeurope"
+        },
+        "validationEnvironment": {
+            "value": false
+        },
+        "hostpoolType": {
+            "value": "Pooled"
+        },
+        "loadBalancerType": {
+            "value": "BreadthFirst"
+        },
+        "preferredAppGroupType": {
+            "value": "Desktop"
+        },
+        "publicNetworkAccess": {
+            "value": "Enabled"
+        },
+        "vmResourceGroup": {
+            "value": "KK-jumphost-rg"
+        },
+        "vmNamePrefix": {
+            "value": "fsgdg"
+        },
+        "vmLocation": {
+            "value": "germanywestcentral"
+        },
+        "vmExtendedLocation": {
+            "value": null
+        },
+        "vmKind": {
+            "value": ""
+        },
+        "vmImageType": {
+            "value": "Gallery"
+        },
+        "vmSize": {
+            "value": "Standard_D2as_v5"
+        },
+        "vmNumberOfInstances": {
+            "value": 1
+        },
+        "vmDiskType": {
+            "value": "StandardSSD_LRS"
+        },
+        "vmDiskSizeGB": {
+            "value": 128
+        },
+        "vmHibernate": {
+            "value": false
+        },
+        "bootDiagnostics": {
+            "value": {
+                "enabled": true
+            }
+        },
+        "securityType": {
+            "value": "TrustedLaunch"
+        },
+        "secureBoot": {
+            "value": true
+        },
+        "vTPM": {
+            "value": true
+        },
+        "customConfigurationScriptUrl": {
+            "value": ""
+        },
+        "virtualNetworkResourceGroupName": {
+            "value": "KK-vnet-rg"
+        },
+        "existingVnetName": {
+            "value": "KK-vnet"
+        },
+        "existingSubnetName": {
+            "value": "KK-lan-subnet"
+        },
+        "createNetworkSecurityGroup": {
+            "value": false
+        },
+        "aadJoin": {
+            "value": true
+        },
+        "domain": {
+            "value": ""
+        },
+        "ouPath": {
+            "value": ""
+        },
+        "addToWorkspace": {
+            "value": false
+        },
+        "virtualMachineTags": {
+            "value": {
+                "cm-resource-parent": "/subscriptions/846453aa-de38-4f00-9c6a-42e91ac7e955/resourceGroups/KK-jumphost-rg/providers/Microsoft.DesktopVirtualization/Test"
+            }
+        },
+        "apiVersion": {
+            "value": "2024-04-08-preview"
+        },
+        "deploymentId": {
+            "value": "7d080c56-b3aa-4e6b-8671-ffa535cea071"
+        },
+        "vmGalleryImageOffer": {
+            "value": "office-365"
+        },
+        "vmGalleryImagePublisher": {
+            "value": "microsoftwindowsdesktop"
+        },
+        "vmGalleryImageSKU": {
+            "value": "win11-24h2-avd-m365"
+        },
+        "vmGalleryImageHasPlan": {
+            "value": false
+        },
+        "maxSessionLimit": {
+            "value": 8
+        },
+        "systemData": {
+            "value": {
+                "aadJoinPreview": false,
+                "sessionHostConfigurationVersion": "",
+                "firstPartyExtension": false
+            }
+        },
+        "nestedTemplatesLocation": {
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/armtemplates/Hostpool_1.0.02929.635/nestedTemplates/"
+        },
+        "tokenExpirationTime": {
+            "value": "2025-02-14T07:19:08.965Z"
+        },
+        "vmTemplate": {
+            "value": "{\"namePrefix\":\"fsgdg\",\"hibernate\":false,\"diskSizeGB\":128,\"securityType\":\"TrustedLaunch\",\"secureBoot\":true,\"vTPM\":true,\"vmInfrastructureType\":\"Cloud\",\"virtualProcessorCount\":null,\"memoryGB\":null,\"maximumMemoryGB\":null,\"minimumMemoryGB\":null,\"dynamicMemoryConfig\":false}"
+        },
+        "availabilityOption": {
+            "value": "None"
+        },
+        "availabilitySetName": {
+            "value": ""
+        },
+        "createAvailabilitySet": {
+            "value": false
+        },
+        "availabilitySetUpdateDomainCount": {
+            "value": 5
+        },
+        "availabilitySetFaultDomainCount": {
+            "value": 2
+        },
+        "integrityMonitoring": {
+            "value": true
+        },
+        "availabilityZones": {
+            "value": []
+        },
+        "vmAdministratorAccountUsername": {
+            "value": "kkadm"
+        },
+        "vmAdministratorAccountPassword": {
+            "value": null
+        },
+        "managedDiskSecurityEncryptionType": {
+            "value": "VMGuestStateOnly"
+        },
+        "availabilitySetTags": {
+            "value": {
+                "cm-resource-parent": "/subscriptions/846453aa-de38-4f00-9c6a-42e91ac7e955/resourceGroups/KK-jumphost-rg/providers/Microsoft.DesktopVirtualization/Test"
+            }
+        },
+        "applicationGroupTags": {
+            "value": {
+                "cm-resource-parent": "/subscriptions/846453aa-de38-4f00-9c6a-42e91ac7e955/resourceGroups/KK-jumphost-rg/providers/Microsoft.DesktopVirtualization/Test"
+            }
+        },
+        "hostpoolTags": {
+            "value": {}
+        },
+        "networkInterfaceTags": {
+            "value": {
+                "cm-resource-parent": "/subscriptions/846453aa-de38-4f00-9c6a-42e91ac7e955/resourceGroups/KK-jumphost-rg/providers/Microsoft.DesktopVirtualization/Test"
+            }
+        },
+        "networkSecurityGroupTags": {
+            "value": {
+                "cm-resource-parent": "/subscriptions/846453aa-de38-4f00-9c6a-42e91ac7e955/resourceGroups/KK-jumphost-rg/providers/Microsoft.DesktopVirtualization/Test"
+            }
+        }
+    }
+}
